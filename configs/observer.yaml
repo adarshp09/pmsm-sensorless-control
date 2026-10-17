@@ -1,0 +1,71 @@
+# Observer / fuzzy controller / DSOGI-FLL parameters.
+#
+# STATUS: PARTIALLY VERIFIED.
+#
+# Source fidelity is critical here: observer gains, sigmoid parameters,
+# membership functions, fuzzy rule tables and FLL gains are the parts of the
+# paper that are most often under-reported. Leave them `null` rather than
+# guessing. See docs/paper_method.md (items 5-10) and
+# docs/parameter_extraction.md.
+
+meta:
+  name: observer
+  status: partially_verified
+  source_document: "docs/act.pdf, Sections II-III, pp.2-5"
+  notes: >
+    Placeholder gains only. `value: null` means "not extracted from the
+    paper". Non-scalar specifications (membership functions, rule table,
+    transfer-function forms) live under `specs` and are likewise unresolved.
+
+parameters:
+  # --- Sliding-mode observer (SMO) ---
+  "smo.sliding_surface_gain":       {value: null, unit: "-",   source: null}
+  "smo.switching_gain_k":           {value: 1, unit: "-", source: "Simulation setup, p.5"}
+  "smo.sigmoid_slope_a":            {value: 4, unit: "-", source: "Simulation setup, p.5"}
+  "smo.boundary_layer_delta":       {value: null, unit: "-",   source: null}
+  "smo.observed_emf_lpf_cutoff":    {value: null, unit: "Hz",  source: null}
+
+  # --- Fuzzy logic controller (switching-gain adaptation) ---
+  "flc.input_error_scale_ke":        {value: null, unit: "-",  source: null}
+  "flc.input_delta_error_scale_kec": {value: null, unit: "-",  source: null}
+  "flc.output_scale_ku":             {value: null, unit: "-",  source: null}
+  "flc.output_min":                 {value: null, unit: "-",   source: null}
+  "flc.output_max":                 {value: null, unit: "-",   source: null}
+
+  # --- DSOGI ---
+  "dsogi.damping_gain_k":           {value: 1.4142135623730951, unit: "-", source: "p.5, ks=sqrt(2); derived numerically"}
+  "dsogi.nominal_center_frequency": {value: null, unit: "Hz",  source: null}
+
+  # --- FLL ---
+  "fll.gamma_gain":                 {value: 50, unit: "-", source: "p.5, Gamma=50"}
+  "fll.min_frequency":              {value: null, unit: "Hz",  source: null}
+  "fll.max_frequency":              {value: null, unit: "Hz",  source: null}
+  "fll.initial_frequency":          {value: null, unit: "Hz",  source: null}
+  "fll.lpf_cutoff":                 {value: null, unit: "Hz",  source: null}
+
+  # --- Discretization ---
+  "discretization.sampling_period_ts": {value: 0.0001, unit: "s", source: "Eq.(20), p.5; derived from Ts=100 us"}
+  "discretization.tustin_prewarp":     {value: null, unit: "-", source: null}
+
+# Structural / non-scalar specifications; null means not printed by the paper.
+specs:
+  sliding_surface_form: "S(x)=i_hat_s-i_s, Eq.(3), p.2"
+  switching_function: "sigmoid(S)=2/(1+exp(-a*S))-1, Eq.(5), p.2; Eq.(4) uses sign(S) before replacement"
+  flc_inputs: "s=current estimation error and s_dot=derivative of current error; p.3"
+  flc_output: "kF and aF multiply fixed sliding gain and sigmoid parameter; p.3"
+  membership_functions: "triangular; inputs NB,NS,Z,PS,PB over {-1,-0.5,0,0.5,1}; outputs Z,PS,PM,PB over [0,1]; breakpoints not numerically reported, p.3/Fig.2"
+  fuzzy_rule_table:
+    output_aF:
+      columns: [NB, NS, Z, PS, PB]
+      rows: {NB: [PB, PB, PB, PM, PS], NS: [PB, PM, PM, PS, PS], Z: [PS, Z, Z, Z, PS], PS: [PS, PS, PM, PB, PB], PB: [PS, PM, PB, PB, PB]}
+    output_kF:
+      columns: [NB, NS, Z, PS, PB]
+      rows: {NB: [PB, PB, PM, PS, Z], NS: [PM, PM, PS, Z, PS], Z: [PS, Z, Z, Z, PS], PS: [PS, Z, PS, PM, PM], PB: [Z, PM, PB, PB, PB]}
+    source: "Tables I-II, p.4"
+  inference_method: "Mamdani, p.3"
+  defuzzification_method: "center of gravity, p.3"
+  dsogi_transfer_functions: "D(s)=ks*w_prime*s/(s^2+ks*w_prime*s+w_prime^2); Q(s)=ks*w_prime^2/(same denominator), Eqs.(9)-(10), p.4"
+  dsogi_signal_combination: null
+  fll_error_signal: null
+  fll_adaptation_law: "integrator with negative gain -Gamma adjusts w_prime toward input frequency; Fig.5/p.4, exact algebraic error expression unresolved"
+  discretization_method: "Tustin with prewarping, Eq.(17), p.5; D(z), Q(z) Eqs.(18)-(19)"

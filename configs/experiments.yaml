@@ -1,0 +1,45 @@
+# Simulation / experimental conditions.
+#
+# STATUS: PARTIALLY VERIFIED.
+#
+# Simulation timestep, duration, speed profiles, load disturbances and noise
+# levels are reported by the paper (or, where the paper is silent, are explicit
+# implementation choices to be recorded in docs/implementation_decisions.md).
+# Reported conditions are populated below; omitted conditions remain null.
+
+meta:
+  name: experiments
+  status: partially_verified
+  source_document: "docs/act.pdf, Sections IV-V, pp.5-10"
+  notes: >
+    Placeholder only. Distinguish paper-reported conditions from local
+    implementation choices when filling this file, and record the choice in
+    docs/implementation_decisions.md.
+
+parameters:
+  # --- Simulation timing ---
+  "sim.timestep_ts":            {value: 0.0001, unit: "s", source: "Eq.(20), p.5; derived from Ts=100 us"}
+  "sim.duration":               {value: null, unit: "s",  source: null}
+
+  # --- Load / disturbance ---
+  "load.initial_torque":        {value: null, unit: "N.m", source: null}
+  "load.step_torque":           {value: null, unit: "N.m", source: "50% rated load in simulation; absolute torque not stated"}
+  "load.step_time":             {value: null, unit: "s",   source: null}
+
+  # --- Measurement noise (only if the paper adds noise) ---
+  "noise.current_sigma":        {value: null, unit: "A",   source: null}
+  "noise.voltage_sigma":        {value: null, unit: "V",   source: null}
+
+# Structural / non-scalar specifications; null means not printed by the paper.
+specs:
+  speed_profile:
+    - {condition: "no-load acceleration", from_rpm: 500, to_rpm: 1000, time_s: 1.5, steady_state_s: 2.0, source: "Fig.9 description, p.6"}
+    - {condition: "no-load variable speed", from_rpm: 500, to_rpm: 1000, time_s: 2.0, source: "Section IV-C, p.7"}
+    - {condition: "constant speed load disturbance", speed_rpm: 1000, load_fraction: 0.5, time_s: 1.5, source: "Section IV-D, p.7"}
+  reference_step_times: null
+  baseline_methods: ["STASMO-CVGI", "SMO+LPF", "STASMO+CVGI", "FSMO+DSOGI-FLL"]
+  evaluation_metrics: ["speed estimation error", "rotor position error", "harmonic content", "amplitude attenuation", "phase delay"]
+  reported_results:
+    simulation: "improved SMO maximum speed error about 5 rpm and position error about 0.07 rad steady state; dynamic position error about 0.2 rad; p.7"
+    experiment: "at 500 rpm improved speed error about 15 rpm and position error 0.1256 rad; at 1000 rpm about 10 rpm and 0.08 rad; 20% load position error 0.152 rad; pp.9-10"
+    table_iv: "FSMO+DSOGI: low harmonics, no amplitude attenuation, no phase delay, 0.08 rad and 10 rpm; p.10"

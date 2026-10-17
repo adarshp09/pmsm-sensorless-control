@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pmsm-sensorless-control"
+version = "0.0.0"
+description = "Reproduction scaffold for a fuzzy-logic + DSOGI-FLL sliding-mode observer for sensorless PMSM control (Phase 00: specification only)."
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["pmsm", "sensorless", "sliding-mode-observer", "dsofi-fll", "fuzzy-logic", "control"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Private :: Do Not Upload",
+]
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "pandas>=2.0",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+# scikit-fuzzy is OPTIONAL: the fuzzy controller may be implemented directly so
+# the paper's exact inference/defuzzification behaviour can be reproduced.
+fuzzy = ["scikit-fuzzy>=0.4"]
+dev = [
+    "pytest>=7.4",
+    "ruff>=0.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

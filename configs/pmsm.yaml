@@ -1,0 +1,54 @@
+# PMSM motor and drive parameters.
+#
+# STATUS: PARTIALLY VERIFIED.
+#
+# Reported values are populated below; unresolved values remain null. Do not
+# fill nulls with textbook or generic PMSM values.
+#
+# Conventions:
+#   * `parameters.<name>.value == null`  -> UNRESOLVED (not yet extracted)
+#   * `parameters.<name>.unit`           -> physical unit of the value
+#   * `parameters.<name>.source`         -> citation, e.g. "Table 1, p.4"
+#                                     or "Eq.(7), p.3"
+#
+# Loaded and validated by `pmsm_sensorless.config`. See
+# docs/parameter_extraction.md for the human-readable extraction table.
+
+meta:
+  name: pmsm
+  status: partially_verified
+  reference: "Zhu et al., IEEE TTE 11(1), 2025, DOI 10.1109/TTE.2024.3396732"
+  source_document: "Table III, p.6 (PDF page 6; printed p.828)"
+  notes: >
+    Numeric machine values are paper-reported. Missing paper values remain
+    null and must not be replaced by generic motor defaults.
+
+parameters:
+  # --- Machine geometry / electrical ---
+  "machine.pole_pairs":                 {value: 4, unit: "-", source: "Table III, p.6"}
+  "machine.stator_resistance_rs":       {value: 0.505, unit: "ohm", source: "Table III, p.6"}
+  "machine.stator_inductance_ld":       {value: 0.00147, unit: "H", source: "Table III, p.6; derived from 1.47 mH"}
+  "machine.stator_inductance_lq":       {value: 0.00147, unit: "H", source: "Table III, p.6; derived from 1.47 mH"}
+  "machine.pm_flux_linkage_psi_f":      {value: 0.1326, unit: "Wb", source: "Table III, p.6"}
+
+  # --- Mechanical ---
+  "mech.inertia_j":                     {value: 0.00153, unit: "kg.m^2", source: "Table III, p.6"}
+  "mech.viscous_friction_b":            {value: null, unit: "N.m.s/rad",  source: null}
+  "mech.static_friction_tf":            {value: null, unit: "N.m",        source: null}
+
+  # --- Rating / operating point ---
+  "rating.dc_bus_voltage":              {value: null, unit: "V",          source: null}
+  "rating.rated_voltage":               {value: 220, unit: "V", source: "Table III, p.6; rate line voltage"}
+  "rating.rated_current":               {value: null, unit: "A",          source: null}
+  "rating.rated_power":                 {value: 2000, unit: "W", source: "Table III, p.6; derived from 2 kW"}
+  "rating.rated_torque":                {value: 7.7, unit: "N.m", source: "Table III, p.6; rate load"}
+  "rating.rated_speed":                 {value: 2000, unit: "rpm", source: "Table III, p.6"}
+  "rating.rated_frequency":             {value: null, unit: "Hz",         source: null}
+  "rating.switching_frequency":         {value: 10000, unit: "Hz", source: "Table III, p.6; derived from 10 kHz"}
+
+# Structural (non-scalar) specification items that belong to the plant but are
+# not simple numbers. Any remaining null is unresolved in the paper.
+specs:
+  model_form: "two-axis stationary alpha-beta PMSM model; Ld=Lq as reported"
+  assumptions: ["cross-coupling magnetic saturation ignored", "iron loss ignored", "magnet eddy-current loss ignored"]
+  parameter_table_ref: "Table III, p.6 (printed p.828)"
