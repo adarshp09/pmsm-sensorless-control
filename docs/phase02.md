@@ -151,6 +151,9 @@ The sigmoid's advantage is much larger in the stable regime (RMSE −82 %, rippl
   frequency errors, filtered gain ≈ 0.81, and the 90.9/88.1 % and 92.7/91.4 % ripple
   reductions) is invalid. The observer-only numbers in this document do not use the
   filter and stand. Library-default re-base: `docs/phase03.md` §13.
+- **Invalid for ramp (Phase 03f):** every *ramp-window* ripple, ripple-reduction and
+  ω′-std value in this document used a stationary phasor fit and is **invalid for a
+  ramp**. Use the windowed fit in `docs/phase03.md` §14.6.
 - **Low-speed limitation (Step 6):** the sign observer's raw back-EMF fundamental
   gain is **0.76 at 100 rpm** (0.93 at 200 rpm), and is **independent of the fit
   window length (1/2/4/8 cycles, half-window scatter ≤ 0.014)** — a real low-speed

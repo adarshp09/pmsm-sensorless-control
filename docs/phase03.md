@@ -400,6 +400,155 @@ Findings:
   zero; this is the D-027 instability, not a filter bug.
 - Predicted vs measured phase: the given formula `atan((r²−1)/(k_s r))` has the
   **opposite sign** to the measured `filtered − raw` phase for the sign observer.
-  Reported side by side; the sign convention is flagged, not resolved here.
+  Reported side by side; the sign convention is flagged (resolved in §14.2).
 - Ramp jitter (~9.8 Hz) is the FLL tracking the 500→1000 rpm ramp; the steady window
   is the clean metric.
+- **Ramp values invalid (Phase 03f):** all ramp-window ripple, ripple-reduction and
+  ω′-std numbers in this section (and `phase02.md`) come from a *stationary* phasor
+  fit and are **invalid for a ramp**. See §14.6 for the windowed fit.
+
+## 14. Phase 03f — verification & disclosure
+
+Script: `experiments/03f_verification.py`; output
+`experiments/output/03f_verification/verification.json`. All blocks state their
+options; the settings here are the **library default** (`epsilon_filter_tau=OFF`,
+`min_omega=None`, no normalization).
+
+### 14.1 Option disclosure (Step 1)
+
+Non-default options actually used, from the `config_diff` blocks:
+
+| script | `epsilon_filter_tau` | `min_omega` | notes |
+| --- | --- | --- | --- |
+| 03 | 0.01 s | 12.566 rad/s (2 Hz) | both enabled (D-028) |
+| 03b | — | — | no DSOGI-FLL used |
+| 03c | — | — | no DSOGI-FLL used |
+| 03d | 0.01 s (LPF_on rows) / OFF (LPF_off rows) | **12.566 rad/s (2 Hz) on ALL rows** | so "LPF off" = "LPF off, min_omega=12.566 rad/s ON" |
+
+03d rows whose ω′ was **pinned at the floor** (final ≈ 2 Hz; `ferr` ≈ −64.7 Hz at
+1000 rpm, ≈ −31 Hz at 500 rpm): 1000 rpm `(b1) LPF_off`, `(b2) LPF_on`, `(b2) LPF_off`;
+500 rpm `(b2) LPF_on`, `(b2) LPF_off` (≈2.6 Hz), and `(c) sigmoid@100 µs LPF_off`
+(≈2.4 Hz). All other 03d rows are **not** floor-pinned. See D-028/D-029.
+
+### 14.2 Off-resonance check and the phase-sign verdict (Step 2)
+
+Permanent tests: `tests/test_sogi_off_resonance.py`. With ω′ frozen and
+`z = e^{jωt}`, the implemented SOGI matches `D(jω)`, `Q(jω)` to **≤2×10⁻³**
+relative at `ω/ω′ = 0.8, 0.9, 1.0, 1.1, 1.25`, and the positive-sequence output
+matches **`½(D+jQ) = ½D(1+ω′/ω)`** to ≤3×10⁻³ (the prewarped biquad is exact at
+`ω′` and the off-resonance warping is <1e-4; the bound is generous).
+
+Phase comparison for the 03e sign rows (positive-sequence output):
+
+| Ts | time-avg `atan((r²−1)/(k_s r))` using actual ω′(t) | measured filtered−raw | true D phase = −atan(...) |
+| --- | --- | --- | --- |
+| 100 µs | **+8.59°** | **−5.86°** | −8.59° |
+| 50 µs | +5.74° | −3.06° | −5.74° |
+| 25 µs | +2.62° | −1.32° | −2.62° |
+
+**Verdict: not a filter bug and not an ω′-jitter effect.** Using the actual
+`ω′(t)` still gives a *positive* time-average, so jitter does not flip the sign.
+The measured filtered−raw phase has the sign and approximate magnitude of
+**−atan((r²−1)/(k_s r))**, which is exactly the implemented `D(jω)` phase (the
+off-resonance test verifies `∠D = −atan(...)`). The supplied formula has an
+inverted sign convention (it gives `+`, the true `D` phase is `−`). Residual
+magnitude differences are because the raw signal carries ripple.
+
+### 14.3 Paper-literal output `v′` vs positive sequence (Step 3)
+
+**Eq.(12) re-checked on the rendered page:** `Ê_f(s) = Ê(s)·D(s)` — the in-phase
+band-pass, with **no** positive/negative-sequence combination printed. So the
+paper-literal output is **`v′`**; the PNS output is the D-020 "non-paper option".
+
+**API gap:** `DSOGIFLLOutput.v_alpha/v_beta` are the PNS output when
+`positive_sequence=True` and the per-axis `v′` when it is `False`; the API does
+**not** expose both simultaneously. To report both we run the same case twice
+(same settings, flag toggled). A read-only accessor (e.g. `v_alpha_prime`,
+`v_beta_prime`) is proposed as a **separate, approved step**.
+
+Steady-window comparison (library default):
+
+| Ts | observer | output | gain | phase | ripple (V) | FLL status |
+| --- | --- | --- | --- | --- | --- | --- |
+| 100 µs | sign | `v′` (paper-literal) | 0.922 | −2.04° | 7.46 | locked (bias +7.9 Hz) |
+| 100 µs | sign | positive seq. | 0.977 | −7.44° | 8.07 | locked |
+| 100 µs | sigmoid | both | — | — | — | **NaN** (ω′<0; see 14.4) |
+| 50 µs | sign | `v′` | 0.965 | −0.83° | 2.89 | locked (+5.0 Hz) |
+| 50 µs | sign | positive seq. | 1.000 | −3.92° | 2.40 | locked |
+| 50 µs | sigmoid | `v′` | 0.984 | −0.38° | 0.01 | locked |
+| 50 µs | sigmoid | positive seq. | 0.984 | −0.38° | 0.00 | locked |
+| 25 µs | sign | `v′` | 0.985 | −0.37° | 1.24 | locked (+2.2 Hz) |
+| 25 µs | sign | positive seq. | 1.000 | −1.71° | 0.75 | locked |
+| 25 µs | sigmoid | `v′` | 0.987 | −0.56° | 0.01 | locked |
+| 25 µs | sigmoid | positive seq. | 0.987 | −0.56° | 0.00 | locked |
+
+The paper-literal `v′` has the lower gain for the detuned sign case (0.922 vs
+0.977): `D` attenuates off resonance, while the PNS factor `½(1+ω′/ω)` offsets
+the gain but adds the `∠D` phase.
+
+### 14.4 Sigmoid @100 µs status (Step 4)
+
+Raw `E_hat` metrics (independent of the filter): **gain 0.960, phase −1.31°,
+ripple 203.7 V** (matches 03c's 0.963/−1.31°). FLL status = **NaN**, first NaN at
+**0.0757 s**; ω′ just before = **−1.668 Hz**; the error is
+`omega_prime must be non-negative` from `SOGIQSG` when ω′ crosses below zero.
+**Not a `tan(ω′Ts/2)/ω′` singularity** — the biquad uses `sin/cos` and is finite at
+ω′→0. It is the intended non-negativity guard rejecting a non-physical ω′ driven by
+the D-027 limit cycle. Reported as a robustness note; no src change.
+
+### 14.5 Collapse cases with no clamp (Step 5)
+
+Rerunning the 03e collapse cases with `min_omega=None`: **ω′ does not decay
+asymptotically — it crosses zero to negative and the SOGI raises (NaN).**
+
+| rpm | case | result (no clamp) |
+| --- | --- | --- |
+| 1000 | ideal | locks (66.66 Hz) |
+| 1000 | period-2 | NaN at 0.033 s (ω′ → −91.5) |
+| 1000 | white | NaN at 0.021 s (ω′ → −11.4) |
+| 1000 | sigmoid @100 µs (constant speed) | locks at 80.7 Hz (bias +14 Hz) |
+| 500 | ideal | locks (33.35 Hz) |
+| 500 | period-2 | NaN at 0.035 s (ω′ → −94.6) |
+| 500 | white | NaN at 0.018 s (ω′ → −760) |
+| 500 | sigmoid @100 µs | NaN at 0.078 s (ω′ → −24.1) |
+
+So the collapse is a **zero-crossing to negative ω′** (the exact ω′=0 point is
+absorbing analytically, but forward Euler overshoots through it).
+
+ε_f budget at frozen ω′=ω_true:
+- synthetic white (32 seeds): mean ε_f = **+11.67 ± 448.44** — not significant
+  (std ≫ mean); period-2 mean ε_f = **−3.6e−10 ≈ 0**.
+- real sign signal: predicted offset `−mean ε_f,ripple / slope`:
+  **+0.22 Hz (100 µs), +0.06 Hz (50 µs), +0.015 Hz (25 µs)** vs observed
+  **+7.91 / +4.97 / +2.20 Hz**.
+
+**Verdict: the open-loop ε_f budget does NOT explain the sign-observer bias.**
+The sign agrees but the magnitude is **36× / 83× / 148×** too small (≫2×), and the
+white-ripple mean is seed-dominated. The bias is therefore a discrete/aliasing and
+nonlinear-loop effect, not the steady-state ripple ε_f.
+
+### 14.6 Ramp metrics with the windowed fit (Step 6)
+
+`experiments/validation_metrics.py` now provides `sliding_window_ramp_metrics`
+(per 60 ms window, complex LS `z ≈ (G0 + G1(t−t_c))·z_true`) and
+`summarize_ramp`. Permanent test: `tests/test_ramp_metrics.py`. Ramp = [0, 1.5] s.
+
+Mean / worst-window (max ripple) over 25 windows:
+
+| Ts | observer | output | mean gain | mean phase | mean ripple (V) | worst ripple (V) | ω′ err mean ± std (Hz) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 100 | sign | `v′` | 0.890 | −1.12° | 5.06 | 8.16 | +9.60 ± 4.55 |
+| 100 | sign | positive seq. | 0.992 | −8.76° | 4.90 | 10.31 | +9.60 ± 4.55 |
+| 100 | sigmoid | — | **NaN** | — | — | — | — |
+| 50 | sign | `v′` | 0.956 | −0.93° | 2.09 | 3.92 | +5.09 ± 2.07 |
+| 50 | sign | positive seq. | 1.013 | −5.02° | 1.56 | 5.73 | +5.09 ± 2.07 |
+| 50 | sigmoid | `v′` | 0.978 | −0.59° | 0.28 | 4.45 | −0.12 ± 0.19 |
+| 50 | sigmoid | positive seq. | 0.976 | −0.40° | 0.34 | 5.36 | −0.12 ± 0.19 |
+| 25 | sign | `v′` | 0.977 | −0.54° | 1.15 | 3.95 | +2.16 ± 1.03 |
+| 25 | sign | positive seq. | 0.999 | −2.24° | 0.89 | 5.49 | +2.16 ± 1.03 |
+| 25 | sigmoid | `v′` | 0.980 | −0.69° | 0.28 | 4.45 | −0.12 ± 0.19 |
+| 25 | sigmoid | positive seq. | 0.978 | −0.51° | 0.34 | 5.36 | −0.12 ± 0.19 |
+
+**Invalid marking:** every earlier *ramp* ripple, ripple-reduction and ω′-std value
+(sections 4–8, 10, 12, 13 and `phase02.md`) used a stationary phasor fit and is
+**invalid for the ramp**; use this table instead.

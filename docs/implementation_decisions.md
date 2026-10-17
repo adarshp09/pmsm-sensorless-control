@@ -353,6 +353,11 @@ inputs by default
   smaller time constant) remains a separate approved step; the filter default is
   already OFF.
 - **Type:** verification finding / bug report.
+- **Option disclosure (Phase 03f):** `03` used **both** `epsilon_filter_tau = 0.01 s`
+  **and** `min_omega = 12.566 rad/s`; `03d` used both on **all** rows, so its
+  "LPF off" rows are really "LPF off, min_omega=12.566 rad/s ON". The floor-pinned
+  03d rows are listed in `phase03.md` §14.1 (D-028 covers why the LPF numbers are
+  retracted; the clamp is a separate non-default option).
 
 ## D-029 — Regime labels for the sign-vs-sigmoid comparison
 
@@ -361,6 +366,12 @@ inputs by default
   comparison is the **stable regime at `Ts = 50 µs`** (sign RMSE 5.10 A / ripple
   248.1 V vs sigmoid RMSE 0.922 A / ripple 0.02 V). Recorded in `phase02.md` and
   `phase03.md`.
+- **Phase 03f additions:** the paper-literal filter output is the in-phase `v'`
+  (Eq.(12) `Ê_f = Ê·D`, re-checked on the rendered page); the positive-sequence
+  output is the D-020 non-paper option, and the API does not expose both at once.
+  The measured filtered−raw phase matches **−atan((r²−1)/(k_s r))** (the true `D`
+  phase, verified by the off-resonance test), so the supplied formula's sign is
+  inverted — not a filter bug and not ω′-jitter.
 - **Type:** reporting convention.
 
 ## D-026 — Metric redefinition and re-based claims

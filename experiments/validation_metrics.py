@@ -38,6 +38,73 @@ def fundamental_phasor(e_alpha, e_beta, theta) -> complex:
     return complex(np.mean(z * np.exp(-1j * np.asarray(theta, dtype=float))))
 
 
+def sliding_window_ramp_metrics(
+    e_alpha,
+    e_beta,
+    true_alpha,
+    true_beta,
+    omega_prime_hz,
+    f_true_hz,
+    t,
+    window_s: float = 0.06,
+) -> list[dict]:
+    """Per-window complex fit ``z ~ (G0 + G1 (t - t_c)) z_true`` over a ramp.
+
+    A single stationary phasor is invalid while the frequency ramps, so each
+    ``window_s`` window is fitted with a locally linear complex gain. ``G0`` gives the
+    gain/phase at the window centre; the RMS residual is the ripple; the ``omega'``
+    error is ``omega' - omega_true`` over the window.
+    """
+    z = np.asarray(e_alpha, dtype=float) + 1j * np.asarray(e_beta, dtype=float)
+    z_true = np.asarray(true_alpha, dtype=float) + 1j * np.asarray(true_beta, dtype=float)
+    t = np.asarray(t, dtype=float)
+    omega_prime_hz = np.asarray(omega_prime_hz, dtype=float)
+    f_true_hz = np.asarray(f_true_hz, dtype=float)
+    samples = max(2, int(round(window_s / float(t[1] - t[0]))))
+    rows: list[dict] = []
+    start = 0
+    while start + samples <= len(z):
+        sl = slice(start, start + samples)
+        zz, zz_true, tt = z[sl], z_true[sl], t[sl]
+        centre = tt.mean()
+        delta = tt - centre
+        weight = np.abs(zz_true) ** 2
+        normal = np.array(
+            [[np.sum(weight), np.sum(delta * weight)], [np.sum(delta * weight), np.sum(delta**2 * weight)]]
+        )
+        rhs = np.array(
+            [np.sum(zz * np.conj(zz_true)), np.sum(delta * zz * np.conj(zz_true))]
+        )
+        g0, g1 = np.linalg.solve(normal, rhs)
+        residual = zz - (g0 + g1 * delta) * zz_true
+        omega_error = omega_prime_hz[sl] - f_true_hz[sl]
+        rows.append(
+            {
+                "t_center_s": float(centre),
+                "gain": float(abs(g0)),
+                "phase_deg": float(np.degrees(np.angle(g0))),
+                "ripple_rms_v": float(np.sqrt(np.mean(np.abs(residual) ** 2))),
+                "omega_prime_error_hz_mean": float(np.mean(omega_error)),
+                "omega_prime_error_hz_std": float(np.std(omega_error)),
+            }
+        )
+        start += samples
+    return rows
+
+
+def summarize_ramp(rows: list[dict]) -> dict:
+    """Mean and worst (max-ripple) window of :func:`sliding_window_ramp_metrics`."""
+    if not rows:
+        return {}
+    worst = max(rows, key=lambda row: row["ripple_rms_v"])
+    keys = ("gain", "phase_deg", "ripple_rms_v", "omega_prime_error_hz_mean", "omega_prime_error_hz_std")
+    return {
+        "n_windows": len(rows),
+        "mean": {key: float(np.mean([row[key] for row in rows])) for key in keys},
+        "worst": dict(worst),
+    }
+
+
 def vector_metrics(e_alpha, e_beta, true_alpha, true_beta, theta) -> dict:
     """Fundamental gain/phase, ripple and total error for one signal vs the truth."""
     z = np.asarray(e_alpha, dtype=float) + 1j * np.asarray(e_beta, dtype=float)

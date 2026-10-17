@@ -22,6 +22,14 @@ The paper says normalization makes the FLL response "only depend on `Gamma`", bu
 never prints the normalized error expression, so the normalization is an option,
 off by default (`normalize_error`).
 
+**Eq.(12) re-check (Phase 03f, rendered page):** it is exactly
+`E_hat_f(s) = E_hat(s) D(s)` -- the **in-phase** band-pass output, with **no**
+positive/negative-sequence combination printed. The implementation's
+positive-sequence output is therefore the D-020 "non-paper option"; the
+paper-literal output is the per-axis in-phase `v'`. The API does not expose both
+`v'` and the sequence output simultaneously (`v_alpha/v_beta` switch with
+`positive_sequence`); a read-only accessor is proposed as a separate step.
+
 ## (b) Fuzzy logic controller
 
 | Item | Status | Source / value |
