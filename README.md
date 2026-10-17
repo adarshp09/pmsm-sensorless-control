@@ -137,7 +137,7 @@ Phase 00 tests cover only package import and configuration loading/validation.
 | 01 | PMSM plant model + Clarke transform (Park not yet implemented) | **in progress** |
 | 02 | Conventional SMO (sign / sigmoid switching) | **in progress** |
 | 03 | DSOGI + FLL back-EMF filtering and frequency tracking | **in progress** |
-| 04 | Fuzzy logic controller for switching-gain adaptation | not started |
+| 04 | Fuzzy logic controller for switching-gain adaptation | **in progress** |
 | 05 | Integration: full sensorless estimator | not started |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |

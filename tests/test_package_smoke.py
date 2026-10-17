@@ -33,13 +33,13 @@ def test_subpackages_are_importable_and_documented(name: str) -> None:
 
 
 def test_not_yet_implemented_subpackages_are_still_stubs() -> None:
-    """Phase 03 guarantee: fuzzy/estimation have no algorithms yet.
+    """Phase 04 guarantee: only ``estimation`` has no algorithms yet.
 
-    ``observers`` (Phase 02) and ``filters`` (Phase 03) are intentionally excluded:
-    importing their submodules binds them as package attributes, so a "must be
-    empty" check no longer applies there.
+    ``observers`` (Phase 02), ``filters`` (Phase 03) and ``fuzzy`` (Phase 04) are
+    intentionally excluded: importing their submodules binds them as package
+    attributes, so a "must be empty" check no longer applies there.
     """
-    for name in ("fuzzy", "estimation"):
+    for name in ("estimation",):
         module = importlib.import_module(f"pmsm_sensorless.{name}")
         public = [attr for attr in vars(module) if not attr.startswith("_")]
         assert public == [], f"pmsm_sensorless.{name} should be empty, found {public}"

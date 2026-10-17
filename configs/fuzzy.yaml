@@ -1,0 +1,41 @@
+# Fuzzy logic controller — PRINTED items only.
+#
+# Source: docs/act.pdf, p.3 (sets/universes, inference, defuzzification) and
+# Tables I-II, p.4 (rule bases). Values here are copied from the paper; see
+# docs/flc_spec.md. Anything not printed lives in configs/fuzzy_assumptions.yaml.
+
+meta:
+  name: fuzzy
+  status: verified
+  source_document: "docs/act.pdf, p.3-4; Tables I-II, p.4"
+
+parameters: {}
+
+specs:
+  # p.3
+  input_sets: [NB, NS, Z, PS, PB]
+  input_centres: [-1.0, -0.5, 0.0, 0.5, 1.0]
+  output_sets: [Z, PS, PM, PB]
+  output_range: [0.0, 1.0]
+  membership_shape: triangular
+  inference: mamdani
+  defuzzification: centre_of_gravity
+  mapping: {k: "kF * k0", a: "aF * a0"}
+
+  # Tables I-II, p.4. rows = s (NB..PB), columns = s_dot (NB..PB).
+  rule_table_aF:
+    columns: [NB, NS, Z, PS, PB]
+    rows:
+      NB: [PB, PB, PB, PM, PS]
+      NS: [PB, PM, PM, PS, PS]
+      Z:  [PS, Z,  Z,  Z,  PS]
+      PS: [PS, PS, PM, PB, PB]
+      PB: [PS, PM, PB, PB, PB]
+  rule_table_kF:
+    columns: [NB, NS, Z, PS, PB]
+    rows:
+      NB: [PB, PB, PM, PS, Z]
+      NS: [PM, PM, PS, Z,  PS]
+      Z:  [PS, Z,  Z,  Z,  PS]
+      PS: [PS, Z,  PS, PM, PM]
+      PB: [Z,  PM, PB, PB, PB]

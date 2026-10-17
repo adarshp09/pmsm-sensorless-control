@@ -1,0 +1,42 @@
+# Fuzzy logic controller — ASSUMPTIONS (not from the paper).
+#
+# Every value here is a local implementation choice. `null` means unresolved and
+# the loader raises ConfigError. See docs/parameter_extraction.md and D-030+.
+
+meta:
+  name: fuzzy_assumptions
+  status: assumed
+  notes: >
+    ASSUMPTION — not from paper. The paper prints the input/output sets, their
+    universes, triangular membership, Mamdani inference, centre-of-gravity
+    defuzzification and the k=kF*k0 / a=aF*a0 mapping, but NOT the scaling
+    gains, the membership feet, the t-norm/aggregation operators, the CoG grid,
+    the per-axis structure or how s_dot is computed. Those are assumed here.
+
+parameters:
+  # ASSUMPTION — not from paper
+  "flc.input_error_scale_ke":        {value: 0.13472, unit: "1/A", source: "ASSUMPTION — not from paper; 1/I_base"}
+  # ASSUMPTION — not from paper
+  "flc.input_delta_error_scale_kec": {value: 1.3472e-5, unit: "s/A", source: "ASSUMPTION — not from paper; Ts/I_base"}
+  # ASSUMPTION — not from paper
+  "flc.output_scale_ku":             {value: 1.0, unit: "-", source: "ASSUMPTION — not from paper; fixed by printed [0,1] output universe"}
+  # ASSUMPTION — not from paper
+  "flc.cog_grid_points":             {value: 1001, unit: "-", source: "ASSUMPTION — not from paper; centre-of-gravity grid"}
+
+specs:
+  # ASSUMPTION — not from paper: Ruspini triangular partition with feet at the
+  # neighbouring printed centres (half-width = centre spacing).
+  input_mf_half_width: 0.5
+  # ASSUMPTION — not from paper: output sets equally spaced on [0,1].
+  output_centres: [0.0, 0.3333333333333333, 0.6666666666666666, 1.0]
+  # ASSUMPTION — not from paper
+  output_mf_half_width: 0.3333333333333333
+  # ASSUMPTION — not from paper: Mamdani t-norm and aggregation.
+  and_operator: min
+  aggregation_operator: max
+  # ASSUMPTION — not from paper: independent FLC per alpha/beta axis.
+  per_axis: true
+  # ASSUMPTION — not from paper: s_dot by backward difference, first step zero.
+  s_dot_scheme: backward_difference_first_zero
+  # ASSUMPTION — not from paper: non-finite normalised inputs mapped to neutral 0.
+  non_finite_input: zero

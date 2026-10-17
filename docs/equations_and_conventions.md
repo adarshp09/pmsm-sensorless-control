@@ -139,3 +139,19 @@ choice is named PROVISIONAL and cross-referenced to
   measurement (D-016).
 - **Units:** SI (`k` [V], `a` [1/A]); the paper's per-unit `k`/`a` are converted
   in `SMOObserverParameters.from_config` (D-015).
+
+## 10. Phase 04 FLC conventions (2026-10-14)
+
+- **Inputs:** normalised `s_n = Ke·S`, `s_dot_n = Kec·(S[k]-S[k-1])/dt` (first step
+  `s_dot_n = 0`), clipped to `[-1, 1]`. `S = i_hat - i` is the observer's own current
+  error; no plant/ground-truth signal enters the FLC (D-032).
+- **Membership:** triangular Ruspini partition on the printed centres
+  `{-1,-0.5,0,0.5,1}` (half-width 0.5); output centres `{0,1/3,2/3,1}` on `[0,1]`
+  (half-width 1/3). The feet/centres are **ASSUMPTION — not from paper**.
+- **Inference/defuzzification:** Mamdani with AND = min, aggregation = max, centre
+  of gravity on a 1001-point grid (print: Mamdani + CoG; operators/grid are assumed).
+- **Rule bases:** the printed 5x5 tables (Tables I-II, p.4); rows = `s`, columns =
+  `s_dot`; rule strength = `min(mu_s, mu_sdot)`.
+- **Adaptation:** `k_t = kF·k0`, `a_t = aF·a0` (printed mapping; `k0`, `a0` from
+  D-015). The reported back-EMF is `k_t·g(S_pre; a_t)` (D-025).
+- **Scope:** raw `E_hat` only; no DSOGI-FLL, no position/speed (D-033).

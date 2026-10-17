@@ -369,10 +369,61 @@ inputs by default
 - **Phase 03f additions:** the paper-literal filter output is the in-phase `v'`
   (Eq.(12) `Ê_f = Ê·D`, re-checked on the rendered page); the positive-sequence
   output is the D-020 non-paper option, and the API does not expose both at once.
-  The measured filtered−raw phase matches **−atan((r²−1)/(k_s r))** (the true `D`
-  phase, verified by the off-resonance test), so the supplied formula's sign is
-  inverted — not a filter bug and not ω′-jitter.
+  **Corrected (Phase 04 Step 0b/0c):** the independent `scipy.signal.freqs` check
+  proves `∠D = +atan((r²−1)/(k_s r))` with `r = ω′/ω`; the earlier "−atan /
+  inverted formula" claim is **retracted**. The closed-loop filtered−raw phase
+  differs because `ω′(t)` is time-varying, not because of a filter bug.
 - **Type:** reporting convention.
+
+## Phase 04 — FLC adaptation (D-030 to D-034)
+
+## D-030 — FLC engine: printed structure, assumed numerics
+
+- **Printed:** input sets {NB,NS,Z,PS,PB} over {-1,-0.5,0,0.5,1}; output sets
+  {Z,PS,PM,PB} over [0,1]; triangular MFs; Mamdani; centre of gravity; the two 5x5
+  rule bases; `k=kF*k0`, `a=aF*a0` (Tables I-II, p.4; p.3).
+- **ASSUMPTION — not from paper:** Ruspini triangular partition with half-width =
+  centre spacing; output centres equally spaced {0,1/3,2/3,1}; AND=min,
+  aggregation=max; CoG on a 1001-point grid on [0,1]; one FLC per axis; `s_dot` by
+  backward difference (zero first step); non-finite normalised input -> 0.
+- All assumptions live in `configs/fuzzy_assumptions.yaml`, each key commented
+  "ASSUMPTION — not from paper"; null/missing raises `ConfigError`. Printed items
+  live in `configs/fuzzy.yaml`.
+- **Type:** implementation choices (assumed).
+
+## D-031 — Nominal FLC scaling assumptions
+
+- **ASSUMPTION — not from paper:** `Ke = 1/I_base = 0.13472 1/A`,
+  `Kec = Ts/I_base = 1.3472e-5 s/A`, `Ku = 1` (fixed by the printed [0,1] output
+  universe). Only a 3x3 sensitivity grid (0.1x/1x/10x) was explored.
+- **Type:** assumed values.
+
+## D-032 — Adaptive observer is a subclass; base observers unchanged
+
+- **Decision:** `observers/fuzzy_smo.py: FuzzySMO(SlidingModeObserver)` overrides
+  `step` to use per-step/per-axis `k_t=kF*k0`, `a_t=aF*a0`; `smo.py` is unchanged.
+- **Why:** keeps `ConventionalSMO`/`SigmoidSMO` bit-identical (verified: forced
+  `kF=aF=1` reproduces `SigmoidSMO` exactly; constant `kF=aF=c` reproduces a fixed
+  observer with `k=c*k0`, `a=c*a0`).
+- **FLC inputs:** only the observer's own `S` and its backward difference; no plant,
+  angle, speed or `E_true` (structure test).
+- **Type:** implementation choice.
+
+## D-033 — Phase 04 evaluates RAW E_hat only
+
+- **Decision:** no DSOGI-FLL in Phase 04; no rotor position/speed. All results are
+  filter-independent.
+- **Type:** scope constraint.
+
+## D-034 — FLC results and conditional conclusion
+
+- **Result (nominal assumptions):** at `Ts=100 us` the FLC reduces the fixed-sigmoid
+  ripple from 194.7 V (limit cycle) to **1.23 V** and current RMSE from 7.06 to
+  **3.46 A**; at `Ts=50 us` it is worse than the stable fixed sigmoid (1.22 V vs
+  0.02 V; 4.08 vs 0.92 A). kF*aF stays below the stability bound 100% of the time;
+  `kF*k0 < |E_true|` ~5.3% of the time.
+- **Type:** experimental result, **conditional on the assumed Ke/Kec/MF/operator/grid
+  values**; not a paper reproduction.
 
 ## D-026 — Metric redefinition and re-based claims
 

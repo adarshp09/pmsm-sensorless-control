@@ -124,13 +124,17 @@ Notes:
 
 | Item | Value | Unit | Source | Status |
 | --- | --- | --- | --- | --- |
-| FLC input scale (error) `Ke` |  | - | not printed | unresolved |
-| FLC input scale (error derivative) `Kec` |  | - | not printed | unresolved |
-| Input per-unit base for `s` |  | A | not printed | unresolved |
-| Sample time for `s_dot` |  | s | not printed | unresolved |
-| Input MF breakpoints |  | - | Fig.2 only | unresolved |
-| Output MF breakpoints |  | - | Fig.2 only | unresolved |
-| Output scale `Ku` |  | - | not printed | unresolved |
+| FLC input scale (error) `Ke` | 0.13472 | 1/A | `configs/fuzzy_assumptions.yaml` | **assumed** (not printed) |
+| FLC input scale (error derivative) `Kec` | 1.3472e-5 | s/A | `configs/fuzzy_assumptions.yaml` | **assumed** (not printed) |
+| Input per-unit base for `s` | 7.4227 | A | D-015 derivation | derived |
+| Sample time for `s_dot` | 0.0001 | s | control `Ts` (assumed for FLC) | **assumed** (not printed) |
+| Input MF feet | half-width 0.5 | - | `fuzzy_assumptions.yaml` Ruspini | **assumed** (Fig.2 only) |
+| Output MF centres / feet | {0,1/3,2/3,1} / half-width 1/3 | - | `fuzzy_assumptions.yaml` | **assumed** (Fig.2 only) |
+| Output scale `Ku` | 1.0 | - | `fuzzy_assumptions.yaml` | **assumed** (not printed) |
+| Mamdani AND / aggregation | min / max | - | `fuzzy_assumptions.yaml` | **assumed** (only "Mamdani" printed) |
+| CoG grid | 1001 points on [0,1] | - | `fuzzy_assumptions.yaml` | **assumed** (not printed) |
+| Per-axis structure | one FLC per axis | - | `fuzzy_assumptions.yaml` | **assumed** (not printed) |
+| `s_dot` scheme | backward difference, first step 0 | - | `fuzzy_assumptions.yaml` | **assumed** (not printed) |
 | `k0` (fixed sliding gain) | 1 (per-unit) | - | p.5 | verified |
 | `a0` (fixed sigmoid slope) | 4 (per-unit) | - | p.5 | verified |
 | Rule tables `aF`, `kF` | see `specs.fuzzy_rule_table` | - | Tables I-II, p.4 | verified |

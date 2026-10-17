@@ -396,8 +396,12 @@ Findings:
 - With the library default the stable sigmoid locks **exactly** in the steady window
   (0.000 Hz, filtered gain 0.984, ripple 0.00 V). The sign observer keeps a **real
   +2 to +8 Hz bias** (decreasing with `Ts`) and its bang-bang ripple.
-- The sigmoid at **100 µs diverges** (limit cycle) — the un-clamped FLL follows it to
-  zero; this is the D-027 instability, not a filter bug.
+- The sigmoid at **100 µs diverges** (limit cycle). **Correction (Phase 04 Step 0c):**
+  the observed mechanism is **not** capture at an "absorbing ω′=0". Unclamped, ω′
+  **overshoots through zero** and the non-negativity guard in `sogi_coefficients`
+  raises (`ValueError`/NaN). The ≈2 Hz "pinning" seen in 03d/03e came from
+  `min_omega = 12.566 rad/s`, not from an absorbing zero. This is the D-027
+  instability, not a filter bug.
 - Predicted vs measured phase: the given formula `atan((r²−1)/(k_s r))` has the
   **opposite sign** to the measured `filtered − raw` phase for the sign observer.
   Reported side by side; the sign convention is flagged (resolved in §14.2).
@@ -440,19 +444,22 @@ matches **`½(D+jQ) = ½D(1+ω′/ω)`** to ≤3×10⁻³ (the prewarped biquad 
 
 Phase comparison for the 03e sign rows (positive-sequence output):
 
-| Ts | time-avg `atan((r²−1)/(k_s r))` using actual ω′(t) | measured filtered−raw | true D phase = −atan(...) |
-| --- | --- | --- | --- |
-| 100 µs | **+8.59°** | **−5.86°** | −8.59° |
-| 50 µs | +5.74° | −3.06° | −5.74° |
-| 25 µs | +2.62° | −1.32° | −2.62° |
+| Ts | time-avg `atan((r²−1)/(k_s r))` using actual ω′(t), r=ω′/ω | measured closed-loop filtered−raw |
+| --- | --- | --- |
+| 100 µs | **+8.59°** | **−5.86°** |
+| 50 µs | +5.74° | −3.06° |
+| 25 µs | +2.62° | −1.32° |
 
-**Verdict: not a filter bug and not an ω′-jitter effect.** Using the actual
-`ω′(t)` still gives a *positive* time-average, so jitter does not flip the sign.
-The measured filtered−raw phase has the sign and approximate magnitude of
-**−atan((r²−1)/(k_s r))**, which is exactly the implemented `D(jω)` phase (the
-off-resonance test verifies `∠D = −atan(...)`). The supplied formula has an
-inverted sign convention (it gives `+`, the true `D` phase is `−`). Residual
-magnitude differences are because the raw signal carries ripple.
+**Verdict (corrected, Phase 04 Step 0b/0c): not a filter bug.** The independent
+`scipy.signal.freqs` check (`tests/test_sogi_phase_independent.py`) proves the
+implemented `D` phase is **`+atan((r²−1)/(k_s r))` with `r = ω′/ω`** (lead for
+`ω′>ω`; +8.5° at `ω′=1, ω=0.9`), matching the supplied formula. A frozen-`ω′`
+check of the raw→PNS transfer matches `½(D+jQ)` (r=1.104: +8.09° measured vs +7.98°
+predicted; r=1.25: +17.68° vs +17.65°). **The earlier "−atan / inverted formula"
+claim is retracted.** The closed-loop measured filtered−raw phase is negative
+because `ω′(t)` is time-varying and correlated with the signal, so the static
+transfer does not apply; that is a closed-loop effect, not an ω′-jitter artifact of
+the static formula and not a filter bug.
 
 ### 14.3 Paper-literal output `v′` vs positive sequence (Step 3)
 
@@ -512,8 +519,10 @@ asymptotically — it crosses zero to negative and the SOGI raises (NaN).**
 | 500 | white | NaN at 0.018 s (ω′ → −760) |
 | 500 | sigmoid @100 µs | NaN at 0.078 s (ω′ → −24.1) |
 
-So the collapse is a **zero-crossing to negative ω′** (the exact ω′=0 point is
-absorbing analytically, but forward Euler overshoots through it).
+So the observed collapse is a **zero-crossing to negative ω′**, after which the
+non-negativity guard raises; there is **no observed capture at ω′=0**. The ≈2 Hz
+"pinning" in 03d/03e came from `min_omega = 12.566 rad/s`, not from an absorbing
+zero (Phase 04 Step 0c correction).
 
 ε_f budget at frozen ω′=ω_true:
 - synthetic white (32 seeds): mean ε_f = **+11.67 ± 448.44** — not significant
