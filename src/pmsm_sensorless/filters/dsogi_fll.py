@@ -169,6 +169,10 @@ class DSOGIFLLOutput:
 
     Attributes:
         v_alpha, v_beta: Filtered outputs (positive sequence, or per-axis band-pass).
+        v_alpha_prime, v_beta_prime: The paper-literal in-phase band-pass outputs
+            ``v'`` per axis (Eq.(12)), exposed **read-only** and independent of
+            ``positive_sequence``; ``v_alpha/v_beta`` equal these when
+            ``positive_sequence=False``.
         qv_alpha, qv_beta: Quadrature SOGI outputs per axis.
         omega: Resonance frequency ``omega'`` [rad/s] after the FLL update.
         frequency_hz: ``omega' / (2 pi)``.
@@ -177,6 +181,8 @@ class DSOGIFLLOutput:
 
     v_alpha: float
     v_beta: float
+    v_alpha_prime: float
+    v_beta_prime: float
     qv_alpha: float
     qv_beta: float
     omega: float
@@ -272,6 +278,8 @@ class DSOGIFLL:
         return DSOGIFLLOutput(
             v_alpha=out_alpha,
             v_beta=out_beta,
+            v_alpha_prime=alpha.in_phase,
+            v_beta_prime=beta.in_phase,
             qv_alpha=alpha.quadrature,
             qv_beta=beta.quadrature,
             omega=self._omega,
