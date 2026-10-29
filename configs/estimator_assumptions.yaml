@@ -1,0 +1,37 @@
+# Estimator parameters — ASSUMPTIONS (not from the paper).
+#
+# Every value here is a local implementation choice; `null` means unresolved and
+# the loader raises ConfigError. The paper prints no estimator gains.
+# See docs/estimator_spec.md and D-043+.
+
+meta:
+  name: estimator_assumptions
+  status: assumed
+  notes: >
+    ASSUMPTION — not from paper. The paper prints the Q-PLL block structure
+    (Fig.1) but not its gains, error algebra, normalization, discretization or
+    angle convention; and Eq.(8) without an atan2/wrapping rule. Those are
+    assumed here.
+
+parameters:
+  # ASSUMPTION — not from paper: standard 2nd-order loop damping.
+  "qpll.damping_zeta":         {value: 0.707, unit: "-",  source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: loop natural frequency (bandwidth).
+  "qpll.natural_frequency_hz": {value: 20.0,  unit: "Hz", source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: error normalization OFF (loop gain then ~ |E|).
+  "qpll.normalize_error":      {value: 0,     unit: "-",  source: "ASSUMPTION — not from paper"}
+
+specs:
+  # ASSUMPTION — not from paper: forward Euler on both integrators,
+  # error -> PI integrator -> omega_hat -> position integrator.
+  qpll_discretization: "forward_euler_error_pi_then_position"
+  # ASSUMPTION — not from paper: theta_hat(0) = theta_true(0) in the chains; a
+  # separate lock-in test starts from a +90 deg offset.
+  initial_theta: "theta_hat(0) = theta_true(0); +90 deg lock-in test"
+  # ASSUMPTION — not from paper: the Q-PLL initial speed is the true electrical
+  # frequency at t=0 (DERIVED from the prescribed profile).
+  initial_omega: "theta_true(0) electrical frequency (DERIVED)"
+  # ASSUMPTION — not from paper: no phase-lag compensation is applied.
+  phase_compensation: "none"
+  # ASSUMPTION — not from paper: design amplitude is |E| at 1000 rpm (DERIVED from pmsm.yaml).
+  design_amplitude: "|E| at 1000 rpm"

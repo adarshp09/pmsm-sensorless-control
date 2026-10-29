@@ -37,10 +37,11 @@ Closed-loop ω′(t) recorded; replay with ω′(t) replaced by (i) its **steady
 mean** (the full-run mean is skewed by the ramp), (ii) mean + components below
 ω_e/2 = 33.3 Hz, (iii) mean + components in [ω_e/2, 3ω_e] = [33.3, 200] Hz, (iv)
 full, (v) mean + components above 3ω_e (diagnostic). **(iv) reproduces the closed
-loop bit-for-bit** (checked, `repro=True`). PNS output phase (deg, relative to
-`E_true`); the closed-loop `filtered − raw` phase is in the last column.
+loop bit-for-bit** (checked, `repro=True`). PNS output **fundamental phase vs E_true**
+(deg). The closed-loop `filtered − raw` phase is a **separate** quantity (last column)
+and is **not** vs E_true.
 
-| input | (i) mean | (ii) +low | (iii) +mid | (v) +high | (iv) full | closed filtered−raw |
+| input | (i) mean vs E_true | (ii) +low vs E_true | (iii) +mid vs E_true | (v) +high vs E_true | (iv) full vs E_true | closed filtered−raw |
 | --- | --- | --- | --- | --- | --- | --- |
 | sign 100 µs | +7.45 | +7.11 | +7.27 | **−7.17** | −7.44 | −5.86 |
 | sign 50 µs | +4.95 | +4.66 | +5.08 | **−3.90** | −3.92 | −3.06 |

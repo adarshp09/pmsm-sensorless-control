@@ -529,6 +529,13 @@ inputs by default
 - **Consequence:** the SOGI *realization* matters when ω′ varies. Adopting the paper's
   Figure-4 structure is **proposed as a separate, approved step**; **no src change**
   is made here. If adopted, D-019's biquad stays as the constant-ω′ equivalent.
+- **Phase 05b Step 0a confirmation (rendered page 827):** Eqs.(18)–(19) are printed as
+  **discrete-time transfer functions** — ratios of numerator/denominator polynomials in
+  `z^-1`/`z^-2` (biquads), introduced by "The discretized transfer functions of digital
+  SOGI are given as follows". They are *not* a block diagram or difference equation. So
+  the biquad implementation is **kept**; the Fig.4 two-integrator realization remains a
+  documented sensitivity (biquad vs two-integrator closed-loop ω′ bias Δ = +1.56 Hz at
+  sign 100 µs, 0 for the stable sigmoid).
 - **Type:** analysis + proposal.
 
 ## D-041 — The −5.9° DSOGI-FLL phase offset is the high-frequency ω′ band
@@ -556,3 +563,51 @@ inputs by default
   `phase03.md` §14.5 (also previously HYPOTHESIS — untested). The four-term split
   shows fund×fund is the restoring term and ripple×ripple the small biasing term.
 - **Type:** verification finding.
+
+---
+
+## Phase 05b — position/speed estimator (2026-10-29)
+
+## D-043 — Estimator assumptions and discretization
+
+- **Printed (kept):** Eq.(8) `theta_hat_e = -arctan(E_alpha/E_beta)` (implemented as
+  `atan2(-E_alpha, E_beta)`) and the Fig.1 Q-PLL block structure. Eqs.(18)-(19) are
+  confirmed as discrete-time transfer functions (D-040) → the biquad stays.
+- **ASSUMPTIONS — not from paper** (`configs/estimator_assumptions.yaml`): `zeta =
+  0.707`, `f_n = 20 Hz` designed at `A = |E|` for 1000 rpm (`Kp = 2 zeta w_n/A`,
+  `Ki = w_n^2/A`); normalization OFF; predict-then-correct **forward Euler**; Q-PLL
+  error `delta_e = -E_alpha cos(theta_hat) - E_beta sin(theta_hat)`; `theta_hat(0) =
+  theta_true(0)`, `omega_hat(0) = theta_true(0) electric frequency`; no phase
+  compensation. `omega_m = omega_hat/p` is DERIVED (`p` printed).
+- **Type:** implementation choices (assumed).
+
+## D-044 — Estimator angle convention `(-pi, pi]`
+
+- **Decision:** estimator outputs are wrapped to `(-pi, pi]`
+  (`wrap_angle_pi_closed`, `-pi` mapped to `+pi`), superseding the earlier `[-pi, pi)`
+  note. The plant's `wrap_angle` keeps `[-pi, pi)`; the two differ only on the
+  measure-zero boundary. **PROVISIONAL** (the paper prints no wrapping rule).
+- **Type:** convention (documented).
+
+## D-045 — Open-loop estimator evaluation (no tuning)
+
+- **Result:** 192 chain runs (3 observers × 3 filters × 2 estimators × 2 Ts × 6
+  scenarios) under the nominal drive. FLL status: **0 guard-fail / 0 collapsed** rows
+  in this cell set. Nominal cell (matched sigmoid | v′ | QPLL): steady angle error
+  mean −0.52° / max 0.73° at 1000 rpm/100 µs (speed max 3.40 rpm), ramp-settled max
+  1.14°; lock-in from +90° scales as 1/|E| (0.61 s @100 rpm → 0.030 s @2000 rpm).
+- **Angle-error budget** `measured ≈ raw + filter + QPLL-lag` closes within ±0.5° for
+  **137/160** steady runs (nominal cells to ±0.001°); the exceptions are all the raw
+  **sign** observer (bang-bang wrap glitches). Against the **continuous** linear-lag
+  form `-atan(omega Ld/(Rs+K_eff))` the budget does **not** close at Ts = 100 µs
+  (up to +2.1°), because of the forward-Euler observer discretization.
+- **Type:** experimental result (conditional on the assumed QPLL gains).
+
+## D-046 — No paper reproduction; class A/B split
+
+- **Decision:** run only class-A (kinematic/open-loop) scenarios; class B (load
+  disturbance) needs the closed-loop controller + mechanical model and is deferred to
+  Phase 06. The paper comparison is setup-limited (open-loop vs closed loop, ideal
+  voltage vs inverter, our `E_hat`/assumed PLL bandwidth) and **makes no reproduction
+  claim** despite our errors being numerically smaller.
+- **Type:** scope / reporting.

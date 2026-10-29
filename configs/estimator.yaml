@@ -1,0 +1,36 @@
+# Rotor position / speed estimator parameters.
+#
+# STATUS: PARTIALLY VERIFIED.
+#
+# The paper prints the estimator STRUCTURE only (Eq.(8) direct arctan; Fig.1
+# normalized Q-PLL) and NO numeric gains, error algebra, normalization or angle
+# convention. There are therefore no PRINTED estimator numbers: `parameters` is
+# empty. Non-scalar printed specifications live under `specs`. Every unprinted
+# value is an ASSUMPTION in `configs/estimator_assumptions.yaml`.
+
+meta:
+  name: estimator
+  status: partially_verified
+  source_document: "docs/act.pdf, Section II-B, p.825 (Eq.(8), Fig.1); Fig.7, p.828"
+  notes: >
+    PRINTED items only. The Q-PLL gains, error sign algebra, normalization and
+    angle convention are not printed and must not be guessed here.
+
+parameters: {}   # no numeric estimator parameters are printed by the paper
+
+specs:
+  position_form: "theta_hat_e = -arctan(E_alpha_hat / E_beta_hat), Eq.(8), p.825"
+  position_form_note: >
+    printed as a one-argument arctan with the minus sign OUTSIDE; implemented in
+    four-quadrant form as atan2(-E_alpha_hat, E_beta_hat)
+  qpll_structure: >
+    Fig.1, p.825: E_alpha_hat, E_beta_hat -> multipliers with cos(theta_hat) and
+    sin(theta_hat) -> error delta_e -> PI -> omega_hat -> integrator 1/s -> theta_hat
+  qpll_error_algebra: null   # not printed
+  qpll_gains: null           # not printed
+  qpll_normalization: null   # the text says "normalized"; the algebra is not printed
+  speed_output: "omega_hat is the Q-PLL PI output (Fig.1); no speed equation is printed"
+  mechanical_conversion: "omega_m = omega_hat / p (DERIVED; p printed, Table III)"
+  estimator_input: "E_hat_f, the DSOGI-FLL filtered back-EMF (Eq.(12), Fig.7)"
+  phase_compensation: "none printed for the proposed method"
+  angle_convention: "theta wrapped to (-pi, pi]; docs/equations_and_conventions.md"

@@ -32,17 +32,14 @@ def test_subpackages_are_importable_and_documented(name: str) -> None:
     assert module.__doc__, f"subpackage {name!r} should document its purpose"
 
 
-def test_not_yet_implemented_subpackages_are_still_stubs() -> None:
-    """Phase 04 guarantee: only ``estimation`` has no algorithms yet.
+def test_estimation_subpackage_is_implemented() -> None:
+    """Phase 05b: ``estimation`` now carries the position/speed estimators.
 
-    ``observers`` (Phase 02), ``filters`` (Phase 03) and ``fuzzy`` (Phase 04) are
-    intentionally excluded: importing their submodules binds them as package
-    attributes, so a "must be empty" check no longer applies there.
+    It was the last bare-stub subpackage; none remain.
     """
-    for name in ("estimation",):
-        module = importlib.import_module(f"pmsm_sensorless.{name}")
-        public = [attr for attr in vars(module) if not attr.startswith("_")]
-        assert public == [], f"pmsm_sensorless.{name} should be empty, found {public}"
+    module = importlib.import_module("pmsm_sensorless.estimation")
+    public = [attr for attr in vars(module) if not attr.startswith("_")]
+    assert "ArctanEstimator" in public and "QPLL" in public, public
 
 
 def test_project_root_is_discoverable() -> None:

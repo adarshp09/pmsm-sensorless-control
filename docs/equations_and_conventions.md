@@ -155,3 +155,26 @@ choice is named PROVISIONAL and cross-referenced to
 - **Adaptation:** `k_t = kF·k0`, `a_t = aF·a0` (printed mapping; `k0`, `a0` from
   D-015). The reported back-EMF is `k_t·g(S_pre; a_t)` (D-025).
 - **Scope:** raw `E_hat` only; no DSOGI-FLL, no position/speed (D-033).
+
+## 11. Phase 05b estimator conventions (2026-10-29)
+
+- **Angle interval (REVISED):** the estimator outputs are wrapped to **`(-pi, pi]`**
+  (the closed upper bound), implemented as
+  `wrap_angle_pi_closed(x) = ((x + pi) mod 2*pi) - pi`, with `-pi` mapped to `+pi`.
+  This supersedes the earlier `PROVISIONAL` `[-pi, pi)` note in section 4 (the plant's
+  `plant.pmsm.wrap_angle` keeps its `[-pi, pi)` convention; the two agree except on
+  the measure-zero boundary). **PROVISIONAL** (the paper prints no wrapping rule).
+- **Position, Eq.(8):** the paper prints `theta_hat_e = -arctan(E_alpha_hat/E_beta_hat)`
+  (one-argument `arctan`, minus outside). Implemented in four-quadrant form
+  `theta_hat_e = atan2(-E_alpha_hat, E_beta_hat)`, which returns `theta_e` exactly for
+  the paper's `E = omega_e psi_f[-sin theta_e, cos theta_e]` (Eq.(2)).
+- **Q-PLL error (Fig.1, derived; the paper prints no algebra):**
+  `delta_e = -E_alpha cos(theta_hat) - E_beta sin(theta_hat) = |E| sin(theta - theta_hat)`.
+  Sign: `delta_e > 0` means `theta > theta_hat`, which raises `omega_hat` (restoring).
+- **Q-PLL discretization (ASSUMPTION):** predict-then-correct forward Euler — advance
+  `theta_hat` by `omega_hat*dt`, form `delta_e`, update the PI integrator then
+  `omega_hat`. At lock `theta_hat[k] = theta[k]`.
+- **Gains (ASSUMPTION):** `Kp = 2 zeta w_n / A`, `Ki = w_n^2 / A`, `A = |E|` at
+  1000 rpm; `zeta = 0.707`, `f_n = 20 Hz`, normalization OFF.
+- **Speed:** `omega_hat` is the Q-PLL PI output; `omega_m = omega_hat / p` is DERIVED
+  (`p` printed, Table III). No speed equation is printed.
