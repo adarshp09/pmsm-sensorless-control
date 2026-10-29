@@ -118,13 +118,17 @@ touch; `|S|` and the back-EMF metrics do change.
 | steady RMSE reduction | 31.0 % | **30.97 %** |
 | mean \|S\|, sign / sigmoid (A) | 9.58 / 6.88 | **9.82 / 7.13** |
 | max \|S\|, sign / sigmoid (A) | 18.46 / 9.02 | **18.03 / 9.98** |
-| sign-vs-sigmoid "chatter" reduction | 17.5 % (MA, retracted) / 17.7 % (ripple) | **21.6 %** (ripple) |
+| sign-vs-sigmoid "chatter" reduction | 17.5 % (MA, retracted) / 17.7 % (ripple) | **21.6 %** (ripple; **limit-cycle vs bang-bang, 100 µs** — D-027/D-029) |
 | steady raw `E_hat` fundamental gain / phase, sign | 0.48 / -60.1 deg | **0.958 / -1.50 deg** |
 | steady raw `E_hat` fundamental gain / phase, sigmoid | 0.48 / -59.4 deg | **0.963 / -1.31 deg** |
 | ramp raw `E_hat` fundamental gain / phase, sign / sigmoid | - | **0.961 / -1.66 deg ; 0.959 / -1.33 deg** |
 
 The pre-fix `E_hat` gain/phase (~0.5 / -60 deg) were an artifact of D-025, not a
-property of the observers. The sign-vs-sigmoid ripple reduction is now **21.6 %**.
+property of the observers. The sign-vs-sigmoid ripple reduction at `Ts = 100 µs` is
+now **21.6 %** — but this is a **limit-cycle vs bang-bang** comparison (the sigmoid
+is a period-2 limit cycle at `Ts ≥ 65 µs`, D-027/D-029), not a fair
+improved-vs-conventional one; the fair comparison is the stable `Ts = 50 µs` regime
+in the "Phase 03d" section below.
 
 ## Phase 03d — regime relabel and stable-regime comparison
 

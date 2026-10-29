@@ -1,11 +1,15 @@
 # PMSM Sensorless Control — Fuzzy Logic + DSOGI-FLL SMO
 
-> **Status: Phase 00 — specification scaffold. Implementation in progress.**
+> **Status: Phases 00–04 complete (including verification sub-phases 03b–03f and
+> 04b). Phase 05 (rotor position/speed estimation) not started.**
 >
-> No PMSM model, sliding-mode observer, fuzzy controller, SOGI/DSOGI or FLL
-> algorithm is implemented yet. All paper-specific numbers are intentionally
-> left **unresolved** (`null`) until the source paper is available. Nothing in
-> this repository should be read as a reproduction of published results.
+> The PMSM plant (Eqs.1–2), the Clarke transform, the conventional (sign) /
+> sigmoid / fuzzy-adaptive sliding-mode observers (Eqs.3–7) and the DSOGI-FLL
+> back-EMF filter (Eqs.9–19) are implemented and tested. There is **no** rotor
+> position/speed estimator, **no** closed-loop controller and **no** integrated
+> simulation yet. Results so far are observer/filter studies under a
+> short-circuited (`u=0`) plant (Phase 04c adds an open-loop nominal-drive
+> scenario); they are **not** a reproduction of the paper's reported accuracy.
 
 ## Objective
 
@@ -28,20 +32,17 @@ voltages/currents only (no shaft sensor), by combining:
 
 ## Paper reference
 
-The paper PDF is **not present in this workspace**. The reference below is a
-placeholder and must be completed once the source is supplied.
-
 | Field | Value |
 | --- | --- |
 | Title | An Improved Sliding Mode Observer Sensorless Control for PMSM Based on Fuzzy Logic Controller and DSOGI-FLL |
-| Authors | _unresolved_ |
-| Venue / year | _unresolved_ |
-| DOI | _unresolved_ |
-| Local copy | _not available_ |
+| Authors | X. Zhu et al. |
+| Venue / year | IEEE TTE, vol. 11, no. 1, pp. 823–834, 2025 |
+| DOI | 10.1109/TTE.2024.3396732 |
+| Local copy | `docs/act.pdf` (12-page copy; text-extracted and page-rendered) |
 
 See [`docs/paper_method.md`](docs/paper_method.md) and
-[`docs/parameter_extraction.md`](docs/parameter_extraction.md) for the exact
-items that still need to be extracted, with their required source locations.
+[`docs/parameter_extraction.md`](docs/parameter_extraction.md) for what the paper
+does and does not print, with source locations.
 
 ## Proposed algorithm architecture
 
@@ -64,8 +65,11 @@ items that still need to be extracted, with their required source locations.
         └──────────┘                    atan2 / sign ⇒ θ̂_e, ω̂_m
 ```
 
-Exact equation forms, signs and interconnections are **unresolved** pending the
-paper (see `docs/paper_method.md`).
+The implemented forms, signs and interconnections are recorded in
+[`docs/equations_and_conventions.md`](docs/equations_and_conventions.md),
+[`docs/paper_method.md`](docs/paper_method.md) and
+[`docs/implementation_decisions.md`](docs/implementation_decisions.md); some are
+DERIVED or ASSUMPTION and are labelled there.
 
 ## Repository structure
 
@@ -74,33 +78,39 @@ pmsm-sensorless-control/
 ├── README.md
 ├── pyproject.toml
 ├── .gitignore
-├── configs/                  # YAML parameter templates (mostly unresolved)
-│   ├── pmsm.yaml
-│   ├── observer.yaml
-│   └── experiments.yaml
+├── configs/                  # YAML parameter templates
+│   ├── pmsm.yaml             # machine + rating (Table III values)
+│   ├── observer.yaml         # SMO / DSOGI / FLL parameters + specs
+│   ├── experiments.yaml      # simulation conditions
+│   ├── fuzzy.yaml            # FLC PRINTED items (sets, rules)
+│   └── fuzzy_assumptions.yaml # FLC ASSUMED items (scales, MFs, operators)
 ├── docs/
-│   ├── paper_method.md            # paper's actual method + source locations
+│   ├── act.pdf                    # source paper
+│   ├── paper_method.md            # extraction status per paper item
 │   ├── equations_and_conventions.md  # notation / sign / angle conventions
-│   ├── parameter_extraction.md    # filled-in extraction table
-│   └── implementation_decisions.md # decision log
+│   ├── parameter_extraction.md    # extraction table with source citations
+│   ├── implementation_decisions.md # decision log (D-001 …)
+│   ├── flc_spec.md                # FLC / DSOGI-FLL printed-vs-unprinted spec
+│   └── phase02/03/04.md           # per-phase findings
 ├── src/pmsm_sensorless/
-│   ├── __init__.py
 │   ├── config.py             # YAML loading + structural validation
-│   ├── plant/                # PMSM model                (empty in Phase 00)
-│   ├── transforms/           # Clarke / Park             (empty in Phase 00)
-│   ├── observers/            # SMO                      (empty in Phase 00)
-│   ├── fuzzy/                # FLC                      (empty in Phase 00)
-│   ├── filters/              # SOGI / DSOGI             (empty in Phase 00)
-│   ├── estimation/           # FLL, position/speed      (empty in Phase 00)
-│   ├── simulation/           # scenarios / integration  (empty in Phase 00)
-│   └── evaluation/           # metrics / plots          (empty in Phase 00)
-├── experiments/
+│   ├── plant/                # PMSM model (Eqs.1–2) + load profiles
+│   ├── transforms/           # Clarke (amplitude/power invariant)
+│   ├── observers/            # sign / sigmoid / FLC-adaptive SMO (Eqs.3–7)
+│   ├── filters/              # SOGI / DSOGI-FLL (Eqs.9–19)
+│   ├── fuzzy/                # FLC Mamdani engine (Tables I–II)
+│   ├── estimation/           # FLL/position/speed — still a docstring stub
+│   ├── simulation/           # scenarios / integration (Phase 04c nominal drive)
+│   └── evaluation/           # metrics / plots — still a docstring stub
+├── experiments/              # per-phase scripts + output/ result JSONs & plots
 ├── tests/
 └── notebooks/
 ```
 
-Sub-packages documented as "empty in Phase 00" contain only a docstring — this
-is deliberate; no algorithm code is written before the specification is fixed.
+Sub-packages still documented as empty (`estimation`, and the placeholder
+docstrings in `simulation`/`evaluation`) contain only a docstring: no
+position/speed estimator or scenario code for those exists yet. `simulation`
+gains the Phase 04c nominal-drive generator.
 
 ## Environment setup
 
@@ -127,34 +137,39 @@ python -m pip install -e ".[fuzzy]"
 pytest
 ```
 
-Phase 00 tests cover only package import and configuration loading/validation.
+Tests cover the plant (Eqs.1–2), Clarke, the conventional/sigmoid/FLC observers,
+SOGI/DSOGI-FLL, configuration loading/validation, the discrete-stability bound
+(D-027), the reported-injection fix (D-025), the ramp metrics and the
+layer-separation structure invariants.
 
 ## Implementation roadmap
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| **00** | Repo scaffold, spec extraction, conventions, config templates, smoke/config tests | **in progress** |
-| 01 | PMSM plant model + Clarke transform (Park not yet implemented) | **in progress** |
-| 02 | Conventional SMO (sign / sigmoid switching) | **in progress** |
-| 03 | DSOGI + FLL back-EMF filtering and frequency tracking | **in progress** |
-| 04 | Fuzzy logic controller for switching-gain adaptation | **in progress** |
-| 05 | Integration: full sensorless estimator | not started |
+| **00** | Repo scaffold, spec extraction, conventions, config templates, smoke/config tests | completed |
+| 01 | PMSM plant model + Clarke transform (Park not yet implemented) | completed |
+| 02 | Conventional SMO (sign / sigmoid switching) | completed (+ verification 02b) |
+| 03 | DSOGI + FLL back-EMF filtering and frequency tracking | completed (+ verification 03b–03f) |
+| 04 | Fuzzy logic controller for switching-gain adaptation | completed (+ verification 04b) |
+| 05 | Integration: full sensorless estimator (position/speed) | not started |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
 
 ## Current phase and known unresolved specifications
 
-Phase 00 is **incomplete**: the paper is not available, so the following are
-deliberately blank and must not be guessed —
+The paper **is** available (`docs/act.pdf`) and Phases 00–04 are implemented.
+What remains genuinely unprinted by the paper — and therefore DERIVED or
+ASSUMPTION, labelled in
+[`docs/implementation_decisions.md`](docs/implementation_decisions.md) — includes:
 
-- all motor parameters (pole pairs, `Rs`, `Ld`, `Lq`, flux linkage, inertia, …);
-- SMO equations, sliding surface, sigmoid parameters and gains;
-- FLC inputs, scaling factors, membership functions, rule table, inference and
-  defuzzification;
-- DSOGI transfer functions and FLL error signal, adaptation law and gains;
-- discretization method, sampling period and any Tustin prewarping;
-- position/speed estimation equations and their sign conventions;
+- the Clarke scaling convention (amplitude-invariant chosen, D-010);
+- the per-unit current base `I_base` used to convert the paper's `a` (D-015);
+- the FLC scaling gains, membership-function feet, t-norm/aggregation, CoG grid
+  and per-axis structure (ASSUMPTION, D-030/D-031);
+- the FLL error-signal algebra and normalization (derived, D-020; D-022);
+- the DSOGI positive-sequence combination (derived, D-021);
+- rotor position/speed estimation equations and their sign conventions (Phase 05);
 - simulation/experimental conditions, baselines and reported results.
 
-See [`docs/parameter_extraction.md`](docs/parameter_extraction.md) for the
-tracked list. **Do not claim exact reproduction while these are unresolved.**
+See [`docs/parameter_extraction.md`](docs/parameter_extraction.md) for the tracked
+list. **Do not claim exact reproduction while these are unresolved.**

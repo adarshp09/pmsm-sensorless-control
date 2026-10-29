@@ -43,19 +43,24 @@ static friction, and rated electrical frequency are not reported.
 
 ## Observer / FLC / DSOGI-FLL parameters (`configs/observer.yaml`)
 
+Paper-printed values are resolved and cited below; the FLC scaling gains are
+ASSUMPTION values in `configs/fuzzy_assumptions.yaml`. The full printed-vs-unprinted
+breakdown (SI ranges, stability/tracking constraints under D-015) is in
+[`flc_spec.md`](flc_spec.md).
+
 | Parameter | Symbol | Value | Unit | Source (page / eq / table) | Status |
 | --- | --- | --- | --- | --- | --- |
 | SMO sliding-surface gain |  |  | - |  | unresolved |
-| SMO switching gain | k |  | - |  | unresolved |
-| sigmoid slope | a |  | - |  | unresolved |
+| SMO switching gain | k | 1 (per-unit; 179.629 V in SI, D-015) | - | p.5 | verified |
+| sigmoid slope | a | 4 (per-unit; 0.5389 1/A in SI, D-015) | - | p.5 | verified |
 | boundary layer | delta |  | - |  | unresolved |
-| FLC input scale (error) | Ke |  | - |  | unresolved |
-| FLC input scale (delta error) | Kec |  | - |  | unresolved |
-| FLC output scale | Ku |  | - |  | unresolved |
-| DSOGI damping gain | k |  | - |  | unresolved |
-| FLL gain | gamma |  | - |  | unresolved |
+| FLC input scale (error) | Ke | 0.13472 (= 1/I_base) | 1/A | `configs/fuzzy_assumptions.yaml` | **assumed** |
+| FLC input scale (delta error) | Kec | 1.3472e-5 (= Ts/I_base) | s/A | `configs/fuzzy_assumptions.yaml` | **assumed** |
+| FLC output scale | Ku | 1.0 | - | `configs/fuzzy_assumptions.yaml` | **assumed** |
+| DSOGI damping gain | k_s | sqrt(2) | - | p.5 | verified |
+| FLL gain | Gamma | 50 | - | p.5 | verified |
 | FLL min/max frequency |  |  | Hz |  | unresolved |
-| sampling period | Ts | 0.0001 | s | Eq.(20), p.5; derived from 10 kHz | derived |
+| sampling period | Ts | 0.0001 | s | Eq.(20), p.5; Table III | verified |
 
 ## Simulation conditions (`configs/experiments.yaml`)
 

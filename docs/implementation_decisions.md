@@ -424,6 +424,9 @@ inputs by default
   `kF*k0 < |E_true|` ~5.3% of the time.
 - **Type:** experimental result, **conditional on the assumed Ke/Kec/MF/operator/grid
   values**; not a paper reproduction.
+- **Superseded (Phase 04b/04c):** the "reduces the limit-cycle default" framing is
+  retracted — compare against matched fixed gain only (D-036, D-037). See
+  `docs/phase04.md` §6 and `docs/phase04c.md`.
 
 ## Phase 04b — fixed-gain control and metric cleanup
 

@@ -117,11 +117,12 @@ fixed-gain Pareto front**. (The FLC grid points are shown in
 
 ## 6. Re-based findings (Phase 04b)
 
-- **Retracted:** "the FLC strongly helps at 100 µs". That was only true against the
-  **limit-cycle default** `kF=aF=1` (ripple 194.7 → 1.23 V). Against **matched
-  fixed-gain control**, the FLC nominal (ripple 1.23 V) is beaten on steady ripple by
-  the matched cell (0.96 V) and by several grid cells; **7 fixed-gain cells dominate
-  it on all four metrics**, and **no FLC cell extends the fixed-gain Pareto front**.
+- **Retracted:** "the FLC strongly helps at 100 µs" — that framing only held against
+  the limit-cycle default (`kF=aF=1`) and is removed from the standing results.
+  Against **matched fixed-gain control**, the FLC nominal is beaten on steady ripple
+  by the matched cell (0.96 V vs 1.23 V) and by several grid cells; **7 fixed-gain
+  cells dominate it on all four metrics**, and **no FLC cell extends the fixed-gain
+  Pareto front**.
 - At `Ts = 50 µs` the stable fixed sigmoid (ripple 0.02 V) remains the best cell; the
   FLC (1.22 V) and the matched fixed gain (0.97 V) are both worse.
 - The FLC's main effect is to move the operating point to a lower-gain regime

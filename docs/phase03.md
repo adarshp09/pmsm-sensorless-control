@@ -219,10 +219,13 @@ instead of the corrupted `k*g(S_post)`. Every number in sections 4-8 came from t
 | continuous-limit sigmoid gain / phase (0.25 us) | 0.985 / -0.96 deg | 0.989 / -0.74 deg |
 
 Interpretation: the pre-fix sign "plateau" (section 4) and the pre-fix low filtered
-gain (~0.5) / large phase were **artifacts of D-025**. Post-fix both observers'
-raw fundamentals are within ~4 % gain and ~2 deg; the sign frequency error drops from
-+7.3 to -5.2 Hz; and the raw -> filtered ripple reduction is ~88-93 % at `Ts=100 us`
-(it was inflated to 97-99 % by the pre-fix signal's extra chatter). Raw
+gain (~0.5) / large phase were **artifacts of D-025**. Post-fix the raw `E_hat`
+gain/phase are speed-dependent (per-speed values in the table below, not a single
+"~4 %" bound): sign gain 0.783 / 0.912 / 0.936 / 0.958 and phase −1.16° / +1.91° /
+−1.34° / −1.81° at 100/200/500/1000 rpm; sigmoid gain 0.970 / 0.934 / 0.949 /
+0.964 and phase −1.88° / +0.05° / −0.98° / −1.40°. The sign frequency error drops
+from +7.3 to -5.2 Hz; and the raw -> filtered ripple reduction is ~88-93 % at
+`Ts=100 us` (it was inflated to 97-99 % by the pre-fix signal's extra chatter). Raw
 `E_hat` gain/phase post-fix, both observers, 100-1000 rpm:
 
 | rpm | sign | sigmoid |
@@ -380,8 +383,8 @@ Initial `omega'` = true electrical frequency at the ramp start (500 rpm) =
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 100 µs | sign | steady | bang-bang | +7.91 | 6.85 | 0.958 / −1.58° | 0.977 / −7.44° | 248.40 → 8.07 | 96.7 % | +9.03 / −5.86 |
 | 100 µs | sign | ramp | bang-bang | +9.60 | 10.41 | 0.961 / −1.65° | 0.992 / −8.57° | 250.85 → 9.75 | 96.1 % | +14.02 / −6.91 |
-| 100 µs | sigmoid | steady | **limit cycle** | — | — | **DIVERGED** | — | — | — | — |
-| 100 µs | sigmoid | ramp | **limit cycle** | — | — | **DIVERGED** | — | — | — | — |
+| 100 µs | sigmoid | steady | **limit cycle** | — | — | **FLL guard-fail: ω′<0 after D-027 limit cycle** | — | — | — | — |
+| 100 µs | sigmoid | ramp | **limit cycle** | — | — | **FLL guard-fail: ω′<0 after D-027 limit cycle** | — | — | — | — |
 | 50 µs | sign | steady | bang-bang | +4.97 | 2.78 | 0.981 / −0.86° | 1.000 / −3.92° | 248.13 → 2.40 | 99.0 % | +5.82 / −3.06 |
 | 50 µs | sign | ramp | bang-bang | +5.09 | 9.91 | 0.981 / −0.86° | 1.013 / −4.89° | 250.72 → 8.40 | 96.7 % | +7.82 / −4.03 |
 | 50 µs | sigmoid | steady | stable | +0.000 | 0.003 | 0.984 / −0.38° | 0.984 / −0.38° | 0.02 → 0.00 | (raw ~0) | 0.00 / 0.00 |
@@ -396,7 +399,8 @@ Findings:
 - With the library default the stable sigmoid locks **exactly** in the steady window
   (0.000 Hz, filtered gain 0.984, ripple 0.00 V). The sign observer keeps a **real
   +2 to +8 Hz bias** (decreasing with `Ts`) and its bang-bang ripple.
-- The sigmoid at **100 µs diverges** (limit cycle). **Correction (Phase 04 Step 0c):**
+- The sigmoid at **100 µs** fails with the **FLL guard-fail: ω′<0 after D-027 limit
+  cycle** (no usable filter output). **Correction (Phase 04 Step 0c):**
   the observed mechanism is **not** capture at an "absorbing ω′=0". Unclamped, ω′
   **overshoots through zero** and the non-negativity guard in `sogi_coefficients`
   raises (`ValueError`/NaN). The ≈2 Hz "pinning" seen in 03d/03e came from
@@ -456,10 +460,11 @@ implemented `D` phase is **`+atan((r²−1)/(k_s r))` with `r = ω′/ω`** (lea
 `ω′>ω`; +8.5° at `ω′=1, ω=0.9`), matching the supplied formula. A frozen-`ω′`
 check of the raw→PNS transfer matches `½(D+jQ)` (r=1.104: +8.09° measured vs +7.98°
 predicted; r=1.25: +17.68° vs +17.65°). **The earlier "−atan / inverted formula"
-claim is retracted.** The closed-loop measured filtered−raw phase is negative
-because `ω′(t)` is time-varying and correlated with the signal, so the static
-transfer does not apply; that is a closed-loop effect, not an ω′-jitter artifact of
-the static formula and not a filter bug.
+claim is retracted.** The static transfer is confirmed; the *closed-loop* measured
+filtered−raw phase is negative. **HYPOTHESIS — untested:** it is explained by
+`ω′(t)` being time-varying and correlated with the signal, so the static transfer
+does not apply. This is carried to the Phase 05 prelude; it is not a filter bug and
+has not been independently verified (e.g. by an `ω′(t)` replay).
 
 ### 14.3 Paper-literal output `v′` vs positive sequence (Step 3)
 
@@ -533,8 +538,10 @@ zero (Phase 04 Step 0c correction).
 
 **Verdict: the open-loop ε_f budget does NOT explain the sign-observer bias.**
 The sign agrees but the magnitude is **36× / 83× / 148×** too small (≫2×), and the
-white-ripple mean is seed-dominated. The bias is therefore a discrete/aliasing and
-nonlinear-loop effect, not the steady-state ripple ε_f.
+white-ripple mean is seed-dominated. **HYPOTHESIS — untested:** the bias is a
+discrete/aliasing and nonlinear-loop effect rather than the steady-state ripple
+ε_f; the budget is disproven but the mechanism is unproven and is carried to the
+Phase 05 prelude.
 
 ### 14.6 Ramp metrics with the windowed fit (Step 6)
 
