@@ -469,3 +469,45 @@ inputs by default
   to **97.1 % (sign)** / **99.4 % (sigmoid)** steady-window raw -> filtered ripple
   reduction at `Ts = 100 us` (ramp: 88.8 % / 97.6 %).
 - **Type:** verification.
+
+---
+
+## Phase 04c — nominal drive (2026-10-29)
+
+## D-037 — Open-loop nominal-drive scenario; matched fixed-gain cell selection
+
+- **Decision:** add `simulation/nominal_drive.py`, a **plant-side** generator that
+  drives the plant with the ideal-FOC feedforward
+  `u = Rs i_ref + Ld d(i_ref)/dt + E_true`, `i_ref = I_q[-sin θ_e, cos θ_e]`, with `u`
+  held over each `Ts`. It may use ground truth; the observer never sees it (no
+  controller, no feedback). `I_rated` is **derived** as `T_rated / ((3/2) p ψ_f)`
+  (= 9.678 A) under the amplitude-invariant Clarke convention with `i_d = 0`.
+- **Matched-cell rule:** the comparison cell is the constant-gain grid cell with the
+  smallest steady ripple among Ts = 100 µs cells inside the D-027 bound
+  (`kF·aF < 0.597`) -> **kF = 1.0, aF = 0.4**. The 04b reference cell (0.355/0.591) is
+  kept alongside.
+- **Type:** new scenario + experiment (no existing src behaviour changed).
+
+## D-038 — GATE passed; 04b conclusions hold under the nominal drive
+
+- **Gate:** fixed sigmoid, `Ts = 10 us`, `I_q = I_rated`: E_hat gain 0.9894 (within
+  2 %) and phase −0.608° (within 1°) — validates the `u` sign, units and ZOH handling
+  in Eq.(4) (no observer code change was needed).
+- **Result:** every Phase 04b conclusion is **CONFIRMED** under the nominal drive at
+  identical observers and Ts: the matched fixed gain (1.0, 0.4) beats the FLC nominal
+  on steady ripple (0.042 vs 1.242 V); 7 fixed-gain cells dominate the FLC nominal at
+  Ts = 100 µs (9 at 50 µs); no FLC grid cell dominates the matched cell on all four
+  metrics; no FLC cell extends the fixed-gain Pareto front; the FLC sits at
+  `kF·aF ≈ 0.212` and avoids the D-027 limit cycle. Versus `u = 0` the nominal drive
+  shifts gain by +0.005…+0.011 and steady ripple by ~1 %.
+- **Type:** experimental result (conditional on the assumed FLC values).
+
+## D-039 — I_q independence and the limits of the nominal scenario
+
+- **Finding:** steady ripple is essentially independent of `I_q ∈ {2, 5, 9.678} A`
+  (matched 0.042 V, FLC ~1.24 V throughout): the observer is driven by `S` and its own
+  gains, not the current magnitude. The fixed sigmoid at Ts = 100 µs remains a period-2
+  limit cycle (`kF·aF = 1.0 ≥ 0.597`) regardless of `u` or `I_q`.
+- **Scope:** open-loop ideal-FOC replica only — no inverter non-idealities, no load
+  steps, no field weakening, no DSOGI-FLL, no rotor position/speed estimation.
+- **Type:** scope / caveat.

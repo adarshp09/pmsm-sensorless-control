@@ -151,6 +151,7 @@ layer-separation structure invariants.
 | 02 | Conventional SMO (sign / sigmoid switching) | completed (+ verification 02b) |
 | 03 | DSOGI + FLL back-EMF filtering and frequency tracking | completed (+ verification 03b–03f) |
 | 04 | Fuzzy logic controller for switching-gain adaptation | completed (+ verification 04b) |
+| 04c | Nominal-drive scenario + 04b re-check (housekeeping) | completed |
 | 05 | Integration: full sensorless estimator (position/speed) | not started |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
