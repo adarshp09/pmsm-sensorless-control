@@ -1,0 +1,526 @@
+{
+  "note": "Phase 03d filter isolation; defaults/code unchanged. Filter metrics only. Options per row (LPF on/off).",
+  "config_diff": {
+    "script": "03d_filter_isolation",
+    "non_default_options": {
+      "epsilon_filter_tau": {
+        "used": 0.01,
+        "default": null
+      },
+      "min_omega": {
+        "used": 12.566370614359172,
+        "default": null
+      }
+    },
+    "library_defaults": {
+      "epsilon_filter_tau": null,
+      "min_omega": null,
+      "max_omega": null,
+      "normalize_error": false,
+      "positive_sequence": true,
+      "per_unit_scaling": true
+    },
+    "scenario": {
+      "rpm": [
+        1000.0,
+        500.0
+      ],
+      "cycles": 8,
+      "note": "LPF on (0.01 s) and off are reported per row"
+    },
+    "note": "non_default_options lists every library default overridden by this script; an empty mapping means all defaults."
+  },
+  "isolation": {
+    "1000rpm": {
+      "electrical_frequency_hz": 66.66666666666666,
+      "window_cycles": 8,
+      "window_s": 0.12,
+      "raw_observer_ripple_rms_v": 248.40990974079912,
+      "cases": {
+        "(a) ideal E_true [LPF_on]": {
+          "frequency_error_mean_hz": -7.546700638344784,
+          "omega_prime_jitter_hz": 16.0338785536405,
+          "filtered_gain": 0.8212056173591973,
+          "filtered_phase_deg": -9.603669308724202,
+          "residual_ripple_v": 25.461722294247007
+        },
+        "(a) ideal E_true [LPF_off]": {
+          "frequency_error_mean_hz": -0.0031390956605642016,
+          "omega_prime_jitter_hz": 0.20472776940870194,
+          "filtered_gain": 1.00010058890978,
+          "filtered_phase_deg": 0.00950295086590986,
+          "residual_ripple_v": 0.31371057063286684
+        },
+        "(b1) E_true + period-2 ripple [LPF_on]": {
+          "frequency_error_mean_hz": -7.375519029859702,
+          "omega_prime_jitter_hz": 15.939499342945805,
+          "filtered_gain": 0.8265887145987664,
+          "filtered_phase_deg": -9.521248012250892,
+          "residual_ripple_v": 25.29650161076458
+        },
+        "(b1) E_true + period-2 ripple [LPF_off]": {
+          "frequency_error_mean_hz": -64.66666666666664,
+          "omega_prime_jitter_hz": 0.0,
+          "filtered_gain": 0.6956763531277314,
+          "filtered_phase_deg": -13.177840149199982,
+          "residual_ripple_v": 1583.6531624372528
+        },
+        "(b2) E_true + white ripple [LPF_on]": {
+          "frequency_error_mean_hz": -64.66666666666664,
+          "omega_prime_jitter_hz": 0.0,
+          "filtered_gain": 0.35330823203148415,
+          "filtered_phase_deg": 174.42958842306388,
+          "residual_ripple_v": 1628.9975796055185
+        },
+        "(b2) E_true + white ripple [LPF_off]": {
+          "frequency_error_mean_hz": -64.66666666666664,
+          "omega_prime_jitter_hz": 0.0,
+          "filtered_gain": 2.2599709877898837,
+          "filtered_phase_deg": -125.32508568598506,
+          "residual_ripple_v": 9219.649039413964
+        },
+        "(c) SMO sign @100us [LPF_on]": {
+          "frequency_error_mean_hz": -6.1278394503737434,
+          "omega_prime_jitter_hz": 15.825319564850476,
+          "filtered_gain": 0.8107901422842292,
+          "filtered_phase_deg": -10.932075716556112,
+          "residual_ripple_v": 23.493443965257466
+        },
+        "(c) SMO sign @100us [LPF_off]": {
+          "frequency_error_mean_hz": 9.022530647361805,
+          "omega_prime_jitter_hz": 5.960288435526086,
+          "filtered_gain": 1.0035757389220932,
+          "filtered_phase_deg": -7.396188717889761,
+          "residual_ripple_v": 6.509742244945508
+        },
+        "(c) SMO sigmoid @100us (limit cycle) [LPF_on]": {
+          "frequency_error_mean_hz": -6.449974686516945,
+          "omega_prime_jitter_hz": 15.715050177120672,
+          "filtered_gain": 0.8083940114672549,
+          "filtered_phase_deg": -10.850645468919161,
+          "residual_ripple_v": 23.520176906357086
+        },
+        "(c) SMO sigmoid @100us (limit cycle) [LPF_off]": {
+          "frequency_error_mean_hz": 4.130856208862721,
+          "omega_prime_jitter_hz": 9.658879275254657,
+          "filtered_gain": 0.9510713679602077,
+          "filtered_phase_deg": -7.894823129933874,
+          "residual_ripple_v": 11.234464156804613
+        },
+        "(c) SMO sigmoid @50us (stable) [LPF_on]": {
+          "frequency_error_mean_hz": -7.05560430315198,
+          "omega_prime_jitter_hz": 15.593175757665575,
+          "filtered_gain": 0.8342203770809509,
+          "filtered_phase_deg": -10.546048177632422,
+          "residual_ripple_v": 24.2088000229743
+        },
+        "(c) SMO sigmoid @50us (stable) [LPF_off]": {
+          "frequency_error_mean_hz": 0.0016143090503590743,
+          "omega_prime_jitter_hz": 0.05541719971650025,
+          "filtered_gain": 0.9843708734204736,
+          "filtered_phase_deg": -0.37589856037812885,
+          "residual_ripple_v": 0.08334482525715757
+        }
+      }
+    },
+    "500rpm": {
+      "electrical_frequency_hz": 33.33333333333333,
+      "window_cycles": 8,
+      "window_s": 0.24,
+      "raw_observer_ripple_rms_v": 252.6820857018295,
+      "cases": {
+        "(a) ideal E_true [LPF_on]": {
+          "frequency_error_mean_hz": -29.911124904720516,
+          "omega_prime_jitter_hz": 3.07154780579676,
+          "filtered_gain": 0.07465084324027928,
+          "filtered_phase_deg": -85.61382734551425,
+          "residual_ripple_v": 10.681391238763368
+        },
+        "(a) ideal E_true [LPF_off]": {
+          "frequency_error_mean_hz": -0.000688626838178695,
+          "omega_prime_jitter_hz": 0.34177161753631097,
+          "filtered_gain": 1.000041129439178,
+          "filtered_phase_deg": 0.024996224736727555,
+          "residual_ripple_v": 0.5195296065791998
+        },
+        "(b1) E_true + period-2 ripple [LPF_on]": {
+          "frequency_error_mean_hz": -6.283639348742809,
+          "omega_prime_jitter_hz": 11.005987335422512,
+          "filtered_gain": 0.7739778999558261,
+          "filtered_phase_deg": -11.199023289513136,
+          "residual_ripple_v": 15.798048948361611
+        },
+        "(b1) E_true + period-2 ripple [LPF_off]": {
+          "frequency_error_mean_hz": 99.7471931979719,
+          "omega_prime_jitter_hz": 22.835626292100326,
+          "filtered_gain": 1.2534385695515307,
+          "filtered_phase_deg": -10.683221536868869,
+          "residual_ripple_v": 34.26865724844667
+        },
+        "(b2) E_true + white ripple [LPF_on]": {
+          "frequency_error_mean_hz": -31.32844225072929,
+          "omega_prime_jitter_hz": 0.0677384431196077,
+          "filtered_gain": 0.929754423990686,
+          "filtered_phase_deg": 108.28016442628851,
+          "residual_ripple_v": 615.0643313945392
+        },
+        "(b2) E_true + white ripple [LPF_off]": {
+          "frequency_error_mean_hz": -30.75305241384933,
+          "omega_prime_jitter_hz": 6.2088070992716995,
+          "filtered_gain": 5.144131815029479,
+          "filtered_phase_deg": -29.76639454699052,
+          "residual_ripple_v": 2366.2269622705653
+        },
+        "(c) SMO sign @100us [LPF_on]": {
+          "frequency_error_mean_hz": -2.3809860405897316,
+          "omega_prime_jitter_hz": 6.859300131905943,
+          "filtered_gain": 0.8368540062502756,
+          "filtered_phase_deg": -8.91469088738162,
+          "residual_ripple_v": 10.687128839600039
+        },
+        "(c) SMO sign @100us [LPF_off]": {
+          "frequency_error_mean_hz": 12.390489682272761,
+          "omega_prime_jitter_hz": 3.2392371226445134,
+          "filtered_gain": 1.0100760599192276,
+          "filtered_phase_deg": -9.832633380550364,
+          "residual_ripple_v": 3.466638849338714
+        },
+        "(c) SMO sigmoid @100us (limit cycle) [LPF_on]": {
+          "frequency_error_mean_hz": -2.6821505365109375,
+          "omega_prime_jitter_hz": 6.893376764957548,
+          "filtered_gain": 0.8367204236080202,
+          "filtered_phase_deg": -9.694112997538074,
+          "residual_ripple_v": 10.97967334029003
+        },
+        "(c) SMO sigmoid @100us (limit cycle) [LPF_off]": {
+          "frequency_error_mean_hz": -30.961703261859974,
+          "omega_prime_jitter_hz": 1.6396295142000852,
+          "filtered_gain": 0.5057319880577907,
+          "filtered_phase_deg": 97.2064479421117,
+          "residual_ripple_v": 400.91580170866735
+        },
+        "(c) SMO sigmoid @50us (stable) [LPF_on]": {
+          "frequency_error_mean_hz": -6.993883179151423,
+          "omega_prime_jitter_hz": 9.340842379673067,
+          "filtered_gain": 0.6987869074321893,
+          "filtered_phase_deg": -14.641142595885135,
+          "residual_ripple_v": 13.768730268985896
+        },
+        "(c) SMO sigmoid @50us (stable) [LPF_off]": {
+          "frequency_error_mean_hz": 0.005200896599952056,
+          "omega_prime_jitter_hz": 0.19939448477195887,
+          "filtered_gain": 0.9872386528213245,
+          "filtered_phase_deg": -0.2579678977184172,
+          "residual_ripple_v": 0.30004345035387187
+        }
+      }
+    }
+  },
+  "amplitude_dependence": {
+    "frequency_step_hz": {
+      "from": 66.66666666666667,
+      "to": 73.33333333333334
+    },
+    "amp_0.1x_default": {
+      "settling_time_s": 0.6400000000000001,
+      "steady_jitter_hz": 0.15589203829129342
+    },
+    "amp_0.1x_normalization_ON": {
+      "settling_time_s": null,
+      "steady_jitter_hz": 0.05837189396684264
+    },
+    "amp_1.0x_default": {
+      "settling_time_s": 0.005100000000000049,
+      "steady_jitter_hz": 3.6756581636352056e-11
+    },
+    "amp_1.0x_normalization_ON": {
+      "settling_time_s": null,
+      "steady_jitter_hz": 0.05837189396683984
+    },
+    "amp_10.0x_default": {
+      "settling_time_s": null,
+      "steady_jitter_hz": 10.201147011567613
+    },
+    "amp_10.0x_normalization_ON": {
+      "settling_time_s": null,
+      "steady_jitter_hz": 0.05837189396684338
+    }
+  },
+  "low_speed_fit": {
+    "100rpm": {
+      "rows": [
+        {
+          "cycles": 1,
+          "fundamental_gain": 0.7577605729576591,
+          "fundamental_phase_deg": 0.9716400662858558,
+          "half_window_gain_std": 0.014359691510669514
+        },
+        {
+          "cycles": 2,
+          "fundamental_gain": 0.757760572957659,
+          "fundamental_phase_deg": 0.9716400662824969,
+          "half_window_gain_std": 2.220446049250313e-16
+        },
+        {
+          "cycles": 4,
+          "fundamental_gain": 0.757760572957659,
+          "fundamental_phase_deg": 0.9716400662757761,
+          "half_window_gain_std": 7.850462293418876e-17
+        },
+        {
+          "cycles": 8,
+          "fundamental_gain": 0.7577605729576593,
+          "fundamental_phase_deg": 0.9716400662623228,
+          "half_window_gain_std": 2.830524433501838e-16
+        }
+      ]
+    },
+    "200rpm": {
+      "rows": [
+        {
+          "cycles": 1,
+          "fundamental_gain": 0.9263478247469762,
+          "fundamental_phase_deg": 0.14201001040679367,
+          "half_window_gain_std": 0.0591277168201928
+        },
+        {
+          "cycles": 2,
+          "fundamental_gain": 0.9263478247469766,
+          "fundamental_phase_deg": 0.14201001040208777,
+          "half_window_gain_std": 3.925231146709438e-16
+        },
+        {
+          "cycles": 4,
+          "fundamental_gain": 0.926347824746977,
+          "fundamental_phase_deg": 0.1420100103927145,
+          "half_window_gain_std": 2.830524433501838e-16
+        },
+        {
+          "cycles": 8,
+          "fundamental_gain": 0.926347824746977,
+          "fundamental_phase_deg": 0.14201001037398844,
+          "half_window_gain_std": 1.7554167342883506e-16
+        }
+      ]
+    }
+  },
+  "phase03_table": {
+    "100us": {
+      "conv": {
+        "steady": {
+          "frequency_error_mean_hz": -5.208715874449775,
+          "frequency_error_std_hz": 15.340693843574833,
+          "frequency_error_max_abs_hz": 29.384863299439772,
+          "raw_fundamental_gain": 0.958205610822399,
+          "raw_fundamental_phase_deg": -1.4988372533682557,
+          "raw_amplitude_error": 0.04179438917760103,
+          "raw_ripple_rms_v": 248.39636991086135,
+          "raw_total_error_rms_v": 248.41128864836745,
+          "filtered_fundamental_gain": 0.8110311765256946,
+          "filtered_fundamental_phase_deg": -9.451485969748513,
+          "filtered_amplitude_error": 0.18896882347430544,
+          "filtered_ripple_rms_v": 22.482320639781715,
+          "filtered_total_error_rms_v": 26.14481894766474,
+          "ripple_reduction_percent": 90.94901401020891
+        },
+        "ramp": {
+          "frequency_error_mean_hz": -3.9716334709057355,
+          "frequency_error_std_hz": 11.376086360895547,
+          "frequency_error_max_abs_hz": 29.151512530488645,
+          "raw_fundamental_gain": 0.961099743174713,
+          "raw_fundamental_phase_deg": -1.654825955639717,
+          "raw_amplitude_error": 0.03890025682528697,
+          "raw_ripple_rms_v": 250.85068784730285,
+          "raw_total_error_rms_v": 250.7408661961023,
+          "filtered_fundamental_gain": 0.8269799226096579,
+          "filtered_fundamental_phase_deg": -9.21030023833469,
+          "filtered_amplitude_error": 0.1730200773903421,
+          "filtered_ripple_rms_v": 18.270746872566363,
+          "filtered_total_error_rms_v": 19.71613573278633,
+          "ripple_reduction_percent": 92.71648524093818
+        },
+        "regime": "bang-bang"
+      },
+      "sig": {
+        "steady": {
+          "frequency_error_mean_hz": -6.362329040815826,
+          "frequency_error_std_hz": 15.344059206346467,
+          "frequency_error_max_abs_hz": 29.58711128109409,
+          "raw_fundamental_gain": 0.9625590075757433,
+          "raw_fundamental_phase_deg": -1.311631085239095,
+          "raw_amplitude_error": 0.03744099242425669,
+          "raw_ripple_rms_v": 194.71054470937318,
+          "raw_total_error_rms_v": 194.7256457130903,
+          "filtered_fundamental_gain": 0.821286895995934,
+          "filtered_fundamental_phase_deg": -9.82290110289804,
+          "filtered_amplitude_error": 0.17871310400406604,
+          "filtered_ripple_rms_v": 23.189034470987114,
+          "filtered_total_error_rms_v": 26.656202056121675,
+          "ripple_reduction_percent": 88.090509168058
+        },
+        "ramp": {
+          "frequency_error_mean_hz": -3.7289521797653093,
+          "frequency_error_std_hz": 11.062608690704954,
+          "frequency_error_max_abs_hz": 28.70434348439467,
+          "raw_fundamental_gain": 0.9586668066545365,
+          "raw_fundamental_phase_deg": -1.3323915817377372,
+          "raw_amplitude_error": 0.04133319334546348,
+          "raw_ripple_rms_v": 206.48226010768664,
+          "raw_total_error_rms_v": 206.34566782959172,
+          "filtered_fundamental_gain": 0.8354582304520612,
+          "filtered_fundamental_phase_deg": -8.49772401729103,
+          "filtered_amplitude_error": 0.16454176954793875,
+          "filtered_ripple_rms_v": 17.824783141882314,
+          "filtered_total_error_rms_v": 18.89416136779917,
+          "ripple_reduction_percent": 91.3674021523272
+        },
+        "regime": "limit cycle (D-027)"
+      }
+    },
+    "50us": {
+      "conv": {
+        "steady": {
+          "frequency_error_mean_hz": -5.841741874795736,
+          "frequency_error_std_hz": 15.572112000830314,
+          "frequency_error_max_abs_hz": 31.220583074437776,
+          "raw_fundamental_gain": 0.9800377552570377,
+          "raw_fundamental_phase_deg": -0.8203599510903887,
+          "raw_amplitude_error": 0.019962244742962265,
+          "raw_ripple_rms_v": 248.13344990518743,
+          "raw_total_error_rms_v": 248.13717607349383,
+          "filtered_fundamental_gain": 0.8160191343539999,
+          "filtered_fundamental_phase_deg": -8.708359532742966,
+          "filtered_amplitude_error": 0.18398086564600014,
+          "filtered_ripple_rms_v": 23.538314881249367,
+          "filtered_total_error_rms_v": 26.767934056142543,
+          "ripple_reduction_percent": 90.513848539871
+        },
+        "ramp": {
+          "frequency_error_mean_hz": -4.678034588915096,
+          "frequency_error_std_hz": 11.752905026652712,
+          "frequency_error_max_abs_hz": 30.378522621309415,
+          "raw_fundamental_gain": 0.9807174799663984,
+          "raw_fundamental_phase_deg": -0.862366115831931,
+          "raw_amplitude_error": 0.019282520033601647,
+          "raw_ripple_rms_v": 250.72317804205358,
+          "raw_total_error_rms_v": 250.60247195349433,
+          "filtered_fundamental_gain": 0.8262462540066757,
+          "filtered_fundamental_phase_deg": -9.238050381261186,
+          "filtered_amplitude_error": 0.17375374599332427,
+          "filtered_ripple_rms_v": 19.313316026475025,
+          "filtered_total_error_rms_v": 20.60970476865615,
+          "ripple_reduction_percent": 92.29695627771773
+        },
+        "regime": "bang-bang"
+      },
+      "sig": {
+        "steady": {
+          "frequency_error_mean_hz": -6.257055451277179,
+          "frequency_error_std_hz": 15.599346857789412,
+          "frequency_error_max_abs_hz": 31.22115728191298,
+          "raw_fundamental_gain": 0.9843719013985415,
+          "raw_fundamental_phase_deg": -0.3801698405749753,
+          "raw_amplitude_error": 0.01562809860145853,
+          "raw_ripple_rms_v": 0.017623325080474164,
+          "raw_total_error_rms_v": 0.942071713099563,
+          "filtered_fundamental_gain": 0.813920710142426,
+          "filtered_fundamental_phase_deg": -8.65429311981485,
+          "filtered_amplitude_error": 0.18607928985757405,
+          "filtered_ripple_rms_v": 23.75202871629993,
+          "filtered_total_error_rms_v": 26.984440500688592,
+          "ripple_reduction_percent": -134676.09138933767
+        },
+        "ramp": {
+          "frequency_error_mean_hz": -4.886406176029711,
+          "frequency_error_std_hz": 11.859438988298036,
+          "frequency_error_max_abs_hz": 30.610072267183753,
+          "raw_fundamental_gain": 0.9855461440402292,
+          "raw_fundamental_phase_deg": -0.34413845111475844,
+          "raw_amplitude_error": 0.014453855959770778,
+          "raw_ripple_rms_v": 7.871522304997536,
+          "raw_total_error_rms_v": 0.7011777359868563,
+          "filtered_fundamental_gain": 0.825955154643805,
+          "filtered_fundamental_phase_deg": -9.05220876998847,
+          "filtered_amplitude_error": 0.17404484535619502,
+          "filtered_ripple_rms_v": 19.526801201328677,
+          "filtered_total_error_rms_v": 20.806516699412448,
+          "ripple_reduction_percent": -148.06893056672584
+        },
+        "regime": "stable"
+      }
+    },
+    "25us": {
+      "conv": {
+        "steady": {
+          "frequency_error_mean_hz": -7.204386794589058,
+          "frequency_error_std_hz": 15.714922254441827,
+          "frequency_error_max_abs_hz": 31.330590232592648,
+          "raw_fundamental_gain": 0.9888479148080489,
+          "raw_fundamental_phase_deg": -0.35043460522487746,
+          "raw_amplitude_error": 0.0111520851919511,
+          "raw_ripple_rms_v": 248.02559308132683,
+          "raw_total_error_rms_v": 248.02659661736138,
+          "filtered_fundamental_gain": 0.8039992266434536,
+          "filtered_fundamental_phase_deg": -9.94597485294328,
+          "filtered_amplitude_error": 0.19600077335654642,
+          "filtered_ripple_rms_v": 24.574758935047292,
+          "filtered_total_error_rms_v": 28.231026405925974,
+          "ripple_reduction_percent": 90.09184551088269
+        },
+        "ramp": {
+          "frequency_error_mean_hz": -5.061378958650462,
+          "frequency_error_std_hz": 11.947139031848753,
+          "frequency_error_max_abs_hz": 30.57392688379737,
+          "raw_fundamental_gain": 0.9891041693769035,
+          "raw_fundamental_phase_deg": -0.34064873202162765,
+          "raw_amplitude_error": 0.010895830623096514,
+          "raw_ripple_rms_v": 250.66814527618084,
+          "raw_total_error_rms_v": 250.54376060157398,
+          "filtered_fundamental_gain": 0.825162575921747,
+          "filtered_fundamental_phase_deg": -9.367155550377122,
+          "filtered_amplitude_error": 0.17483742407825298,
+          "filtered_ripple_rms_v": 19.74715696853586,
+          "filtered_total_error_rms_v": 21.09507522607325,
+          "ripple_reduction_percent": 92.12219129527651
+        },
+        "regime": "bang-bang"
+      },
+      "sig": {
+        "steady": {
+          "frequency_error_mean_hz": -6.749792737249789,
+          "frequency_error_std_hz": 15.609002519797743,
+          "frequency_error_max_abs_hz": 31.282871180545698,
+          "raw_fundamental_gain": 0.9868621243563868,
+          "raw_fundamental_phase_deg": -0.5594491701281676,
+          "raw_amplitude_error": 0.01313787564361324,
+          "raw_ripple_rms_v": 0.017827033123720765,
+          "raw_total_error_rms_v": 0.9072351912539789,
+          "filtered_fundamental_gain": 0.808994106843244,
+          "filtered_fundamental_phase_deg": -9.430246156305142,
+          "filtered_amplitude_error": 0.19100589315675598,
+          "filtered_ripple_rms_v": 24.090125680933518,
+          "filtered_total_error_rms_v": 27.574349927848314,
+          "ripple_reduction_percent": -135032.556908076
+        },
+        "ramp": {
+          "frequency_error_mean_hz": -4.976287307508695,
+          "frequency_error_std_hz": 11.907353534276764,
+          "frequency_error_max_abs_hz": 30.56433782852853,
+          "raw_fundamental_gain": 0.9874966918219894,
+          "raw_fundamental_phase_deg": -0.45697129694183636,
+          "raw_amplitude_error": 0.012503308178010597,
+          "raw_ripple_rms_v": 7.900775691776215,
+          "raw_total_error_rms_v": 0.647646136339699,
+          "filtered_fundamental_gain": 0.8256894588174942,
+          "filtered_fundamental_phase_deg": -9.330802035660945,
+          "filtered_amplitude_error": 0.17431054118250577,
+          "filtered_ripple_rms_v": 19.64420428822581,
+          "filtered_total_error_rms_v": 20.986673679107284,
+          "ripple_reduction_percent": -148.63640045714922
+        },
+        "regime": "stable"
+      }
+    }
+  },
+  "sigmoid_ts_star_us": 60.1
+}

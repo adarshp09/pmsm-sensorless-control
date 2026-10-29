@@ -37,7 +37,10 @@ htmlcov/
 # Command Code local state (taste, sessions)
 .commandcode/
 
-# Local experiment output (keep the directory, ignore generated results)
-experiments/**/output/
+# Local experiment output: results (JSON) are tracked so they survive a clone;
+# generated plots and binary state dumps stay ignored.
 experiments/**/*.npz
 experiments/**/*.csv
+experiments/**/output/**/*.png
+# >2 MB result: too large to track (Phase 04c Step 0b); regenerate locally
+experiments/output/04_flc_adaptation/flc.json

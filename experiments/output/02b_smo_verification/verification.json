@@ -1,0 +1,190 @@
+{
+  "note": "Phase 03b metric: fundamental gain/phase, ripple (std about the fitted fundamental) and total error, replacing the one-period-MA chatter. Defaults unchanged. No position/speed estimation. epsilon_filter_tau=OFF (no DSOGI-FLL in this script).",
+  "config_diff": {
+    "script": "02b_smo_verification",
+    "non_default_options": {},
+    "library_defaults": {
+      "epsilon_filter_tau": null,
+      "min_omega": null,
+      "max_omega": null,
+      "normalize_error": false,
+      "positive_sequence": true,
+      "per_unit_scaling": true
+    },
+    "scenario": {
+      "ts_s": 0.0001,
+      "a_si_per_a": 0.5388877434122991,
+      "fll_used": false
+    },
+    "note": "non_default_options lists every library default overridden by this script; an empty mapping means all defaults."
+  },
+  "metric_definitions": "see experiments/validation_metrics.py and docs/phase03.md",
+  "steady_window": {
+    "t0_s": 1.75,
+    "t1_s": 2.0,
+    "note": "ramp ends at 1.5 s; +0.25 s settle"
+  },
+  "ramp_window": {
+    "t0_s": 0.0,
+    "t1_s": 1.5
+  },
+  "conventional_sign": {
+    "steady": {
+      "rmse_current_a": 10.225089077166079,
+      "max_abs_current_error_a": 18.46088292904208,
+      "mean_abs_sliding_surface_a": 9.822097816736777,
+      "max_abs_sliding_surface_a": 18.028189245113875
+    },
+    "fundamental_steady": {
+      "fundamental_gain": 0.958205610822399,
+      "fundamental_phase_deg": -1.4988372533682557,
+      "ripple_rms_v": 248.39636991086135,
+      "total_error_rms_v": 248.41128864836745
+    },
+    "fundamental_ramp": {
+      "fundamental_gain": 0.961099743174713,
+      "fundamental_phase_deg": -1.654825955639717,
+      "ripple_rms_v": 250.85068784730285,
+      "total_error_rms_v": 250.7408661961023
+    }
+  },
+  "sigmoid": {
+    "steady": {
+      "rmse_current_a": 7.05826014686042,
+      "max_abs_current_error_a": 9.015188307270973,
+      "mean_abs_sliding_surface_a": 7.126518321352871,
+      "max_abs_sliding_surface_a": 9.984062933052092
+    },
+    "fundamental_steady": {
+      "fundamental_gain": 0.9625590075757433,
+      "fundamental_phase_deg": -1.311631085239095,
+      "ripple_rms_v": 194.71054470937318,
+      "total_error_rms_v": 194.7256457130903
+    },
+    "fundamental_ramp": {
+      "fundamental_gain": 0.9586668066545365,
+      "fundamental_phase_deg": -1.3323915817377372,
+      "ripple_rms_v": 206.48226010768664,
+      "total_error_rms_v": 206.34566782959172
+    }
+  },
+  "steady_rmse_reduction_percent": 30.971162269652883,
+  "steady_ripple_reduction_percent": 21.61296689671982,
+  "sigmoid_slope_sweep": [
+    {
+      "a_si_per_a": 0.05,
+      "a_pu_equivalent": 0.3711348095126028,
+      "i_base_multiplier_equivalent": 10.77775486824598,
+      "rmse_current_a": 9.285657104788244,
+      "mean_abs_sliding_surface_a": 11.135975189128981,
+      "max_abs_sliding_surface_a": 11.197499431365538,
+      "fundamental_gain": 0.8832359195685233,
+      "fundamental_phase_deg": -6.446830211240834,
+      "ripple_rms_v": 0.11570512215207622
+    },
+    {
+      "a_si_per_a": 0.1,
+      "a_pu_equivalent": 0.7422696190252056,
+      "i_base_multiplier_equivalent": 5.38887743412299,
+      "rmse_current_a": 4.182217321647952,
+      "mean_abs_sliding_surface_a": 5.909267585767844,
+      "max_abs_sliding_surface_a": 5.949740455951046,
+      "fundamental_gain": 0.9351063301595325,
+      "fundamental_phase_deg": -3.077384809389328,
+      "ripple_rms_v": 0.07587071671191302
+    },
+    {
+      "a_si_per_a": 0.2,
+      "a_pu_equivalent": 1.4845392380504112,
+      "i_base_multiplier_equivalent": 2.694438717061495,
+      "rmse_current_a": 2.013989941874392,
+      "mean_abs_sliding_surface_a": 3.043912260531414,
+      "max_abs_sliding_surface_a": 3.0669299053811496,
+      "fundamental_gain": 0.9620898910163243,
+      "fundamental_phase_deg": -1.2366503344348063,
+      "ripple_rms_v": 0.04304241464061752
+    },
+    {
+      "a_si_per_a": 0.3592584956081994,
+      "a_pu_equivalent": 2.6666666666666665,
+      "i_base_multiplier_equivalent": 1.5,
+      "rmse_current_a": 3.8362706353374136,
+      "mean_abs_sliding_surface_a": 3.7232551509287206,
+      "max_abs_sliding_surface_a": 5.151047880015728,
+      "fundamental_gain": 0.9732920588118072,
+      "fundamental_phase_deg": -0.5619815739413332,
+      "ripple_rms_v": 97.59623343154779
+    },
+    {
+      "a_si_per_a": 0.43111019472983925,
+      "a_pu_equivalent": 3.1999999999999997,
+      "i_base_multiplier_equivalent": 1.25,
+      "rmse_current_a": 6.018707930437416,
+      "mean_abs_sliding_surface_a": 6.021634764441472,
+      "max_abs_sliding_surface_a": 8.23119829839493,
+      "fundamental_gain": 0.9687357301142108,
+      "fundamental_phase_deg": -0.8937079212690596,
+      "ripple_rms_v": 165.5743706864026
+    },
+    {
+      "a_si_per_a": 0.5388877434122991,
+      "a_pu_equivalent": 3.9999999999999996,
+      "i_base_multiplier_equivalent": 1.0,
+      "rmse_current_a": 7.05826014686042,
+      "mean_abs_sliding_surface_a": 7.126518321352871,
+      "max_abs_sliding_surface_a": 9.984062933052092,
+      "fundamental_gain": 0.9625590075757433,
+      "fundamental_phase_deg": -1.311631085239095,
+      "ripple_rms_v": 194.71054470937318
+    },
+    {
+      "a_si_per_a": 0.7185169912163988,
+      "a_pu_equivalent": 5.333333333333333,
+      "i_base_multiplier_equivalent": 0.75,
+      "rmse_current_a": 7.561821646767702,
+      "mean_abs_sliding_surface_a": 7.400575548761399,
+      "max_abs_sliding_surface_a": 13.050842022245,
+      "fundamental_gain": 0.9597282205981955,
+      "fundamental_phase_deg": -1.383908181078191,
+      "ripple_rms_v": 201.47507547590297
+    },
+    {
+      "a_si_per_a": 1.0777754868245981,
+      "a_pu_equivalent": 7.999999999999999,
+      "i_base_multiplier_equivalent": 0.5,
+      "rmse_current_a": 8.983827957363019,
+      "mean_abs_sliding_surface_a": 8.444142087520033,
+      "max_abs_sliding_surface_a": 15.41600516833026,
+      "fundamental_gain": 0.9493256503654903,
+      "fundamental_phase_deg": -1.4446289104079206,
+      "ripple_rms_v": 224.14828946048138
+    },
+    {
+      "a_si_per_a": 2.0,
+      "a_pu_equivalent": 14.845392380504112,
+      "i_base_multiplier_equivalent": 0.26944387170614953,
+      "rmse_current_a": 9.511991452966631,
+      "mean_abs_sliding_surface_a": 8.88193587456664,
+      "max_abs_sliding_surface_a": 17.646491297250837,
+      "fundamental_gain": 0.9544360061076873,
+      "fundamental_phase_deg": -0.8881477330824137,
+      "ripple_rms_v": 233.30057041476587
+    },
+    {
+      "a_si_per_a": 4.0,
+      "a_pu_equivalent": 29.690784761008224,
+      "i_base_multiplier_equivalent": 0.13472193585307476,
+      "rmse_current_a": 9.811495223123895,
+      "mean_abs_sliding_surface_a": 9.309370377625045,
+      "max_abs_sliding_surface_a": 18.943873838328802,
+      "fundamental_gain": 0.9579663241317578,
+      "fundamental_phase_deg": -1.3045732016902092,
+      "ripple_rms_v": 240.52719692912277
+    }
+  ],
+  "defaults": {
+    "a_si_per_a": 0.5388877434122991,
+    "i_base_a": 7.422696190252056,
+    "k_v": 179.62924780409975
+  }
+}

@@ -1,0 +1,2957 @@
+{
+  "note": "Phase 04b; RAW E_hat only. All FLC values are ASSUMPTIONS (Ke=0.13472 1/A, Kec=1.3472e-5 s/A, Ku=1, CoG grid=1001, Ruspini feet, min/max, per-axis, backward-difference s_dot).",
+  "assumptions": {
+    "ke_1_per_a": 0.13472,
+    "kec_s_per_a": 1.3472e-05,
+    "ku": 1.0,
+    "cog_grid_points": 1001
+  },
+  "k0_v": 179.62924780409975,
+  "a0_per_a": 0.5388877434122991,
+  "config_diff": {
+    "script": "04b_fixed_gain",
+    "non_default_options": {},
+    "library_defaults": {
+      "epsilon_filter_tau": null,
+      "min_omega": null,
+      "max_omega": null,
+      "normalize_error": false,
+      "positive_sequence": true,
+      "per_unit_scaling": true
+    },
+    "scenario": {
+      "ts_us": [
+        100.0,
+        50.0
+      ],
+      "cycles": 8
+    },
+    "note": "non_default_options lists every library default overridden by this script; an empty mapping means all defaults."
+  },
+  "runs": {
+    "Ts100_fixed_sign": {
+      "ts_us": 100.0,
+      "label": "fixed_sign",
+      "steady": {
+        "fundamental_gain": 0.9582117730566256,
+        "fundamental_phase_deg": -1.5834123684891488,
+        "ripple_rms_v": 248.3962965748317,
+        "rms_s_alpha_a": 7.446290997776327,
+        "rms_s_beta_a": 7.528893539845738,
+        "mean_abs_s_a": 9.824505346888937,
+        "rms_abs_s_a": 10.589215625243243,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 10.225304447180621
+      },
+      "transient": {
+        "t_conv_s": 1.9988000000000001,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 15.883823437864866,
+        "max_abs_s_first_20ms_v": 16.826417953536513
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9609797144060653,
+          "phase_deg": -1.6124201146567452,
+          "ripple_rms_v": 250.73057383216639,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.08995,
+          "gain": 0.9558451539073604,
+          "phase_deg": -1.7440527852601004,
+          "ripple_rms_v": 252.4711904718486,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_sigmoid": {
+      "ts_us": 100.0,
+      "label": "fixed_sigmoid",
+      "steady": {
+        "fundamental_gain": 0.961725683936279,
+        "fundamental_phase_deg": -1.2553823631743772,
+        "ripple_rms_v": 194.68981829879255,
+        "rms_s_alpha_a": 5.251332555775161,
+        "rms_s_beta_a": 5.2513325554741295,
+        "mean_abs_s_a": 7.125747462724086,
+        "rms_abs_s_a": 7.426505720695738,
+        "period2_flag": true,
+        "post_update_current_rmse_a_old": 7.0581560319119045
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 11.139758581043608,
+        "max_abs_s_first_20ms_v": 9.900805921170251
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.958399279962101,
+          "phase_deg": -1.3204914344263934,
+          "ripple_rms_v": 206.23350888505087,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.08995,
+          "gain": 0.9554407806418297,
+          "phase_deg": -1.5851331921019116,
+          "ripple_rms_v": 216.07962041382783,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.35_af0.1": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.35_af0.1",
+      "steady": {
+        "fundamental_gain": 0.7131701233447988,
+        "fundamental_phase_deg": -16.341807165599683,
+        "ripple_rms_v": 1.0896289737330187,
+        "rms_s_alpha_a": 18.553164157162247,
+        "rms_s_beta_a": 18.553164157162225,
+        "mean_abs_s_a": 26.235028395655366,
+        "rms_abs_s_a": 26.238136375993225,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 24.661536785353412
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 39.35720456398984,
+        "max_abs_s_first_20ms_v": 12.96749533542441
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.735713295109742,
+          "phase_deg": -12.09104301171309,
+          "ripple_rms_v": 0.5217656903980974,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.7454401149103205,
+          "phase_deg": -8.036762751346672,
+          "ripple_rms_v": 1.5842403771713682,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.034999999999999996,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.35_af0.2": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.35_af0.2",
+      "steady": {
+        "fundamental_gain": 0.8300368235828627,
+        "fundamental_phase_deg": -9.646436756828042,
+        "ripple_rms_v": 1.3626444838242224,
+        "rms_s_alpha_a": 11.405089293815356,
+        "rms_s_beta_a": 11.405089293815342,
+        "mean_abs_s_a": 16.12095594395308,
+        "rms_abs_s_a": 16.129231959389852,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 14.343069573195786
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 24.193847939084776,
+        "max_abs_s_first_20ms_v": 7.483564128180493
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8464149476769336,
+          "phase_deg": -6.95579278074186,
+          "ripple_rms_v": 0.56932601622253,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.8532585495046673,
+          "phase_deg": -4.546610812923478,
+          "ripple_rms_v": 1.4309694118804308,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.06999999999999999,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.35_af0.4": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.35_af0.4",
+      "steady": {
+        "fundamental_gain": 0.9025857474044374,
+        "fundamental_phase_deg": -5.161262389370891,
+        "ripple_rms_v": 1.2091519453164665,
+        "rms_s_alpha_a": 6.50749678023254,
+        "rms_s_beta_a": 6.507496780232532,
+        "mean_abs_s_a": 9.19049161516805,
+        "rms_abs_s_a": 9.2029902037041,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 7.374582976556694
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 13.80448530555615,
+        "max_abs_s_first_20ms_v": 4.055568246453364
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.913913275310734,
+          "phase_deg": -3.6498960535514233,
+          "ripple_rms_v": 0.46065690629826844,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9189693746250357,
+          "phase_deg": -2.3695640410866754,
+          "ripple_rms_v": 1.2191140050776867,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.13999999999999999,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.35_af0.6": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.35_af0.6",
+      "steady": {
+        "fundamental_gain": 0.9296566063458921,
+        "fundamental_phase_deg": -3.405021401955039,
+        "ripple_rms_v": 1.0064740053361982,
+        "rms_s_alpha_a": 4.570717412302334,
+        "rms_s_beta_a": 4.570717412302329,
+        "mean_abs_s_a": 6.451003648012522,
+        "rms_abs_s_a": 6.463970554252815,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 4.719230941610742
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 9.695955831379223,
+        "max_abs_s_first_20ms_v": 2.7816389468505656
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9386830262168189,
+          "phase_deg": -2.394657586677148,
+          "ripple_rms_v": 0.37174964676745476,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.943038980732594,
+          "phase_deg": -1.561447653148835,
+          "ripple_rms_v": 1.1222512789868935,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.21,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.35_af1": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.35_af1",
+      "steady": {
+        "fundamental_gain": 0.9526167575390462,
+        "fundamental_phase_deg": -1.871203643130104,
+        "ripple_rms_v": 0.7335432265959214,
+        "rms_s_alpha_a": 2.872483171224709,
+        "rms_s_beta_a": 2.8724831712247063,
+        "mean_abs_s_a": 4.050827406134098,
+        "rms_abs_s_a": 4.062304658434459,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 2.646137480672846
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 6.093456987651688,
+        "max_abs_s_first_20ms_v": 1.857113281396069
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9594301601571652,
+          "phase_deg": -1.3223653165257843,
+          "ripple_rms_v": 0.2708770066420231,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9631638771658853,
+          "phase_deg": -0.8810239376698192,
+          "ripple_rms_v": 1.0958191653470746,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.35,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.5_af0.1": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.5_af0.1",
+      "steady": {
+        "fundamental_gain": 0.7934551173986177,
+        "fundamental_phase_deg": -11.857605769566177,
+        "ripple_rms_v": 0.570369321585966,
+        "rms_s_alpha_a": 13.75422530200988,
+        "rms_s_beta_a": 13.754225302009864,
+        "mean_abs_s_a": 19.450229875195284,
+        "rms_abs_s_a": 19.45141196203754,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 17.71782301859159
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 29.17711794305631,
+        "max_abs_s_first_20ms_v": 9.677572853281504
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8059863967699796,
+          "phase_deg": -8.862140658796324,
+          "ripple_rms_v": 0.2911396233887651,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.8096632263341271,
+          "phase_deg": -5.972619415388826,
+          "ripple_rms_v": 1.519420257838667,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.05,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.5_af0.2": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.5_af0.2",
+      "steady": {
+        "fundamental_gain": 0.8841599409750821,
+        "fundamental_phase_deg": -6.379990590074625,
+        "ripple_rms_v": 0.5174440266977539,
+        "rms_s_alpha_a": 7.807800491676505,
+        "rms_s_beta_a": 7.807800491676496,
+        "mean_abs_s_a": 11.040110390810257,
+        "rms_abs_s_a": 11.041897347632226,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 9.193504218838816
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 16.562846021448337,
+        "max_abs_s_first_20ms_v": 5.347352147117385
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8915485323663066,
+          "phase_deg": -4.7544286191128124,
+          "ripple_rms_v": 0.24861238086775345,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.89372728772154,
+          "phase_deg": -3.213647936918768,
+          "ripple_rms_v": 1.3158065877220664,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.1,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.5_af0.4": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.5_af0.4",
+      "steady": {
+        "fundamental_gain": 0.9350868851961406,
+        "fundamental_phase_deg": -3.074914039924321,
+        "ripple_rms_v": 0.35084637274656566,
+        "rms_s_alpha_a": 4.1794011704255345,
+        "rms_s_beta_a": 4.17940117042553,
+        "mean_abs_s_a": 5.908967321648647,
+        "rms_abs_s_a": 5.910565817813775,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 4.186278756237021
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 8.865848726720662,
+        "max_abs_s_first_20ms_v": 2.8204373743426245
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9398896509074726,
+          "phase_deg": -2.323758642247974,
+          "ripple_rms_v": 0.17356285824512846,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9419124867299697,
+          "phase_deg": -1.6012381229469463,
+          "ripple_rms_v": 1.1271109493154479,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.2,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.5_af0.6": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.5_af0.6",
+      "steady": {
+        "fundamental_gain": 0.9528865779313418,
+        "fundamental_phase_deg": -1.8700607470517119,
+        "ripple_rms_v": 0.25829809205789284,
+        "rms_s_alpha_a": 2.8523010173132284,
+        "rms_s_beta_a": 2.852301017313226,
+        "mean_abs_s_a": 4.032474360087469,
+        "rms_abs_s_a": 4.033762782654942,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 2.6030943874557204
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 6.050644173982413,
+        "max_abs_s_first_20ms_v": 1.9151403942766323
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9568881405967349,
+          "phase_deg": -1.4466454028807565,
+          "ripple_rms_v": 0.13706859764842771,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9590146750751257,
+          "phase_deg": -1.0229733603090787,
+          "ripple_rms_v": 1.0863973109118745,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.3,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.5_af1": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.5_af1",
+      "steady": {
+        "fundamental_gain": 0.9674091320704411,
+        "fundamental_phase_deg": -0.8648755070925948,
+        "ripple_rms_v": 0.1674579177778694,
+        "rms_s_alpha_a": 1.7441460694546806,
+        "rms_s_beta_a": 1.744146069454679,
+        "mean_abs_s_a": 2.4656998268871817,
+        "rms_abs_s_a": 2.4665950261825347,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.8525869548085137
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 3.699892539273802,
+        "max_abs_s_first_20ms_v": 1.857113281396069
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9708121942226966,
+          "phase_deg": -0.7185686580177203,
+          "ripple_rms_v": 0.11224954371629614,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9730940902244342,
+          "phase_deg": -0.5444327671867779,
+          "ripple_rms_v": 1.3003494528416033,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.5,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.75_af0.1": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.75_af0.1",
+      "steady": {
+        "fundamental_gain": 0.8579507778340967,
+        "fundamental_phase_deg": -8.020137432701167,
+        "ripple_rms_v": 0.22942992430638717,
+        "rms_s_alpha_a": 9.59213300892483,
+        "rms_s_beta_a": 9.592133008924819,
+        "mean_abs_s_a": 13.565047398836336,
+        "rms_abs_s_a": 13.565324593308132,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 11.73372626308428
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 20.347986889962197,
+        "max_abs_s_first_20ms_v": 6.805105671630413
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8644768788836708,
+          "phase_deg": -6.072229034011949,
+          "ripple_rms_v": 0.1469965814069682,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.8652729764668791,
+          "phase_deg": -4.15624125161388,
+          "ripple_rms_v": 1.4046127747564419,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.07500000000000001,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.75_af0.2": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.75_af0.2",
+      "steady": {
+        "fundamental_gain": 0.9214080898927399,
+        "fundamental_phase_deg": -3.987321971284576,
+        "ripple_rms_v": 0.16384033855736374,
+        "rms_s_alpha_a": 5.178793271423353,
+        "rms_s_beta_a": 5.178793271423348,
+        "mean_abs_s_a": 7.323652808860151,
+        "rms_abs_s_a": 7.3239196811734315,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 5.518257696688402
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 10.985879521760147,
+        "max_abs_s_first_20ms_v": 3.637336310327122
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9253067915507613,
+          "phase_deg": -3.0609657365010077,
+          "ripple_rms_v": 0.11074836578088354,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9261694402655688,
+          "phase_deg": -2.131743802290006,
+          "ripple_rms_v": 1.1928103721642784,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.15000000000000002,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.75_af0.4": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.75_af0.4",
+      "steady": {
+        "fundamental_gain": 0.9550040931410131,
+        "fundamental_phase_deg": -1.7266626601410677,
+        "ripple_rms_v": 0.09691423381451729,
+        "rms_s_alpha_a": 2.692075590187072,
+        "rms_s_beta_a": 2.6920755901870694,
+        "mean_abs_s_a": 3.8069881395102403,
+        "rms_abs_s_a": 3.8071698105761094,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 2.4417742312261415
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 5.710754715864164,
+        "max_abs_s_first_20ms_v": 1.8828510635667426
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9580093807310697,
+          "phase_deg": -1.384525734133415,
+          "ripple_rms_v": 0.08038077160089896,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9594872359234992,
+          "phase_deg": -1.0075518634889942,
+          "ripple_rms_v": 1.0866817334157606,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.30000000000000004,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.75_af0.6": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.75_af0.6",
+      "steady": {
+        "fundamental_gain": 0.966443913752127,
+        "fundamental_phase_deg": -0.9332859947057406,
+        "ripple_rms_v": 0.06814774905090655,
+        "rms_s_alpha_a": 1.8181756787346863,
+        "rms_s_beta_a": 1.8181756787346848,
+        "mean_abs_s_a": 2.5711552546772154,
+        "rms_abs_s_a": 2.5712887036434995,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.867353144001927
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 3.856933055465249,
+        "max_abs_s_first_20ms_v": 1.857113281396069
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9692516145869127,
+          "phase_deg": -0.79777403352847,
+          "ripple_rms_v": 0.07541774436525897,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9710532470656306,
+          "phase_deg": -0.614363110753257,
+          "ripple_rms_v": 1.238028991798422,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.44999999999999996,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf0.75_af1": {
+      "ts_us": 100.0,
+      "label": "fixed_kf0.75_af1",
+      "steady": {
+        "fundamental_gain": 0.9726451922440865,
+        "fundamental_phase_deg": -0.5520293456385121,
+        "ripple_rms_v": 97.08085212880111,
+        "rms_s_alpha_a": 2.749895998203421,
+        "rms_s_beta_a": 2.7498959982034212,
+        "mean_abs_s_a": 3.713056793190837,
+        "rms_abs_s_a": 3.888940215774778,
+        "period2_flag": true,
+        "post_update_current_rmse_a_old": 3.8267965174936545
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 5.833410323662167,
+        "max_abs_s_first_20ms_v": 5.619612139208358
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9721311489525387,
+          "phase_deg": -0.6465274511118564,
+          "ripple_rms_v": 111.46829988692099,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.08995,
+          "gain": 0.9723741327271177,
+          "phase_deg": -0.8446531090501407,
+          "ripple_rms_v": 122.83194061226004,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.75,
+      "in_stability_bound": false,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf1_af0.1": {
+      "ts_us": 100.0,
+      "label": "fixed_kf1_af0.1",
+      "steady": {
+        "fundamental_gain": 0.8905405092594219,
+        "fundamental_phase_deg": -5.985047433036268,
+        "ripple_rms_v": 0.11175837270270424,
+        "rms_s_alpha_a": 7.368839377600982,
+        "rms_s_beta_a": 7.368839377600974,
+        "mean_abs_s_a": 10.421027029197877,
+        "rms_abs_s_a": 10.42111258675222,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 8.569826749423612
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 15.631668880128329,
+        "max_abs_s_first_20ms_v": 5.251392718277538
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8949788122346729,
+          "phase_deg": -4.576183889393197,
+          "ripple_rms_v": 0.0965135724095248,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.8951803097803394,
+          "phase_deg": -3.1670655829472305,
+          "ripple_rms_v": 1.3131416267636868,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.1,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf1_af0.2": {
+      "ts_us": 100.0,
+      "label": "fixed_kf1_af0.2",
+      "steady": {
+        "fundamental_gain": 0.9389650846054644,
+        "fundamental_phase_deg": -2.818664904649797,
+        "ripple_rms_v": 0.07172664245065,
+        "rms_s_alpha_a": 3.8936092706757472,
+        "rms_s_beta_a": 3.8936092706757437,
+        "mean_abs_s_a": 5.506327744800198,
+        "rms_abs_s_a": 5.506395037171255,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 3.816538306912022
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 8.259592555756882,
+        "max_abs_s_first_20ms_v": 2.7609337517294334
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9419686841626819,
+          "phase_deg": -2.2106495018477683,
+          "ripple_rms_v": 0.07278859622226269,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.942798679906091,
+          "phase_deg": -1.5724605676809449,
+          "ripple_rms_v": 1.1244504559301955,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.2,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf1_af0.4": {
+      "ts_us": 100.0,
+      "label": "fixed_kf1_af0.4",
+      "steady": {
+        "fundamental_gain": 0.9640618653070062,
+        "fundamental_phase_deg": -1.0996939850247327,
+        "ripple_rms_v": 0.04028791281092713,
+        "rms_s_alpha_a": 2.0013047982761,
+        "rms_s_beta_a": 2.0013047982760983,
+        "mean_abs_s_a": 2.8302309059647426,
+        "rms_abs_s_a": 2.8302723881644107,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.9340868698421294
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 4.2454085822466165,
+        "max_abs_s_first_20ms_v": 1.857113281396069
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9666995072793189,
+          "phase_deg": -0.9304768198146136,
+          "ripple_rms_v": 0.061925627711262365,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.968263634276015,
+          "phase_deg": -0.7094944364298443,
+          "ripple_rms_v": 1.1592786061560687,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.4,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf1_af0.6": {
+      "ts_us": 100.0,
+      "label": "fixed_kf1_af0.6",
+      "steady": {
+        "fundamental_gain": 0.9725385259546596,
+        "fundamental_phase_deg": -0.5053309487444301,
+        "ripple_rms_v": 0.02787191942077125,
+        "rms_s_alpha_a": 1.3465059636635843,
+        "rms_s_beta_a": 1.3465059636635832,
+        "mean_abs_s_a": 1.904217451066779,
+        "rms_abs_s_a": 1.9042469956292942,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.8636326472822176
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 2.8563704934439413,
+        "max_abs_s_first_20ms_v": 1.857113281396069
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9751243066320744,
+          "phase_deg": -0.4883087744957457,
+          "ripple_rms_v": 0.21082700806143864,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9770032337507211,
+          "phase_deg": -0.411535335380595,
+          "ripple_rms_v": 5.0016804178758605,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.6,
+      "in_stability_bound": false,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_kf1_af1": {
+      "ts_us": 100.0,
+      "label": "fixed_kf1_af1",
+      "steady": {
+        "fundamental_gain": 0.961725683936279,
+        "fundamental_phase_deg": -1.2553823631743772,
+        "ripple_rms_v": 194.68981829879255,
+        "rms_s_alpha_a": 5.251332555775161,
+        "rms_s_beta_a": 5.2513325554741295,
+        "mean_abs_s_a": 7.125747462724086,
+        "rms_abs_s_a": 7.426505720695738,
+        "period2_flag": true,
+        "post_update_current_rmse_a_old": 7.0581560319119045
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 11.139758581043608,
+        "max_abs_s_first_20ms_v": 9.900805921170251
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.958399279962101,
+          "phase_deg": -1.3204914344263934,
+          "ripple_rms_v": 206.23350888505087,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.08995,
+          "gain": 0.9554407806418297,
+          "phase_deg": -1.5851331921019116,
+          "ripple_rms_v": 216.07962041382783,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 1.0,
+      "in_stability_bound": false,
+      "bound": 0.597004132231405
+    },
+    "Ts100_fixed_flc_mean": {
+      "ts_us": 100.0,
+      "label": "fixed_flc_mean",
+      "steady": {
+        "fundamental_gain": 0.9301780740416854,
+        "fundamental_phase_deg": -3.373971618171121,
+        "ripple_rms_v": 0.9554030029914763,
+        "rms_s_alpha_a": 4.5334948018827514,
+        "rms_s_beta_a": 4.533494801882747,
+        "mean_abs_s_a": 6.399580689657923,
+        "rms_abs_s_a": 6.411329833770512,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 4.667947724116177
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 9.616994750655767,
+        "max_abs_s_first_20ms_v": 2.7789480618955738
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9388697452199167,
+          "phase_deg": -2.384660493032549,
+          "ripple_rms_v": 0.3576771943329583,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9430669345148109,
+          "phase_deg": -1.5606136432469844,
+          "ripple_rms_v": 1.1221640846942698,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.209805,
+      "in_stability_bound": true,
+      "bound": 0.597004132231405
+    },
+    "Ts100_flc_ke0.1_kec0.1": {
+      "ts_us": 100.0,
+      "label": "flc_ke0.1_kec0.1",
+      "steady": {
+        "fundamental_gain": 0.8472941370290199,
+        "fundamental_phase_deg": -8.358384836277791,
+        "ripple_rms_v": 1.777436538023526,
+        "rms_s_alpha_a": 10.128506063967185,
+        "rms_s_beta_a": 10.128480230329915,
+        "mean_abs_s_a": 14.320153751108561,
+        "rms_abs_s_a": 14.323852375112079,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 12.544698963477014
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 21.485778562668116,
+        "max_abs_s_first_20ms_v": 8.245095357005688
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8519025790236845,
+          "phase_deg": -6.424210582462991,
+          "ripple_rms_v": 1.3630679744138257,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.46995,
+          "gain": 0.8478926805189384,
+          "phase_deg": -8.259576015779102,
+          "ripple_rms_v": 1.7495122365172655,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.2321480054690972,
+        "kf_min": 0.1928924359702302,
+        "kf_max": 0.2450169394540886,
+        "af_mean": 0.36386820811731574,
+        "af_min": 0.28153163383680935,
+        "af_max": 0.39147446738838915
+      }
+    },
+    "Ts100_flc_ke0.1_kec1": {
+      "ts_us": 100.0,
+      "label": "flc_ke0.1_kec1",
+      "steady": {
+        "fundamental_gain": 0.864771906260262,
+        "fundamental_phase_deg": -6.438830517403758,
+        "ripple_rms_v": 10.072291790175521,
+        "rms_s_alpha_a": 8.515955116611414,
+        "rms_s_beta_a": 8.489480348776599,
+        "mean_abs_s_a": 12.009787524805589,
+        "rms_abs_s_a": 12.024673307013549,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 10.375270175166577
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 18.037009960520322,
+        "max_abs_s_first_20ms_v": 8.048766216139136
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8638822361986171,
+          "phase_deg": -5.251852600349796,
+          "ripple_rms_v": 6.9594032214022254,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.46995,
+          "gain": 0.86461655926236,
+          "phase_deg": -6.3544282618664605,
+          "ripple_rms_v": 10.036942531562712,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.25999387596312246,
+        "kf_min": 0.18129704769010668,
+        "kf_max": 0.3114210074923144,
+        "af_mean": 0.3483180430500201,
+        "af_min": 0.2586819381094743,
+        "af_max": 0.3892627941454468
+      }
+    },
+    "Ts100_flc_ke0.1_kec10": {
+      "ts_us": 100.0,
+      "label": "flc_ke0.1_kec10",
+      "steady": {
+        "fundamental_gain": 0.8954182769219888,
+        "fundamental_phase_deg": -5.119629218353985,
+        "ripple_rms_v": 14.408907236608947,
+        "rms_s_alpha_a": 6.731358884622881,
+        "rms_s_beta_a": 6.727057603123092,
+        "mean_abs_s_a": 9.499042139351916,
+        "rms_abs_s_a": 9.51653804854095,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 7.7962292983334915
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 14.274807072811424,
+        "max_abs_s_first_20ms_v": 6.876251596912988
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8930526581565309,
+          "phase_deg": -4.253081970412278,
+          "ripple_rms_v": 12.054603773459291,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.22995,
+          "gain": 0.8921412008410827,
+          "phase_deg": -5.016126767680314,
+          "ripple_rms_v": 15.097523852186315,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.3247235703088866,
+        "kf_min": 0.15948566258151614,
+        "kf_max": 0.41944521170420623,
+        "af_mean": 0.3397286461426674,
+        "af_min": 0.20791200749948635,
+        "af_max": 0.42089559368670326
+      }
+    },
+    "Ts100_flc_ke1_kec0.1": {
+      "ts_us": 100.0,
+      "label": "flc_ke1_kec0.1",
+      "steady": {
+        "fundamental_gain": 0.9431311880940402,
+        "fundamental_phase_deg": -2.459172571002018,
+        "ripple_rms_v": 1.3581105256165613,
+        "rms_s_alpha_a": 3.556057003478118,
+        "rms_s_beta_a": 3.55594685401446,
+        "mean_abs_s_a": 5.02263696635906,
+        "rms_abs_s_a": 5.02894615606104,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 3.4497781432445533
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 7.5434192340915605,
+        "max_abs_s_first_20ms_v": 3.3730298258904767
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9398969375142936,
+          "phase_deg": -2.2259257463002964,
+          "ripple_rms_v": 0.901921030640846,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.46995,
+          "gain": 0.9430187644665387,
+          "phase_deg": -2.425980630235531,
+          "ripple_rms_v": 1.3148402770619005,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.348859480708009,
+        "kf_min": 0.2784155895537489,
+        "kf_max": 0.3635280819981407,
+        "af_mean": 0.5944082429118235,
+        "af_min": 0.41817786200041923,
+        "af_max": 0.6663496216167245
+      }
+    },
+    "Ts100_flc_ke1_kec1": {
+      "ts_us": 100.0,
+      "label": "flc_ke1_kec1",
+      "steady": {
+        "fundamental_gain": 0.9427613246070718,
+        "fundamental_phase_deg": -2.4235217440793955,
+        "ripple_rms_v": 1.2316171611665732,
+        "rms_s_alpha_a": 3.5417710366716157,
+        "rms_s_beta_a": 3.54186945127539,
+        "mean_abs_s_a": 5.002979374684035,
+        "rms_abs_s_a": 5.008890224998324,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 3.456344240711843
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 7.513335337497486,
+        "max_abs_s_first_20ms_v": 3.356862876654974
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9397755349170577,
+          "phase_deg": -2.1923211029928784,
+          "ripple_rms_v": 0.8322924907144672,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029949999999999997,
+          "gain": 0.9338954299059088,
+          "phase_deg": -1.8413966012052845,
+          "ripple_rms_v": 1.2287782413569275,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.35534996012280745,
+        "kf_min": 0.2788674234057501,
+        "kf_max": 0.3738008528431077,
+        "af_mean": 0.5909955317768817,
+        "af_min": 0.4184180397550526,
+        "af_max": 0.6624717776472228
+      }
+    },
+    "Ts100_flc_ke1_kec10": {
+      "ts_us": 100.0,
+      "label": "flc_ke1_kec10",
+      "steady": {
+        "fundamental_gain": 0.9596550041093483,
+        "fundamental_phase_deg": -1.3257739807902007,
+        "ripple_rms_v": 44.48904515454547,
+        "rms_s_alpha_a": 2.5655745765847975,
+        "rms_s_beta_a": 2.5658337386819525,
+        "mean_abs_s_a": 3.399186677920504,
+        "rms_abs_s_a": 3.6284536213898155,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 2.7122501955487066
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 5.442680432084723,
+        "max_abs_s_first_20ms_v": 3.3817899201172734
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9571008440926987,
+          "phase_deg": -1.3196182285267264,
+          "ripple_rms_v": 31.701886320841606,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.46995,
+          "gain": 0.9610935202914305,
+          "phase_deg": -1.2951737653598507,
+          "ripple_rms_v": 44.157925595830136,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.45028061058133206,
+        "kf_min": 0.22670692735065687,
+        "kf_max": 0.6397876709321849,
+        "af_mean": 0.5195477342824442,
+        "af_min": 0.23343359077110787,
+        "af_max": 0.7894587256445177
+      }
+    },
+    "Ts100_flc_ke10_kec0.1": {
+      "ts_us": 100.0,
+      "label": "flc_ke10_kec0.1",
+      "steady": {
+        "fundamental_gain": 0.9740932280145972,
+        "fundamental_phase_deg": -0.5375548584997992,
+        "ripple_rms_v": 73.32615277418115,
+        "rms_s_alpha_a": 2.247239397849829,
+        "rms_s_beta_a": 2.2280222937290945,
+        "mean_abs_s_a": 2.909386891742676,
+        "rms_abs_s_a": 3.1645170646723204,
+        "period2_flag": true,
+        "post_update_current_rmse_a_old": 3.104078316025628
+      },
+      "transient": {
+        "t_conv_s": 1.9957,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 4.74677559700848,
+        "max_abs_s_first_20ms_v": 3.716397224515891
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9767070994903199,
+          "phase_deg": -0.5799410798224724,
+          "ripple_rms_v": 80.43041005069519,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.26995,
+          "gain": 0.9750465998671116,
+          "phase_deg": -0.7646837726467556,
+          "ripple_rms_v": 86.82605051006337,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.6746689416709344,
+        "kf_min": 0.24827291071703525,
+        "kf_max": 0.7793876331925154,
+        "af_mean": 0.8373941595074852,
+        "af_min": 0.3946665605346437,
+        "af_max": 0.8889381935770673
+      }
+    },
+    "Ts100_flc_ke10_kec1": {
+      "ts_us": 100.0,
+      "label": "flc_ke10_kec1",
+      "steady": {
+        "fundamental_gain": 0.971201887416033,
+        "fundamental_phase_deg": -0.648311501623474,
+        "ripple_rms_v": 133.76680440513917,
+        "rms_s_alpha_a": 3.6020543637016056,
+        "rms_s_beta_a": 3.6017726225360676,
+        "mean_abs_s_a": 4.91237282609315,
+        "rms_abs_s_a": 5.09387491635907,
+        "period2_flag": true,
+        "post_update_current_rmse_a_old": 4.979632893695648
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 7.640812374538605,
+        "max_abs_s_first_20ms_v": 7.164622026374077
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9695885405254131,
+          "phase_deg": -0.7749905931332965,
+          "ripple_rms_v": 148.79062353221562,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.08995,
+          "gain": 0.9691533731377991,
+          "phase_deg": -1.011284862844032,
+          "ripple_rms_v": 161.52231368987373,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.8586124543265949,
+        "kf_min": 0.7795954390832645,
+        "kf_max": 0.8877012393768328,
+        "af_mean": 0.8711593652288263,
+        "af_min": 0.7805954639443959,
+        "af_max": 0.8877012393768328
+      }
+    },
+    "Ts100_flc_ke10_kec10": {
+      "ts_us": 100.0,
+      "label": "flc_ke10_kec10",
+      "steady": {
+        "fundamental_gain": 0.9702015083273934,
+        "fundamental_phase_deg": -0.7039707646919111,
+        "ripple_rms_v": 138.10168970553292,
+        "rms_s_alpha_a": 3.7249663708038976,
+        "rms_s_beta_a": 3.7247482322878924,
+        "mean_abs_s_a": 5.07474863942388,
+        "rms_abs_s_a": 5.267743716008946,
+        "period2_flag": true,
+        "post_update_current_rmse_a_old": 5.119706416198912
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 7.901615574013419,
+        "max_abs_s_first_20ms_v": 7.1457354686242684
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9690466421571138,
+          "phase_deg": -0.808541060025339,
+          "ripple_rms_v": 151.3838123680291,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.08995,
+          "gain": 0.965634100044107,
+          "phase_deg": -0.807924841079332,
+          "ripple_rms_v": 161.52705878099292,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 0.597004132231405,
+      "gains": {
+        "kf_mean": 0.872195385240359,
+        "kf_min": 0.7903583767087268,
+        "kf_max": 0.8892217782217783,
+        "af_mean": 0.8880300253416734,
+        "af_min": 0.8802785715312726,
+        "af_max": 0.8892217782217783
+      }
+    },
+    "Ts50_fixed_sign": {
+      "ts_us": 50.0,
+      "label": "fixed_sign",
+      "steady": {
+        "fundamental_gain": 0.9805011680288305,
+        "fundamental_phase_deg": -0.8632270392362095,
+        "ripple_rms_v": 248.1278018703359,
+        "rms_s_alpha_a": 3.7551181709919645,
+        "rms_s_beta_a": 3.755118170991828,
+        "mean_abs_s_a": 4.9757506036868655,
+        "rms_abs_s_a": 5.3105390457303905,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 5.10123594351834
+      },
+      "transient": {
+        "t_conv_s": 1.9999,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 7.965808568595586,
+        "max_abs_s_first_20ms_v": 9.364123057160482
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9807103519165972,
+          "phase_deg": -0.841877454722807,
+          "ripple_rms_v": 250.59780683079669,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9766991454729838,
+          "phase_deg": -0.42944416574074185,
+          "ripple_rms_v": 252.41626621770376,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_sigmoid": {
+      "ts_us": 50.0,
+      "label": "fixed_sigmoid",
+      "steady": {
+        "fundamental_gain": 0.9843723815103897,
+        "fundamental_phase_deg": -0.38023942569690017,
+        "ripple_rms_v": 0.017622778712915385,
+        "rms_s_alpha_a": 0.8182231700704549,
+        "rms_s_beta_a": 0.8182231700704521,
+        "mean_abs_s_a": 1.1571231808527869,
+        "rms_abs_s_a": 1.1571423041615427,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 0.9223582962271553
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 1.7357134562423142,
+        "max_abs_s_first_20ms_v": 0.9365441414647374
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9857018607670678,
+          "phase_deg": -0.33864754542179804,
+          "ripple_rms_v": 0.04715896231758994,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9865943147524059,
+          "phase_deg": -0.2691259545217474,
+          "ripple_rms_v": 1.009499554442406,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.35_af0.1": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.35_af0.1",
+      "steady": {
+        "fundamental_gain": 0.7146863967611297,
+        "fundamental_phase_deg": -16.65902677287455,
+        "ripple_rms_v": 1.0888354567449536,
+        "rms_s_alpha_a": 18.60302292442254,
+        "rms_s_beta_a": 18.60302292442241,
+        "mean_abs_s_a": 26.305598388502393,
+        "rms_abs_s_a": 26.30864732085586,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 25.51022070766735
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 39.46297098128379,
+        "max_abs_s_first_20ms_v": 12.989061821109171
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.7372618907251142,
+          "phase_deg": -12.281652557134715,
+          "ripple_rms_v": 0.5212888749426273,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.7467793267160893,
+          "phase_deg": -8.125316073531804,
+          "ripple_rms_v": 1.5476999305652772,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.034999999999999996,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.35_af0.2": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.35_af0.2",
+      "steady": {
+        "fundamental_gain": 0.8326661129112547,
+        "fundamental_phase_deg": -9.998435991185078,
+        "ripple_rms_v": 1.3707123297755048,
+        "rms_s_alpha_a": 11.455846664092533,
+        "rms_s_beta_a": 11.455846664092462,
+        "mean_abs_s_a": 16.19280552439025,
+        "rms_abs_s_a": 16.20101372082619,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 15.282993276125321
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 24.301520581239284,
+        "max_abs_s_first_20ms_v": 7.498948622425302
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8487617579110516,
+          "phase_deg": -7.1621562202548175,
+          "ripple_rms_v": 0.5712754729044902,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.8550538742734364,
+          "phase_deg": -4.642058070353675,
+          "ripple_rms_v": 1.3762683724477824,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.06999999999999999,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.35_af0.4": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.35_af0.4",
+      "steady": {
+        "fundamental_gain": 0.9061689769475104,
+        "fundamental_phase_deg": -5.5259082169259095,
+        "ripple_rms_v": 1.2271224419999611,
+        "rms_s_alpha_a": 6.548053301013824,
+        "rms_s_beta_a": 6.548053301013787,
+        "mean_abs_s_a": 9.247778321057332,
+        "rms_abs_s_a": 9.260345785435637,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 8.286121061411787
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 13.890518678153455,
+        "max_abs_s_first_20ms_v": 4.065071076617882
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9168849188236464,
+          "phase_deg": -3.8614393309683392,
+          "ripple_rms_v": 0.46332069878143534,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.469975,
+          "gain": 0.9068269903308565,
+          "phase_deg": -5.454217515485866,
+          "ripple_rms_v": 1.165759750688759,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.13999999999999999,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.35_af0.6": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.35_af0.6",
+      "steady": {
+        "fundamental_gain": 0.9336684145127664,
+        "fundamental_phase_deg": -3.7715100537626722,
+        "ripple_rms_v": 1.0268275464508778,
+        "rms_s_alpha_a": 4.603742043229245,
+        "rms_s_beta_a": 4.60374204322922,
+        "mean_abs_s_a": 6.497516761042463,
+        "rms_abs_s_a": 6.510674435202003,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 5.5330003588010905
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 9.766011652803005,
+        "max_abs_s_first_20ms_v": 2.788498512278595
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9419179801828769,
+          "phase_deg": -2.606857632196076,
+          "ripple_rms_v": 0.372804547965544,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9452901228169154,
+          "phase_deg": -1.6607535324424758,
+          "ripple_rms_v": 0.9941199615015455,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.21,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.35_af1": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.35_af1",
+      "steady": {
+        "fundamental_gain": 0.9570362583194136,
+        "fundamental_phase_deg": -2.237272488524294,
+        "ripple_rms_v": 0.7530907939640765,
+        "rms_s_alpha_a": 2.89648627599187,
+        "rms_s_beta_a": 2.8964862759918564,
+        "mean_abs_s_a": 4.084464715177407,
+        "rms_abs_s_a": 4.096250174735233,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 3.154767769320146
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 6.14437526210285,
+        "max_abs_s_first_20ms_v": 1.7128089367472947
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.962903343805803,
+          "phase_deg": -1.5343906632678712,
+          "ripple_rms_v": 0.2665519802456172,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9655287913664979,
+          "phase_deg": -0.9808866230547593,
+          "ripple_rms_v": 0.8567047310576172,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.35,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.5_af0.1": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.5_af0.1",
+      "steady": {
+        "fundamental_gain": 0.7957787121350437,
+        "fundamental_phase_deg": -12.194116432062861,
+        "ripple_rms_v": 0.5718937746842886,
+        "rms_s_alpha_a": 13.800192570804612,
+        "rms_s_beta_a": 13.800192570804526,
+        "mean_abs_s_a": 19.515254403666614,
+        "rms_abs_s_a": 19.51641949699225,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 18.63153108430081
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 29.274629245488374,
+        "max_abs_s_first_20ms_v": 9.695366384351512
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8080615358378531,
+          "phase_deg": -9.06149315936793,
+          "ripple_rms_v": 0.290541433156789,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.8112734659231151,
+          "phase_deg": -6.065235400300327,
+          "ripple_rms_v": 1.4744282585618596,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.05,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.5_af0.2": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.5_af0.2",
+      "steady": {
+        "fundamental_gain": 0.8875950617878189,
+        "fundamental_phase_deg": -6.734954322155932,
+        "ripple_rms_v": 0.5230257113452659,
+        "rms_s_alpha_a": 7.843789720665961,
+        "rms_s_beta_a": 7.843789720665919,
+        "mean_abs_s_a": 11.091008389487454,
+        "rms_abs_s_a": 11.092793803368444,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 10.12374614184
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 16.639190705052666,
+        "max_abs_s_first_20ms_v": 5.358748616514165
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8943535414859227,
+          "phase_deg": -4.962319704913981,
+          "ripple_rms_v": 0.24813240610233112,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.8957279750899222,
+          "phase_deg": -3.3108001439157424,
+          "ripple_rms_v": 1.246275961618965,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.1,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.5_af0.4": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.5_af0.4",
+      "steady": {
+        "fundamental_gain": 0.9393020212537392,
+        "fundamental_phase_deg": -3.4346734498729323,
+        "ripple_rms_v": 0.3572508989601078,
+        "rms_s_alpha_a": 4.202415262779997,
+        "rms_s_beta_a": 4.2024152627799785,
+        "mean_abs_s_a": 5.9414938709373954,
+        "rms_abs_s_a": 5.943112659347153,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 4.9602276932280756
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 8.91466898902073,
+        "max_abs_s_first_20ms_v": 2.826947666169582
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9431823553066121,
+          "phase_deg": -2.533896940566606,
+          "ripple_rms_v": 0.17085464344994963,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9441635087296344,
+          "phase_deg": -1.7003296684586637,
+          "ripple_rms_v": 1.0040393885091863,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.2,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.5_af0.6": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.5_af0.6",
+      "steady": {
+        "fundamental_gain": 0.9574059541099331,
+        "fundamental_phase_deg": -2.2301901048631225,
+        "ripple_rms_v": 0.2638498639530792,
+        "rms_s_alpha_a": 2.8690264292358636,
+        "rms_s_beta_a": 2.8690264292358516,
+        "mean_abs_s_a": 4.056102970770028,
+        "rms_abs_s_a": 4.057416087032203,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 3.1076531073791713
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 6.0861241305483045,
+        "max_abs_s_first_20ms_v": 1.9196873051084642
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9603667527338903,
+          "phase_deg": -1.6570198357824193,
+          "ripple_rms_v": 0.13096191380700625,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9613596628071236,
+          "phase_deg": -1.1226196427745623,
+          "ripple_rms_v": 0.8880487473810638,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.3,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.5_af1": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.5_af1",
+      "steady": {
+        "fundamental_gain": 0.9721902025026712,
+        "fundamental_phase_deg": -1.2246870707684445,
+        "ripple_rms_v": 0.1715417572821085,
+        "rms_s_alpha_a": 1.7549163260913239,
+        "rms_s_beta_a": 1.754916326091317,
+        "mean_abs_s_a": 2.480908697274857,
+        "rms_abs_s_a": 2.4818264691883103,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.6560824225220916
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 3.7227397037824654,
+        "max_abs_s_first_20ms_v": 1.1691665410572154
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.974449085413806,
+          "phase_deg": -0.9288875863397575,
+          "ripple_rms_v": 0.09332626266015158,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9755201265227423,
+          "phase_deg": -0.644426795900776,
+          "ripple_rms_v": 0.7948652870447466,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.5,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.75_af0.1": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.75_af0.1",
+      "steady": {
+        "fundamental_gain": 0.8610755250699452,
+        "fundamental_phase_deg": -8.368118733650304,
+        "ripple_rms_v": 0.2311513853622415,
+        "rms_s_alpha_a": 9.629449579391839,
+        "rms_s_beta_a": 9.629449579391787,
+        "mean_abs_s_a": 13.617822734164843,
+        "rms_abs_s_a": 13.618098193363798,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 12.66968154438686
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 20.427147290045696,
+        "max_abs_s_first_20ms_v": 6.81866237560758
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8670570224172606,
+          "phase_deg": -6.2769565054490135,
+          "ripple_rms_v": 0.14551864919326535,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.8671400963083952,
+          "phase_deg": -4.2518664290167365,
+          "ripple_rms_v": 1.346978016049234,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.07500000000000001,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.75_af0.2": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.75_af0.2",
+      "steady": {
+        "fundamental_gain": 0.9254385023194264,
+        "fundamental_phase_deg": -4.343900736350735,
+        "ripple_rms_v": 0.16630988255830403,
+        "rms_s_alpha_a": 5.203272333374954,
+        "rms_s_beta_a": 5.203272333374931,
+        "mean_abs_s_a": 7.358269419494945,
+        "rms_abs_s_a": 7.358538302579545,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 6.370843507218807
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 11.037807453869316,
+        "max_abs_s_first_20ms_v": 3.6453111943320398
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9284647725389494,
+          "phase_deg": -3.269796500261072,
+          "ripple_rms_v": 0.10788722061530534,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9283399956902737,
+          "phase_deg": -2.230153522924006,
+          "ripple_rms_v": 1.0978630656967097,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.15000000000000002,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.75_af0.4": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.75_af0.4",
+      "steady": {
+        "fundamental_gain": 0.9595854224969849,
+        "fundamental_phase_deg": -2.085152466568518,
+        "ripple_rms_v": 0.09887646466492564,
+        "rms_s_alpha_a": 2.7061286352419027,
+        "rms_s_beta_a": 2.706128635241892,
+        "mean_abs_s_a": 3.8268589521223064,
+        "rms_abs_s_a": 3.827043817485285,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 2.8849457140289028
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 5.740565726227928,
+        "max_abs_s_first_20ms_v": 1.8871896345195802
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9615123547393232,
+          "phase_deg": -1.594331893174026,
+          "ripple_rms_v": 0.07303215686457003,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9618367661108326,
+          "phase_deg": -1.1071570044214991,
+          "ripple_rms_v": 0.8857743080366671,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.30000000000000004,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.75_af0.6": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.75_af0.6",
+      "steady": {
+        "fundamental_gain": 0.9712251216861747,
+        "fundamental_phase_deg": -1.2919262019483875,
+        "ripple_rms_v": 0.06965868243416082,
+        "rms_s_alpha_a": 1.8279882810115555,
+        "rms_s_beta_a": 1.8279882810115489,
+        "mean_abs_s_a": 2.585029507794239,
+        "rms_abs_s_a": 2.5851658188656175,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.7424705271887087
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 3.8777487282984264,
+        "max_abs_s_first_20ms_v": 1.273061385646933
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.972878983754224,
+          "phase_deg": -1.0076910653737772,
+          "ripple_rms_v": 0.058646196164318105,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9734676090543527,
+          "phase_deg": -0.7143093182457261,
+          "ripple_rms_v": 0.805783807098628,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.44999999999999996,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf0.75_af1": {
+      "ts_us": 50.0,
+      "label": "fixed_kf0.75_af1",
+      "steady": {
+        "fundamental_gain": 0.9806205100800254,
+        "fundamental_phase_deg": -0.6421595027430541,
+        "ripple_rms_v": 0.04363174603055075,
+        "rms_s_alpha_a": 1.1084045885502498,
+        "rms_s_beta_a": 1.108404588550246,
+        "mean_abs_s_a": 1.5674323805387254,
+        "rms_abs_s_a": 1.5675208017243307,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.0259522551438283
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 2.351281202586496,
+        "max_abs_s_first_20ms_v": 0.9365441414647374
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9820979908184847,
+          "phase_deg": -0.5277452590879124,
+          "ripple_rms_v": 0.048816036827224046,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9829462340854479,
+          "phase_deg": -0.39300196651630814,
+          "ripple_rms_v": 0.8075274502712175,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.75,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf1_af0.1": {
+      "ts_us": 50.0,
+      "label": "fixed_kf1_af0.1",
+      "steady": {
+        "fundamental_gain": 0.894122371517047,
+        "fundamental_phase_deg": -6.337363211838479,
+        "ripple_rms_v": 0.11297078611127472,
+        "rms_s_alpha_a": 7.399666208332837,
+        "rms_s_beta_a": 7.399666208332801,
+        "mean_abs_s_a": 10.464622756506312,
+        "rms_abs_s_a": 10.46470830885817,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 9.490114153311367
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 15.697062463287253,
+        "max_abs_s_first_20ms_v": 5.262400109885483
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8978455084147425,
+          "phase_deg": -4.783005350163226,
+          "ripple_rms_v": 0.09423450820175906,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.8971942228950229,
+          "phase_deg": -3.2641063862508117,
+          "ripple_rms_v": 1.2433276909058655,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.1,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf1_af0.2": {
+      "ts_us": 50.0,
+      "label": "fixed_kf1_af0.2",
+      "steady": {
+        "fundamental_gain": 0.9432858728492532,
+        "fundamental_phase_deg": -3.1759077790452133,
+        "ripple_rms_v": 0.07296816333360955,
+        "rms_s_alpha_a": 3.912335026326185,
+        "rms_s_beta_a": 3.912335026326169,
+        "mean_abs_s_a": 5.532809147295265,
+        "rms_abs_s_a": 5.53287725477778,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 4.552130051746439
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 8.29931588216667,
+        "max_abs_s_first_20ms_v": 2.767130062735496
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9453040636811201,
+          "phase_deg": -2.4198713837029384,
+          "ripple_rms_v": 0.06829483405501309,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9450583175729108,
+          "phase_deg": -1.6714698441915818,
+          "ripple_rms_v": 1.0006422225680027,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.2,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf1_af0.4": {
+      "ts_us": 50.0,
+      "label": "fixed_kf1_af0.4",
+      "steady": {
+        "fundamental_gain": 0.9688062464768051,
+        "fundamental_phase_deg": -1.4579631825302526,
+        "ripple_rms_v": 0.04114317506532475,
+        "rms_s_alpha_a": 2.0116259821234417,
+        "rms_s_beta_a": 2.0116259821234337,
+        "mean_abs_s_a": 2.844826444349576,
+        "rms_abs_s_a": 2.844868746341063,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.9699115116104975
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 4.2673031195115945,
+        "max_abs_s_first_20ms_v": 1.4199032076488016
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.97030111509209,
+          "phase_deg": -1.1402450482826239,
+          "ripple_rms_v": 0.04879976996714953,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9706624584160228,
+          "phase_deg": -0.8093564594456111,
+          "ripple_rms_v": 0.8236101430794619,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.4,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf1_af0.6": {
+      "ts_us": 50.0,
+      "label": "fixed_kf1_af0.6",
+      "steady": {
+        "fundamental_gain": 0.9774326170469778,
+        "fundamental_phase_deg": -0.8636791443544003,
+        "ripple_rms_v": 0.02850245501223913,
+        "rms_s_alpha_a": 1.3536135413706476,
+        "rms_s_beta_a": 1.3536135413706425,
+        "mean_abs_s_a": 1.9142684184691166,
+        "rms_abs_s_a": 1.9142986284182408,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.2208860753514446
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 2.8714479426273614,
+        "max_abs_s_first_20ms_v": 0.9549251538303729
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9788201051776962,
+          "phase_deg": -0.6981313887465217,
+          "ripple_rms_v": 0.04236405308399096,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9794596276823114,
+          "phase_deg": -0.5114227675841757,
+          "ripple_rms_v": 0.7848165143334255,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.6,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_kf1_af1": {
+      "ts_us": 50.0,
+      "label": "fixed_kf1_af1",
+      "steady": {
+        "fundamental_gain": 0.9843723815103897,
+        "fundamental_phase_deg": -0.38023942569690017,
+        "ripple_rms_v": 0.017622778712915385,
+        "rms_s_alpha_a": 0.8182231700704549,
+        "rms_s_beta_a": 0.8182231700704521,
+        "mean_abs_s_a": 1.1571231808527869,
+        "rms_abs_s_a": 1.1571423041615427,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 0.9223582962271553
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 1.7357134562423142,
+        "max_abs_s_first_20ms_v": 0.9365441414647374
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9857018607670678,
+          "phase_deg": -0.33864754542179804,
+          "ripple_rms_v": 0.04715896231758994,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9865943147524059,
+          "phase_deg": -0.2691259545217474,
+          "ripple_rms_v": 1.009499554442406,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 1.0,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_fixed_flc_mean": {
+      "ts_us": 50.0,
+      "label": "fixed_flc_mean",
+      "steady": {
+        "fundamental_gain": 0.9342078274568519,
+        "fundamental_phase_deg": -3.7399323125550312,
+        "ripple_rms_v": 0.9746401189279273,
+        "rms_s_alpha_a": 4.565678568766379,
+        "rms_s_beta_a": 4.565678568766356,
+        "mean_abs_s_a": 6.444923683498269,
+        "rms_abs_s_a": 6.4568445533855785,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 5.478550072880929
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 9.685266830078367,
+        "max_abs_s_first_20ms_v": 2.7857784080471246
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9421099723257693,
+          "phase_deg": -2.596714506423644,
+          "ripple_rms_v": 0.35844066313150175,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9453185827511784,
+          "phase_deg": -1.6599101335295114,
+          "ripple_rms_v": 0.9940850120106788,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": 0.209805,
+      "in_stability_bound": true,
+      "bound": 1.2044421487603307
+    },
+    "Ts50_flc_ke0.1_kec0.1": {
+      "ts_us": 50.0,
+      "label": "flc_ke0.1_kec0.1",
+      "steady": {
+        "fundamental_gain": 0.8502505943880698,
+        "fundamental_phase_deg": -8.714969656292936,
+        "ripple_rms_v": 1.752579155736584,
+        "rms_s_alpha_a": 10.17514928182098,
+        "rms_s_beta_a": 10.175149281820923,
+        "mean_abs_s_a": 14.38611430335428,
+        "rms_abs_s_a": 14.389834113522047,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 13.468695821923484
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 21.58475117028307,
+        "max_abs_s_first_20ms_v": 8.256721329813631
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8544591013638244,
+          "phase_deg": -6.630223840886336,
+          "ripple_rms_v": 1.3507941970120763,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.469975,
+          "gain": 0.8508566381092366,
+          "phase_deg": -8.607728757451195,
+          "ripple_rms_v": 1.7234253467304987,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.2324156630434924,
+        "kf_min": 0.19265772372404538,
+        "kf_max": 0.24530848991235754,
+        "af_mean": 0.3644383710858185,
+        "af_min": 0.28079824500618766,
+        "af_max": 0.3920171761867047
+      }
+    },
+    "Ts50_flc_ke0.1_kec1": {
+      "ts_us": 50.0,
+      "label": "flc_ke0.1_kec1",
+      "steady": {
+        "fundamental_gain": 0.8650292080470595,
+        "fundamental_phase_deg": -6.8952940026591145,
+        "ripple_rms_v": 8.94277543780522,
+        "rms_s_alpha_a": 8.698121824202373,
+        "rms_s_beta_a": 8.69812182420234,
+        "mean_abs_s_a": 12.288324762172548,
+        "rms_abs_s_a": 12.301001850960379,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 11.436124578920492
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 18.45150277644057,
+        "max_abs_s_first_20ms_v": 8.014272630918173
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8633936060626257,
+          "phase_deg": -5.576563826378695,
+          "ripple_rms_v": 5.508873236558275,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.469975,
+          "gain": 0.865205582873073,
+          "phase_deg": -6.815827054451715,
+          "ripple_rms_v": 8.695363828799826,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.2583926617646118,
+        "kf_min": 0.18693373831242857,
+        "kf_max": 0.3046784539018582,
+        "af_mean": 0.35039832725941505,
+        "af_min": 0.26675114543012146,
+        "af_max": 0.3891848321342528
+      }
+    },
+    "Ts50_flc_ke0.1_kec10": {
+      "ts_us": 50.0,
+      "label": "flc_ke0.1_kec10",
+      "steady": {
+        "fundamental_gain": 0.8969705901280978,
+        "fundamental_phase_deg": -5.5955815529423365,
+        "ripple_rms_v": 14.001852086008924,
+        "rms_s_alpha_a": 6.87174557240894,
+        "rms_s_beta_a": 6.915292124037858,
+        "mean_abs_s_a": 9.738137706565988,
+        "rms_abs_s_a": 9.748956476090243,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 8.826189863576005
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 14.623434714135364,
+        "max_abs_s_first_20ms_v": 6.857192263742058
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.8947291656117673,
+          "phase_deg": -4.443720830131443,
+          "ripple_rms_v": 11.483672361888672,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.2899750000000003,
+          "gain": 0.8952055985043461,
+          "phase_deg": -5.330687232765099,
+          "ripple_rms_v": 14.085131627081799,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.3238733924082477,
+        "kf_min": 0.15204295055236688,
+        "kf_max": 0.41802746922394896,
+        "af_mean": 0.3390830581120191,
+        "af_min": 0.2150771296287894,
+        "af_max": 0.4194068973723022
+      }
+    },
+    "Ts50_flc_ke1_kec0.1": {
+      "ts_us": 50.0,
+      "label": "flc_ke1_kec0.1",
+      "steady": {
+        "fundamental_gain": 0.9476558103197303,
+        "fundamental_phase_deg": -2.8109991470368962,
+        "ripple_rms_v": 1.3411522970389813,
+        "rms_s_alpha_a": 3.565686903480967,
+        "rms_s_beta_a": 3.565686903480957,
+        "mean_abs_s_a": 5.036344220312668,
+        "rms_abs_s_a": 5.042642778078902,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 4.089788346901304
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 7.563964167118352,
+        "max_abs_s_first_20ms_v": 3.378121043914114
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9433169530607202,
+          "phase_deg": -2.4320962349547464,
+          "ripple_rms_v": 0.8911387184719217,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.469975,
+          "gain": 0.9475097628191055,
+          "phase_deg": -2.7717957576779386,
+          "ripple_rms_v": 1.2988599867698618,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.3495622762686707,
+        "kf_min": 0.2772001723088635,
+        "kf_max": 0.3642178888029529,
+        "af_mean": 0.5948703384491474,
+        "af_min": 0.41476949097114035,
+        "af_max": 0.6663619942425105
+      }
+    },
+    "Ts50_flc_ke1_kec1": {
+      "ts_us": 50.0,
+      "label": "flc_ke1_kec1",
+      "steady": {
+        "fundamental_gain": 0.9472855052662401,
+        "fundamental_phase_deg": -2.77583129776077,
+        "ripple_rms_v": 1.2166905819612643,
+        "rms_s_alpha_a": 3.552064292117456,
+        "rms_s_beta_a": 3.5520642921174455,
+        "mean_abs_s_a": 5.017466809656559,
+        "rms_abs_s_a": 5.023377496333686,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 4.081031617716857
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 7.535066244500529,
+        "max_abs_s_first_20ms_v": 3.3620092344215773
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9431948963411598,
+          "phase_deg": -2.3989107345110736,
+          "ripple_rms_v": 0.8219262474233432,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.469975,
+          "gain": 0.9471436970029832,
+          "phase_deg": -2.73891351610542,
+          "ripple_rms_v": 1.1790000090505228,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.3559528712544528,
+        "kf_min": 0.27774990630852925,
+        "kf_max": 0.37423365553566235,
+        "af_mean": 0.5913986991324364,
+        "af_min": 0.4150430275305862,
+        "af_max": 0.6617101176163486
+      }
+    },
+    "Ts50_flc_ke1_kec10": {
+      "ts_us": 50.0,
+      "label": "flc_ke1_kec10",
+      "steady": {
+        "fundamental_gain": 0.9591237011315984,
+        "fundamental_phase_deg": -1.9861400874005535,
+        "ripple_rms_v": 36.91046883270743,
+        "rms_s_alpha_a": 2.7238196620312447,
+        "rms_s_beta_a": 2.7238196620312594,
+        "mean_abs_s_a": 3.821488948837649,
+        "rms_abs_s_a": 3.8520627075030967,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 2.976138021773995
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 5.778094061254645,
+        "max_abs_s_first_20ms_v": 3.2120703737566294
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9547697159754197,
+          "phase_deg": -1.795012406457765,
+          "ripple_rms_v": 25.32553463258817,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.469975,
+          "gain": 0.9591312289364372,
+          "phase_deg": -1.940610959843545,
+          "ripple_rms_v": 36.518904146967486,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.44522423456537086,
+        "kf_min": 0.2416593960358665,
+        "kf_max": 0.553187898719176,
+        "af_mean": 0.5124844431937714,
+        "af_min": 0.2689539109096584,
+        "af_max": 0.6954333162064972
+      }
+    },
+    "Ts50_flc_ke10_kec0.1": {
+      "ts_us": 50.0,
+      "label": "flc_ke10_kec0.1",
+      "steady": {
+        "fundamental_gain": 0.9787779089101323,
+        "fundamental_phase_deg": -0.7600144758749308,
+        "ripple_rms_v": 5.109236879559093,
+        "rms_s_alpha_a": 1.261887050374098,
+        "rms_s_beta_a": 1.2618870503741342,
+        "mean_abs_s_a": 1.7691877402541627,
+        "rms_abs_s_a": 1.784577780822056,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.1706635705361106
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 2.6768666712330837,
+        "max_abs_s_first_20ms_v": 1.2410803666840873
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9797782246474109,
+          "phase_deg": -0.6390820763899808,
+          "ripple_rms_v": 7.104026883770265,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9791126214491832,
+          "phase_deg": -0.5485992830224969,
+          "ripple_rms_v": 11.809977382987427,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.697342621613105,
+        "kf_min": 0.4007653158239505,
+        "kf_max": 0.8892200254139255,
+        "af_mean": 0.8340349576333745,
+        "af_min": 0.5236800078484629,
+        "af_max": 0.8892206560615417
+      }
+    },
+    "Ts50_flc_ke10_kec1": {
+      "ts_us": 50.0,
+      "label": "flc_ke10_kec1",
+      "steady": {
+        "fundamental_gain": 0.9774778124084845,
+        "fundamental_phase_deg": -0.8208202291015371,
+        "ripple_rms_v": 11.691525704103814,
+        "rms_s_alpha_a": 1.34077205709902,
+        "rms_s_beta_a": 1.3407720570990436,
+        "mean_abs_s_a": 1.883938840325061,
+        "rms_abs_s_a": 1.8961380272003245,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.2534026011863797
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 2.844207040800487,
+        "max_abs_s_first_20ms_v": 1.328451640765243
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9789765118822966,
+          "phase_deg": -0.6708884572834432,
+          "ripple_rms_v": 10.491649512639624,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 0.029974999999999998,
+          "gain": 0.9787404434745951,
+          "phase_deg": -0.5595144775027329,
+          "ripple_rms_v": 12.864501919574934,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.6750647241241343,
+        "kf_min": 0.41217879014419334,
+        "kf_max": 0.8516694259367885,
+        "af_mean": 0.8059241447794521,
+        "af_min": 0.5200807904949856,
+        "af_max": 0.8892087163219576
+      }
+    },
+    "Ts50_flc_ke10_kec10": {
+      "ts_us": 50.0,
+      "label": "flc_ke10_kec10",
+      "steady": {
+        "fundamental_gain": 0.9741719594823598,
+        "fundamental_phase_deg": -1.0975566153897585,
+        "ripple_rms_v": 51.10202543287961,
+        "rms_s_alpha_a": 1.7276761092633366,
+        "rms_s_beta_a": 1.7276761092633295,
+        "mean_abs_s_a": 2.357802647064603,
+        "rms_abs_s_a": 2.443302985108187,
+        "period2_flag": false,
+        "post_update_current_rmse_a_old": 1.7287535814998125
+      },
+      "transient": {
+        "t_conv_s": 0.0,
+        "t_conv_rule": "first time after which |S| stays below 1.5x its steady-window RMS",
+        "threshold_v": 3.6649544776622807,
+        "max_abs_s_first_20ms_v": 1.474567306865786
+      },
+      "ramp": {
+        "n_windows": 25,
+        "mean": {
+          "gain": 0.9770219698177754,
+          "phase_deg": -0.815097543529012,
+          "ripple_rms_v": 37.24292411409919,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        },
+        "worst": {
+          "t_center_s": 1.469975,
+          "gain": 0.9742702717665351,
+          "phase_deg": -1.0817945066897516,
+          "ripple_rms_v": 50.58608891511992,
+          "omega_prime_error_hz_mean": 0.0,
+          "omega_prime_error_hz_std": 0.0
+        }
+      },
+      "kf_af_product": null,
+      "in_stability_bound": null,
+      "bound": 1.2044421487603307,
+      "gains": {
+        "kf_mean": 0.5160173532708247,
+        "kf_min": 0.15180507743037921,
+        "kf_max": 0.7522441650053622,
+        "af_mean": 0.6096618721399103,
+        "af_min": 0.2633284270253885,
+        "af_max": 0.8363422440583521
+      }
+    }
+  },
+  "flc_diagnostics": {
+    "achievable_kf_range": [
+      0.1107782217782218,
+      0.8892217782217783
+    ],
+    "achievable_af_range": [
+      0.1107782217782218,
+      0.8892217782217783
+    ],
+    "observed_kf_range": [
+      0.2788674234057501,
+      0.3738008528431077
+    ],
+    "observed_af_range": [
+      0.4184180397550526,
+      0.6624717776472228
+    ],
+    "visited_sn_range": [
+      -0.6211202500482286,
+      0.6195651372514163
+    ],
+    "visited_sdotn_range": [
+      -0.0644563586311397,
+      0.06366041703968854
+    ],
+    "saturation_fraction": 0.0,
+    "min_achievable_k_v": 19.899008651097724,
+    "e_max_v": 55.5,
+    "min_k_vs_e_max": "below"
+  },
+  "dominators_of_flc_nominal": [
+    "Ts100_fixed_kf0.35_af1",
+    "Ts100_fixed_kf0.5_af0.6",
+    "Ts100_fixed_kf0.5_af1",
+    "Ts100_fixed_kf0.75_af0.4",
+    "Ts100_fixed_kf0.75_af0.6",
+    "Ts100_fixed_kf1_af0.4",
+    "Ts100_fixed_kf1_af0.6",
+    "Ts50_fixed_kf0.35_af1",
+    "Ts50_fixed_kf0.5_af0.6",
+    "Ts50_fixed_kf0.5_af1",
+    "Ts50_fixed_kf0.75_af0.4",
+    "Ts50_fixed_kf0.75_af0.6",
+    "Ts50_fixed_kf0.75_af1",
+    "Ts50_fixed_kf1_af0.4",
+    "Ts50_fixed_kf1_af0.6",
+    "Ts50_fixed_kf1_af1"
+  ],
+  "pareto_beyond_front_ripple": {
+    "Ts100_fixed_flc_mean": false,
+    "Ts100_flc_ke0.1_kec0.1": false,
+    "Ts100_flc_ke0.1_kec1": false,
+    "Ts100_flc_ke0.1_kec10": false,
+    "Ts100_flc_ke1_kec0.1": false,
+    "Ts100_flc_ke1_kec1": false,
+    "Ts100_flc_ke1_kec10": false,
+    "Ts100_flc_ke10_kec0.1": false,
+    "Ts100_flc_ke10_kec1": false,
+    "Ts100_flc_ke10_kec10": false,
+    "Ts50_fixed_flc_mean": false,
+    "Ts50_flc_ke0.1_kec0.1": false,
+    "Ts50_flc_ke0.1_kec1": false,
+    "Ts50_flc_ke0.1_kec10": false,
+    "Ts50_flc_ke1_kec0.1": false,
+    "Ts50_flc_ke1_kec1": false,
+    "Ts50_flc_ke1_kec10": false,
+    "Ts50_flc_ke10_kec0.1": false,
+    "Ts50_flc_ke10_kec1": false,
+    "Ts50_flc_ke10_kec10": false
+  },
+  "pareto_beyond_front_gain_error": {
+    "Ts100_fixed_flc_mean": false,
+    "Ts100_flc_ke0.1_kec0.1": false,
+    "Ts100_flc_ke0.1_kec1": false,
+    "Ts100_flc_ke0.1_kec10": false,
+    "Ts100_flc_ke1_kec0.1": false,
+    "Ts100_flc_ke1_kec1": false,
+    "Ts100_flc_ke1_kec10": false,
+    "Ts100_flc_ke10_kec0.1": false,
+    "Ts100_flc_ke10_kec1": false,
+    "Ts100_flc_ke10_kec10": false,
+    "Ts50_fixed_flc_mean": false,
+    "Ts50_flc_ke0.1_kec0.1": false,
+    "Ts50_flc_ke0.1_kec1": false,
+    "Ts50_flc_ke0.1_kec10": false,
+    "Ts50_flc_ke1_kec0.1": false,
+    "Ts50_flc_ke1_kec1": false,
+    "Ts50_flc_ke1_kec10": false,
+    "Ts50_flc_ke10_kec0.1": false,
+    "Ts50_flc_ke10_kec1": false,
+    "Ts50_flc_ke10_kec10": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "note": "Phase 02 observer validation on identical signals; currents and the back-EMF switching signal only. No rotor position/speed estimation. Timing is a software benchmark, not hardware real-time evidence.",
+  "parameters": {
+    "stator_resistance_ohm": 0.505,
+    "ld_h": 0.00147,
+    "switching_gain_k_v": 179.62924780409975,
+    "sigmoid_slope_a_per_a": 0.5388877434122991,
+    "per_unit_voltage_base_v": 179.62924780409975,
+    "per_unit_current_base_a": 7.422696190252056
+  },
+  "scenario": {
+    "description": "short-circuit (u=0), no-load speed ramp from paper profile",
+    "from_rpm": 500.0,
+    "to_rpm": 1000.0,
+    "ramp_time_s": 1.5,
+    "duration_s": 2.0,
+    "timestep_s": 0.0001,
+    "steps": 20000
+  },
+  "conventional_sign": {
+    "rmse_current_a": 10.204701260425367,
+    "max_abs_current_error_a": 18.946382838292873,
+    "mean_sliding_surface_a": 9.816272934153218,
+    "mean_back_emf_amplitude_v": 254.03411844343543,
+    "runtime_per_update_us": 4.312270850641653
+  },
+  "sigmoid": {
+    "rmse_current_a": 7.122994470598336,
+    "max_abs_current_error_a": 9.268905173216924,
+    "mean_sliding_surface_a": 7.1775661880163595,
+    "mean_back_emf_amplitude_v": 200.48387905290187,
+    "runtime_per_update_us": 4.467964600189589
+  },
+  "sigmoid_rmse_reduction_percent": 30.198892757185668
+}

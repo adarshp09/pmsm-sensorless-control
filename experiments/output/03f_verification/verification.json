@@ -1,0 +1,724 @@
+{
+  "note": "Phase 03f; library default (epsilon_filter_tau=OFF, no clamps, no normalization) unless stated. Filter metrics only; no position/speed.",
+  "config_diff": {
+    "script": "03f_verification",
+    "non_default_options": {},
+    "library_defaults": {
+      "epsilon_filter_tau": null,
+      "min_omega": null,
+      "max_omega": null,
+      "normalize_error": false,
+      "positive_sequence": true,
+      "per_unit_scaling": true
+    },
+    "scenario": {
+      "ts_us": [
+        100.0,
+        50.0,
+        25.0
+      ],
+      "step6_window_s": 0.06,
+      "step4_5_settings": "library default; step5 min_omega=None"
+    },
+    "note": "non_default_options lists every library default overridden by this script; an empty mapping means all defaults."
+  },
+  "step2_phase_check": [
+    {
+      "ts_us": 100.0,
+      "time_avg_formula_deg": 8.592769252674856,
+      "mean_r": 1.1186841872549476,
+      "measured_filtered_minus_raw_phase_deg": -5.855381096354486
+    },
+    {
+      "ts_us": 50.0,
+      "time_avg_formula_deg": 5.742647653304388,
+      "mean_r": 1.0746164148285628,
+      "measured_filtered_minus_raw_phase_deg": -3.0567381637077204
+    },
+    {
+      "ts_us": 25.0,
+      "time_avg_formula_deg": 2.61789713419692,
+      "mean_r": 1.0330168115121339,
+      "measured_filtered_minus_raw_phase_deg": -1.3227110050558644
+    }
+  ],
+  "step3_outputs": [
+    {
+      "ts_us": 100.0,
+      "observer": "sign",
+      "output": "in_phase_v_prime",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9582117730566256,
+        "raw_phase_deg": -1.5834123684891488,
+        "raw_ripple_rms_v": 248.3962965748317,
+        "gain": 0.9222631134384534,
+        "phase_deg": -2.041596171508374,
+        "ripple_rms_v": 7.462122580991096,
+        "frequency_error_mean_hz": 7.912279150329841,
+        "omega_prime_std_hz": 6.846083720725218,
+        "measured_filtered_minus_raw_phase_deg": -0.4581838030192251
+      }
+    },
+    {
+      "ts_us": 100.0,
+      "observer": "sign",
+      "output": "in_phase_v_prime",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9610997431747127,
+        "raw_phase_deg": -1.654825955640428,
+        "raw_ripple_rms_v": 250.85068784730285,
+        "gain": 0.8957820998722527,
+        "phase_deg": -1.1715527167968596,
+        "ripple_rms_v": 9.761027998637266,
+        "frequency_error_mean_hz": 9.60169911216653,
+        "omega_prime_std_hz": 10.405599614583776,
+        "measured_filtered_minus_raw_phase_deg": 0.4832732388435683
+      }
+    },
+    {
+      "ts_us": 100.0,
+      "observer": "sign",
+      "output": "positive_sequence",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9582117730566256,
+        "raw_phase_deg": -1.5834123684891488,
+        "raw_ripple_rms_v": 248.3962965748317,
+        "gain": 0.9768083434937946,
+        "phase_deg": -7.438793464843634,
+        "ripple_rms_v": 8.07498392268087,
+        "frequency_error_mean_hz": 7.912279150329841,
+        "omega_prime_std_hz": 6.846083720725218,
+        "measured_filtered_minus_raw_phase_deg": -5.855381096354486
+      }
+    },
+    {
+      "ts_us": 100.0,
+      "observer": "sign",
+      "output": "positive_sequence",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9610997431747127,
+        "raw_phase_deg": -1.654825955640428,
+        "raw_ripple_rms_v": 250.85068784730285,
+        "gain": 0.9924629346661126,
+        "phase_deg": -8.56691975376317,
+        "ripple_rms_v": 9.75257737005848,
+        "frequency_error_mean_hz": 9.60169911216653,
+        "omega_prime_std_hz": 10.405599614583776,
+        "measured_filtered_minus_raw_phase_deg": -6.912093798122742
+      }
+    },
+    {
+      "ts_us": 100.0,
+      "observer": "sigmoid",
+      "output": "in_phase_v_prime",
+      "window": "steady",
+      "metrics": {
+        "diverged": true,
+        "error": "omega_prime must be non-negative, got -10.483267596173192"
+      }
+    },
+    {
+      "ts_us": 100.0,
+      "observer": "sigmoid",
+      "output": "in_phase_v_prime",
+      "window": "ramp",
+      "metrics": {
+        "diverged": true,
+        "error": "omega_prime must be non-negative, got -10.483267596173192"
+      }
+    },
+    {
+      "ts_us": 100.0,
+      "observer": "sigmoid",
+      "output": "positive_sequence",
+      "window": "steady",
+      "metrics": {
+        "diverged": true,
+        "error": "omega_prime must be non-negative, got -10.483267596173192"
+      }
+    },
+    {
+      "ts_us": 100.0,
+      "observer": "sigmoid",
+      "output": "positive_sequence",
+      "window": "ramp",
+      "metrics": {
+        "diverged": true,
+        "error": "omega_prime must be non-negative, got -10.483267596173192"
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "observer": "sign",
+      "output": "in_phase_v_prime",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9805011680288305,
+        "raw_phase_deg": -0.8632270392362095,
+        "raw_ripple_rms_v": 248.1278018703359,
+        "gain": 0.9645975868613932,
+        "phase_deg": -0.827056985036734,
+        "ripple_rms_v": 2.894136963891721,
+        "frequency_error_mean_hz": 4.97442765523752,
+        "omega_prime_std_hz": 2.7828395507641015,
+        "measured_filtered_minus_raw_phase_deg": 0.0361700541994755
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "observer": "sign",
+      "output": "in_phase_v_prime",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9807174799663989,
+        "raw_phase_deg": -0.8623661158320116,
+        "raw_ripple_rms_v": 250.72317804205358,
+        "gain": 0.9582922018665961,
+        "phase_deg": -0.88939493510317,
+        "ripple_rms_v": 8.487841351578059,
+        "frequency_error_mean_hz": 5.093888568021152,
+        "omega_prime_std_hz": 9.906664050962782,
+        "measured_filtered_minus_raw_phase_deg": -0.02702881927115841
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "observer": "sign",
+      "output": "positive_sequence",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9805011680288305,
+        "raw_phase_deg": -0.8632270392362095,
+        "raw_ripple_rms_v": 248.1278018703359,
+        "gain": 0.9999087020726014,
+        "phase_deg": -3.91996520294393,
+        "ripple_rms_v": 2.4024300655918136,
+        "frequency_error_mean_hz": 4.97442765523752,
+        "omega_prime_std_hz": 2.7828395507641015,
+        "measured_filtered_minus_raw_phase_deg": -3.0567381637077204
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "observer": "sign",
+      "output": "positive_sequence",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9807174799663989,
+        "raw_phase_deg": -0.8623661158320116,
+        "raw_ripple_rms_v": 250.72317804205358,
+        "gain": 1.0131410934512686,
+        "phase_deg": -4.894119111061229,
+        "ripple_rms_v": 8.396381314683623,
+        "frequency_error_mean_hz": 5.093888568021152,
+        "omega_prime_std_hz": 9.906664050962782,
+        "measured_filtered_minus_raw_phase_deg": -4.031752995229218
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "observer": "sigmoid",
+      "output": "in_phase_v_prime",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9843723815103897,
+        "raw_phase_deg": -0.38023942569690017,
+        "raw_ripple_rms_v": 0.017622778712915385,
+        "gain": 0.9843723857280787,
+        "phase_deg": -0.3802387190406446,
+        "ripple_rms_v": 0.008100973772344786,
+        "frequency_error_mean_hz": 8.560940526199564e-07,
+        "omega_prime_std_hz": 0.0027524494394044366,
+        "measured_filtered_minus_raw_phase_deg": 7.066562555668732e-07
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "observer": "sigmoid",
+      "output": "in_phase_v_prime",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9855461440402293,
+        "raw_phase_deg": -0.34413845111475794,
+        "raw_ripple_rms_v": 7.871522304997537,
+        "gain": 0.9793445495704325,
+        "phase_deg": -0.5289969890663,
+        "ripple_rms_v": 8.242306517304483,
+        "frequency_error_mean_hz": -0.1227345599781344,
+        "omega_prime_std_hz": 9.761739031354425,
+        "measured_filtered_minus_raw_phase_deg": -0.18485853795154206
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "observer": "sigmoid",
+      "output": "positive_sequence",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9843723815103897,
+        "raw_phase_deg": -0.38023942569690017,
+        "raw_ripple_rms_v": 0.017622778712915385,
+        "gain": 0.984372397212559,
+        "phase_deg": -0.3802385013692493,
+        "ripple_rms_v": 0.0020413765049870566,
+        "frequency_error_mean_hz": 8.560940526199564e-07,
+        "omega_prime_std_hz": 0.0027524494394044366,
+        "measured_filtered_minus_raw_phase_deg": 9.243276508641429e-07
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "observer": "sigmoid",
+      "output": "positive_sequence",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9855461440402293,
+        "raw_phase_deg": -0.34413845111475794,
+        "raw_ripple_rms_v": 7.871522304997537,
+        "gain": 0.9782292690129851,
+        "phase_deg": -0.3889129779948555,
+        "ripple_rms_v": 8.314047397845309,
+        "frequency_error_mean_hz": -0.1227345599781344,
+        "omega_prime_std_hz": 9.761739031354425,
+        "measured_filtered_minus_raw_phase_deg": -0.04477452688009759
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "observer": "sign",
+      "output": "in_phase_v_prime",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9888638128187389,
+        "raw_phase_deg": -0.38515049933862966,
+        "raw_ripple_rms_v": 248.02539753767613,
+        "gain": 0.984677761172561,
+        "phase_deg": -0.3679527413942229,
+        "ripple_rms_v": 1.2433970570318056,
+        "frequency_error_mean_hz": 2.2011207674755777,
+        "omega_prime_std_hz": 1.1699746128794977,
+        "measured_filtered_minus_raw_phase_deg": 0.017197757944406755
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "observer": "sign",
+      "output": "in_phase_v_prime",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9891041693769035,
+        "raw_phase_deg": -0.34064873202209495,
+        "raw_ripple_rms_v": 250.66814527618084,
+        "gain": 0.9785496405931554,
+        "phase_deg": -0.4847671476939534,
+        "ripple_rms_v": 8.375319815171393,
+        "frequency_error_mean_hz": 2.1640200255181927,
+        "omega_prime_std_hz": 9.78307198587728,
+        "measured_filtered_minus_raw_phase_deg": -0.14411841567185846
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "observer": "sign",
+      "output": "positive_sequence",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9888638128187389,
+        "raw_phase_deg": -0.38515049933862966,
+        "raw_ripple_rms_v": 248.02539753767613,
+        "gain": 1.0003806027729187,
+        "phase_deg": -1.707861504394494,
+        "ripple_rms_v": 0.7531674365977858,
+        "frequency_error_mean_hz": 2.2011207674755777,
+        "omega_prime_std_hz": 1.1699746128794977,
+        "measured_filtered_minus_raw_phase_deg": -1.3227110050558644
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "observer": "sign",
+      "output": "positive_sequence",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9891041693769035,
+        "raw_phase_deg": -0.34064873202209495,
+        "raw_ripple_rms_v": 250.66814527618084,
+        "gain": 1.000552424445234,
+        "phase_deg": -2.1717581863879993,
+        "ripple_rms_v": 8.419588160436913,
+        "frequency_error_mean_hz": 2.1640200255181927,
+        "omega_prime_std_hz": 9.78307198587728,
+        "measured_filtered_minus_raw_phase_deg": -1.8311094543659043
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "observer": "sigmoid",
+      "output": "in_phase_v_prime",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9868626049011656,
+        "raw_phase_deg": -0.5595194804124467,
+        "raw_ripple_rms_v": 0.017826479826022913,
+        "gain": 0.9868626052511519,
+        "phase_deg": -0.5595187556531773,
+        "ripple_rms_v": 0.008192513050231026,
+        "frequency_error_mean_hz": 1.1831291692428655e-06,
+        "omega_prime_std_hz": 0.002790407535901835,
+        "measured_filtered_minus_raw_phase_deg": 7.247592693770954e-07
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "observer": "sigmoid",
+      "output": "in_phase_v_prime",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9874966918219894,
+        "raw_phase_deg": -0.45697129694183697,
+        "raw_ripple_rms_v": 7.900775691776217,
+        "gain": 0.9812741881744088,
+        "phase_deg": -0.6414409951311002,
+        "ripple_rms_v": 8.27268433211849,
+        "frequency_error_mean_hz": -0.12294080256562401,
+        "omega_prime_std_hz": 9.761243561577084,
+        "measured_filtered_minus_raw_phase_deg": -0.18446969818926323
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "observer": "sigmoid",
+      "output": "positive_sequence",
+      "window": "steady",
+      "metrics": {
+        "raw_gain": 0.9868626049011656,
+        "raw_phase_deg": -0.5595194804124467,
+        "raw_ripple_rms_v": 0.017826479826022913,
+        "gain": 0.986862616514014,
+        "phase_deg": -0.5595183128782715,
+        "ripple_rms_v": 0.002060192854356403,
+        "frequency_error_mean_hz": 1.1831291692428655e-06,
+        "omega_prime_std_hz": 0.002790407535901835,
+        "measured_filtered_minus_raw_phase_deg": 1.167534175228191e-06
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "observer": "sigmoid",
+      "output": "positive_sequence",
+      "window": "ramp",
+      "metrics": {
+        "raw_gain": 0.9874966918219894,
+        "raw_phase_deg": -0.45697129694183697,
+        "raw_ripple_rms_v": 7.900775691776217,
+        "gain": 0.9801594606999734,
+        "phase_deg": -0.5011691118370177,
+        "ripple_rms_v": 8.344497614646535,
+        "frequency_error_mean_hz": -0.12294080256562401,
+        "omega_prime_std_hz": 9.761243561577084,
+        "measured_filtered_minus_raw_phase_deg": -0.044197814895180765
+      }
+    }
+  ],
+  "step4_sigmoid_100us": {
+    "settings": "epsilon_filter_tau=OFF, min_omega=None, no normalization",
+    "raw_metrics_independent_of_filter": {
+      "fundamental_gain": 0.9596911122885345,
+      "fundamental_phase_deg": -1.310255042858815,
+      "ripple_rms_v": 203.68441572989343,
+      "total_error_rms_v": 203.50028808191246
+    },
+    "first_nan_time_s": 0.0757,
+    "omega_prime_hz_just_before_nan": -1.6684638576860549,
+    "error": "omega_prime must be non-negative, got -10.483267596173192",
+    "nan_from_tan_omega_singularity": false,
+    "note": "omega' went negative; SOGIQSG rejects omega'<0 (ValueError). No tan(w'Ts/2)/w' is used."
+  },
+  "step5": {
+    "collapse_no_clamp": [
+      {
+        "rpm": 1000.0,
+        "case": "ideal",
+        "min_omega": null,
+        "final": 66.66388225951145,
+        "first_nan_s": null,
+        "error": null
+      },
+      {
+        "rpm": 1000.0,
+        "case": "period-2",
+        "min_omega": null,
+        "final": null,
+        "first_nan_s": 0.0333,
+        "error": "omega_prime must be non-negative, got -91.48355943583806"
+      },
+      {
+        "rpm": 1000.0,
+        "case": "white",
+        "min_omega": null,
+        "final": null,
+        "first_nan_s": 0.020800000000000003,
+        "error": "omega_prime must be non-negative, got -11.364528228681479"
+      },
+      {
+        "rpm": 1000.0,
+        "case": "sigmoid@100us",
+        "min_omega": null,
+        "final": 80.66849829843325,
+        "first_nan_s": null,
+        "error": null
+      },
+      {
+        "rpm": 500.0,
+        "case": "ideal",
+        "min_omega": null,
+        "final": 33.35012321449873,
+        "first_nan_s": null,
+        "error": null
+      },
+      {
+        "rpm": 500.0,
+        "case": "period-2",
+        "min_omega": null,
+        "final": null,
+        "first_nan_s": 0.0351,
+        "error": "omega_prime must be non-negative, got -94.59992782802578"
+      },
+      {
+        "rpm": 500.0,
+        "case": "white",
+        "min_omega": null,
+        "final": null,
+        "first_nan_s": 0.0177,
+        "error": "omega_prime must be non-negative, got -760.3463361986212"
+      },
+      {
+        "rpm": 500.0,
+        "case": "sigmoid@100us",
+        "min_omega": null,
+        "final": null,
+        "first_nan_s": 0.0775,
+        "error": "omega_prime must be non-negative, got -24.110512312612613"
+      }
+    ],
+    "budget_synthetic": {
+      "white_mean_eps_f": 11.670998858213444,
+      "white_std_eps_f": 448.44141005049164,
+      "white_implied_domega_dt_hz_per_s": 92.87485795522682,
+      "period2_mean_eps_f": -3.5703609076639017e-10,
+      "n_seeds": 32
+    },
+    "budget_real": [
+      {
+        "ts_us": 100.0,
+        "mean_eps_fundamental": -3.407897755035576e-10,
+        "mean_eps_ripple": -13.22217098476923,
+        "restoring_slope": 9.555967992019694,
+        "predicted_offset_hz": 0.22021566756917196,
+        "observed_offset_hz": 7.91
+      },
+      {
+        "ts_us": 50.0,
+        "mean_eps_fundamental": -4.981633173963602e-10,
+        "mean_eps_ripple": -3.761147412962652,
+        "restoring_slope": 9.960447907435972,
+        "predicted_offset_hz": 0.06009822128816231,
+        "observed_offset_hz": 4.97
+      },
+      {
+        "ts_us": 25.0,
+        "mean_eps_fundamental": 1.7578955232147247e-09,
+        "mean_eps_ripple": -0.9520013235687508,
+        "restoring_slope": 10.188104876925044,
+        "predicted_offset_hz": 0.014871825359705541,
+        "observed_offset_hz": 2.2
+      }
+    ]
+  },
+  "step6_ramp": {
+    "Ts100_sign_in_phase_v_prime": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.8904220562525863,
+        "phase_deg": -1.115852266430612,
+        "ripple_rms_v": 5.057897546729622,
+        "omega_prime_error_hz_mean": 9.601889120390164,
+        "omega_prime_error_hz_std": 4.553201649325478
+      },
+      "worst": {
+        "t_center_s": 1.10995,
+        "gain": 0.9120174318058425,
+        "phase_deg": -3.378787812358177,
+        "ripple_rms_v": 8.163266843425932,
+        "omega_prime_error_hz_mean": 8.443214290259519,
+        "omega_prime_error_hz_std": 7.584412872900954
+      }
+    },
+    "Ts100_sign_positive_sequence": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.9918117441581981,
+        "phase_deg": -8.757526937867187,
+        "ripple_rms_v": 4.897866221818528,
+        "omega_prime_error_hz_mean": 9.601889120390164,
+        "omega_prime_error_hz_std": 4.553201649325478
+      },
+      "worst": {
+        "t_center_s": 1.10995,
+        "gain": 0.9687505006555756,
+        "phase_deg": -9.83981127239552,
+        "ripple_rms_v": 10.309990281747883,
+        "omega_prime_error_hz_mean": 8.443214290259519,
+        "omega_prime_error_hz_std": 7.584412872900954
+      }
+    },
+    "Ts50_sign_in_phase_v_prime": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.9556992182262476,
+        "phase_deg": -0.9258117868917577,
+        "ripple_rms_v": 2.0856144308931466,
+        "omega_prime_error_hz_mean": 5.093928541563602,
+        "omega_prime_error_hz_std": 2.074700260451158
+      },
+      "worst": {
+        "t_center_s": 0.029974999999999998,
+        "gain": 0.8327099127056715,
+        "phase_deg": -3.731269510975601,
+        "ripple_rms_v": 3.918743109205755,
+        "omega_prime_error_hz_mean": 3.466520360703558,
+        "omega_prime_error_hz_std": 3.4732190754285184
+      }
+    },
+    "Ts50_sign_positive_sequence": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 1.0129779761147804,
+        "phase_deg": -5.022206329320394,
+        "ripple_rms_v": 1.5554470280628812,
+        "omega_prime_error_hz_mean": 5.093928541563602,
+        "omega_prime_error_hz_std": 2.074700260451158
+      },
+      "worst": {
+        "t_center_s": 0.029974999999999998,
+        "gain": 0.8971005362664615,
+        "phase_deg": -4.881830674837237,
+        "ripple_rms_v": 5.728525309979353,
+        "omega_prime_error_hz_mean": 3.466520360703558,
+        "omega_prime_error_hz_std": 3.4732190754285184
+      }
+    },
+    "Ts50_sigmoid_in_phase_v_prime": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.977771470295262,
+        "phase_deg": -0.5895264412258591,
+        "ripple_rms_v": 0.2805663547227993,
+        "omega_prime_error_hz_mean": -0.12273721653527767,
+        "omega_prime_error_hz_std": 0.19160835528690295
+      },
+      "worst": {
+        "t_center_s": 0.029974999999999998,
+        "gain": 0.865037911586204,
+        "phase_deg": -4.12285773264031,
+        "ripple_rms_v": 4.44548088259181,
+        "omega_prime_error_hz_mean": -1.5519093814884706,
+        "omega_prime_error_hz_std": 2.7896882103263283
+      }
+    },
+    "Ts50_sigmoid_positive_sequence": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.976300848037938,
+        "phase_deg": -0.40434819059057886,
+        "ripple_rms_v": 0.3368142899663954,
+        "omega_prime_error_hz_mean": -0.12273721653527767,
+        "omega_prime_error_hz_std": 0.19160835528690295
+      },
+      "worst": {
+        "t_center_s": 0.029974999999999998,
+        "gain": 0.8419225462421113,
+        "phase_deg": -1.557877141330331,
+        "ripple_rms_v": 5.360072604046664,
+        "omega_prime_error_hz_mean": -1.5519093814884706,
+        "omega_prime_error_hz_std": 2.7896882103263283
+      }
+    },
+    "Ts25_sign_in_phase_v_prime": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.9765000966821255,
+        "phase_deg": -0.5361679595191788,
+        "ripple_rms_v": 1.1512969587123991,
+        "omega_prime_error_hz_mean": 2.164028333201922,
+        "omega_prime_error_hz_std": 1.0334227725101683
+      },
+      "worst": {
+        "t_center_s": 0.0299875,
+        "gain": 0.8589738206196655,
+        "phase_deg": -3.895960357516047,
+        "ripple_rms_v": 3.952949337569399,
+        "omega_prime_error_hz_mean": 0.6879576543773775,
+        "omega_prime_error_hz_std": 2.7598268873504077
+      }
+    },
+    "Ts25_sign_positive_sequence": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.9991559033104154,
+        "phase_deg": -2.244156062526098,
+        "ripple_rms_v": 0.891297157238785,
+        "omega_prime_error_hz_mean": 2.164028333201922,
+        "omega_prime_error_hz_std": 1.0334227725101683
+      },
+      "worst": {
+        "t_center_s": 0.0299875,
+        "gain": 0.872906203381965,
+        "phase_deg": -3.185882428934979,
+        "ripple_rms_v": 5.491625974688612,
+        "omega_prime_error_hz_mean": 0.6879576543773775,
+        "omega_prime_error_hz_std": 2.7598268873504077
+      }
+    },
+    "Ts25_sigmoid_in_phase_v_prime": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.9796224055629287,
+        "phase_deg": -0.6939449098091508,
+        "ripple_rms_v": 0.28172982802338625,
+        "omega_prime_error_hz_mean": -0.12294212603913868,
+        "omega_prime_error_hz_std": 0.19194083495011027
+      },
+      "worst": {
+        "t_center_s": 0.0299875,
+        "gain": 0.8660255389942783,
+        "phase_deg": -4.159500168217326,
+        "ripple_rms_v": 4.445508527213372,
+        "omega_prime_error_hz_mean": -1.5451517025354677,
+        "omega_prime_error_hz_std": 2.782148761804802
+      }
+    },
+    "Ts25_sigmoid_positive_sequence": {
+      "n_windows": 25,
+      "mean": {
+        "gain": 0.9781545388342815,
+        "phase_deg": -0.5084150808001006,
+        "ripple_rms_v": 0.33818779188623815,
+        "omega_prime_error_hz_mean": -0.12294212603913868,
+        "omega_prime_error_hz_std": 0.19194083495011027
+      },
+      "worst": {
+        "t_center_s": 0.0299875,
+        "gain": 0.8429714748921376,
+        "phase_deg": -1.5875921952575676,
+        "ripple_rms_v": 5.358869008939601,
+        "omega_prime_error_hz_mean": -1.5451517025354677,
+        "omega_prime_error_hz_std": 2.782148761804802
+      }
+    }
+  }
+}

@@ -1,0 +1,303 @@
+{
+  "note": "Phase 03b diagnosis; no code/defaults changed. Filter metrics only. epsilon_filter_tau=OFF (no DSOGI-FLL in this script).",
+  "config_diff": {
+    "script": "03b_dsogi_fll_diagnosis",
+    "non_default_options": {},
+    "library_defaults": {
+      "epsilon_filter_tau": null,
+      "min_omega": null,
+      "max_omega": null,
+      "normalize_error": false,
+      "positive_sequence": true,
+      "per_unit_scaling": true
+    },
+    "scenario": {
+      "speeds_rpm": [
+        100.0,
+        200.0,
+        500.0,
+        1000.0
+      ],
+      "ts_coarse_us": [
+        100.0,
+        50.0,
+        25.0,
+        10.0,
+        5.0,
+        2.5
+      ],
+      "fll_used": false
+    },
+    "note": "non_default_options lists every library default overridden by this script; an empty mapping means all defaults."
+  },
+  "reference_check": {
+    "100rpm": {
+      "|E_true|_v": 5.554335811546754,
+      "psi_f_omega_e_v": 5.554335811546754,
+      "|E_true|_measured_v": 5.554335811546754
+    },
+    "200rpm": {
+      "|E_true|_v": 11.108671623093509,
+      "psi_f_omega_e_v": 11.108671623093509,
+      "|E_true|_measured_v": 11.108671623093509
+    },
+    "500rpm": {
+      "|E_true|_v": 27.77167905773377,
+      "psi_f_omega_e_v": 27.77167905773377,
+      "|E_true|_measured_v": 27.771679057733767
+    },
+    "1000rpm": {
+      "|E_true|_v": 55.54335811546754,
+      "psi_f_omega_e_v": 55.54335811546754,
+      "|E_true|_measured_v": 55.543358115467534
+    }
+  },
+  "alignment_check": {
+    "true_self_phase_deg": 1.4968076438758221e-28,
+    "true_shifted_phase_deg": 2.400000000000003,
+    "omega_e_times_Ts_deg": 2.4,
+    "true_gain": 1.0
+  },
+  "speed_sweep_100us": [
+    {
+      "rpm": 100.0,
+      "|E_true|_v": 5.554335811546754,
+      "sign": {
+        "fundamental_gain": 0.7829058776116128,
+        "fundamental_phase_deg": -1.1590619465017264,
+        "ripple_rms_v": 253.9968970054899,
+        "total_error_rms_v": 253.99977865909003
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9701643345472295,
+        "fundamental_phase_deg": -1.8751495586797304,
+        "ripple_rms_v": 230.1946566492839,
+        "total_error_rms_v": 230.19478592536345
+      }
+    },
+    {
+      "rpm": 200.0,
+      "|E_true|_v": 11.108671623093509,
+      "sign": {
+        "fundamental_gain": 0.9121729348144162,
+        "fundamental_phase_deg": 1.912109164446114,
+        "ripple_rms_v": 253.83194252208156,
+        "total_error_rms_v": 253.83406445308776
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9339742610083529,
+        "fundamental_phase_deg": 0.04646528974457598,
+        "ripple_rms_v": 228.07130680066243,
+        "total_error_rms_v": 228.07248633399718
+      }
+    },
+    {
+      "rpm": 500.0,
+      "|E_true|_v": 27.771679057733767,
+      "sign": {
+        "fundamental_gain": 0.9360524317177243,
+        "fundamental_phase_deg": -1.3425116186695698,
+        "ripple_rms_v": 252.7005232168661,
+        "total_error_rms_v": 252.70754779601046
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9494872628862496,
+        "fundamental_phase_deg": -0.9796698252519562,
+        "ripple_rms_v": 217.3469898624301,
+        "total_error_rms_v": 217.35200943727116
+      }
+    },
+    {
+      "rpm": 1000.0,
+      "|E_true|_v": 55.543358115467534,
+      "sign": {
+        "fundamental_gain": 0.9575964791846369,
+        "fundamental_phase_deg": -1.8114925557962698,
+        "ripple_rms_v": 248.4036166810814,
+        "total_error_rms_v": 248.42072525728375
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9637894216944456,
+        "fundamental_phase_deg": -1.3974223994799817,
+        "ripple_rms_v": 194.7420291808814,
+        "total_error_rms_v": 194.75695547710112
+      }
+    }
+  ],
+  "ts_sweep_1000rpm": [
+    {
+      "ts_us": 100.0,
+      "|E_true|_v": 55.54335811546754,
+      "sign": {
+        "fundamental_gain": 0.9570671833177398,
+        "fundamental_phase_deg": -1.6409087682973298,
+        "ripple_rms_v": 248.40990974079912,
+        "total_error_rms_v": 248.4262291326661
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9617256839416211,
+        "fundamental_phase_deg": -1.2553823630430871,
+        "ripple_rms_v": 194.68981829657048,
+        "total_error_rms_v": 194.70508222055426
+      }
+    },
+    {
+      "ts_us": 50.0,
+      "|E_true|_v": 55.54335811546754,
+      "sign": {
+        "fundamental_gain": 0.9787704018301049,
+        "fundamental_phase_deg": -0.7810004916590718,
+        "ripple_rms_v": 248.14888200771225,
+        "total_error_rms_v": 248.1528140277971
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.984372381510423,
+        "fundamental_phase_deg": -0.3802394256861502,
+        "ripple_rms_v": 0.017622778712393542,
+        "total_error_rms_v": 0.9420731456756709
+      }
+    },
+    {
+      "ts_us": 25.0,
+      "|E_true|_v": 55.54335811546754,
+      "sign": {
+        "fundamental_gain": 0.9893566244801397,
+        "fundamental_phase_deg": -0.4213544248153052,
+        "ripple_rms_v": 248.01933437688868,
+        "total_error_rms_v": 248.0203716918017
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9868626049011823,
+        "fundamental_phase_deg": -0.5595194804070927,
+        "ripple_rms_v": 0.017826479825753593,
+        "total_error_rms_v": 0.9072540018901115
+      }
+    },
+    {
+      "ts_us": 10.0,
+      "|E_true|_v": 55.543358115467534,
+      "sign": {
+        "fundamental_gain": 0.9957198119918016,
+        "fundamental_phase_deg": -0.1745014589566969,
+        "ripple_rms_v": 247.9407620732245,
+        "total_error_rms_v": 247.94093351017779
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9883508691335297,
+        "fundamental_phase_deg": -0.6671266396849469,
+        "ripple_rms_v": 0.01794840104068669,
+        "total_error_rms_v": 0.9123294770310277
+      }
+    },
+    {
+      "ts_us": 5.0,
+      "|E_true|_v": 55.543358115467534,
+      "sign": {
+        "fundamental_gain": 0.9977853354262468,
+        "fundamental_phase_deg": -0.08360745226784176,
+        "ripple_rms_v": 247.91514342178417,
+        "total_error_rms_v": 247.91518715858967
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9888459771653015,
+        "fundamental_phase_deg": -0.7030020342750878,
+        "ripple_rms_v": 0.017988986417628576,
+        "total_error_rms_v": 0.9183680740267731
+      }
+    },
+    {
+      "ts_us": 2.5,
+      "|E_true|_v": 55.543358115467534,
+      "sign": {
+        "fundamental_gain": 0.998843166011504,
+        "fundamental_phase_deg": -0.03986486828299378,
+        "ripple_rms_v": 247.90200158368978,
+        "total_error_rms_v": 247.9020129195939
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9890933469966894,
+        "fundamental_phase_deg": -0.7209409855282671,
+        "ripple_rms_v": 0.01800927130623728,
+        "total_error_rms_v": 0.9221837370996069
+      }
+    }
+  ],
+  "continuous_limit_1000rpm": [
+    {
+      "ts_us": 1.0,
+      "|E_true|_v": 55.543358115467534,
+      "sign": {
+        "fundamental_gain": 0.9995039954922602,
+        "fundamental_phase_deg": -0.01569306490836715,
+        "ripple_rms_v": 247.89378442294242,
+        "total_error_rms_v": 247.8937864203951
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.989247721820105,
+        "fundamental_phase_deg": -0.7325929430108749,
+        "ripple_rms_v": 0.017989306225361806,
+        "total_error_rms_v": 0.9251632842276188
+      }
+    },
+    {
+      "ts_us": 0.5,
+      "|E_true|_v": 55.543358115467534,
+      "sign": {
+        "fundamental_gain": 0.9998604059260248,
+        "fundamental_phase_deg": -0.013006473437778481,
+        "ripple_rms_v": 247.8893502269787,
+        "total_error_rms_v": 247.88935066885597
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9892971658104944,
+        "fundamental_phase_deg": -0.7361808344174005,
+        "ripple_rms_v": 0.017993378099087663,
+        "total_error_rms_v": 0.9260554526184058
+      }
+    },
+    {
+      "ts_us": 0.25,
+      "|E_true|_v": 55.543358115467534,
+      "sign": {
+        "fundamental_gain": 0.999873333473731,
+        "fundamental_phase_deg": -0.004203712931286683,
+        "ripple_rms_v": 247.88918936075535,
+        "total_error_rms_v": 247.8891894940865
+      },
+      "sigmoid": {
+        "fundamental_gain": 0.9893218859650821,
+        "fundamental_phase_deg": -0.7379747919538678,
+        "ripple_rms_v": 0.017995413930545264,
+        "total_error_rms_v": 0.9265092838529243
+      }
+    }
+  ],
+  "sign_injection_pre_vs_post_100us": {
+    "applied_sign_S_pre": {
+      "fundamental_gain": 0.9570671833177398,
+      "fundamental_phase_deg": -1.6409087682980916,
+      "ripple_rms_v": 248.40990974079912,
+      "total_error_rms_v": 248.42622913266607
+    },
+    "reported_sign_S_post": {
+      "fundamental_gain": 0.6084885509981438,
+      "fundamental_phase_deg": -58.4848488200155,
+      "ripple_rms_v": 251.77581793384488,
+      "total_error_rms_v": 256.2339852624996
+    }
+  },
+  "sign_injection_pre_vs_post_10us": {
+    "applied_sign_S_pre": {
+      "fundamental_gain": 0.9956808680286944,
+      "fundamental_phase_deg": -0.17274835907803368,
+      "ripple_rms_v": 247.941244559221,
+      "total_error_rms_v": 247.94141692836982
+    },
+    "reported_sign_S_post": {
+      "fundamental_gain": 0.6125089308366594,
+      "fundamental_phase_deg": -48.751057724488525,
+      "ripple_rms_v": 251.74574138156717,
+      "total_error_rms_v": 255.1991607164553
+    }
+  }
+}

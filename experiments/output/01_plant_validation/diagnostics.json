@@ -1,0 +1,32 @@
+{
+  "note": "Phase 01 plant validation against closed-form solutions of Eq.(1)-(2); not a reproduction of the paper's results.",
+  "parameters": {
+    "pole_pairs": 4,
+    "stator_resistance_ohm": 0.505,
+    "ld_h": 0.00147,
+    "lq_h": 0.00147,
+    "psi_f_wb": 0.1326,
+    "inertia_kg_m2": 0.00153,
+    "viscous_friction_paper_value": null
+  },
+  "timestep_s": 0.0001,
+  "scenario_a": {
+    "tau_s": 0.002910891089108911,
+    "max_abs_error_a": 4.350449600565298e-08
+  },
+  "scenario_b": {
+    "electrical_speed_rad_s": 209.43951023931953,
+    "steady_current_amplitude_a": 46.95527230091783,
+    "final_current_magnitude_a": 46.955272102953955,
+    "max_abs_error_a": 3.531745293424933e-07
+  },
+  "scenario_c": {
+    "local_friction_assumption_n_m_s_per_rad": 0.002,
+    "initial_speed_rpm": 500.0,
+    "timestep_s": 1e-05,
+    "tau_m_s": 0.7649999999999999,
+    "max_rel_omega_error": 0.0014575215765271002,
+    "note": "residual is dominated by the zero-order-held u=E drive, not by the Runge-Kutta integrator"
+  },
+  "determinism_max_abs_diff_a": 0.0
+}

@@ -1,0 +1,100 @@
+{
+  "note": "Phase 03c stability sweep (sigmoid, post-fix). Defaults/D-016 unchanged. epsilon_filter_tau=OFF (no DSOGI-FLL in this script).",
+  "config_diff": {
+    "script": "03c_stability",
+    "non_default_options": {},
+    "library_defaults": {
+      "epsilon_filter_tau": null,
+      "min_omega": null,
+      "max_omega": null,
+      "normalize_error": false,
+      "positive_sequence": true,
+      "per_unit_scaling": true
+    },
+    "scenario": {
+      "rpm": 1000.0,
+      "ts_us": [
+        100.0,
+        80.0,
+        65.0,
+        60.0,
+        55.0,
+        50.0,
+        40.0
+      ],
+      "fll_used": false
+    },
+    "note": "non_default_options lists every library default overridden by this script; an empty mapping means all defaults."
+  },
+  "k_v": 179.62924780409975,
+  "a_per_a": 0.5388877434122991,
+  "i_base_a": 7.422696190252056,
+  "ts_star_us": 60.11655249974441,
+  "largest_a_stable_at_100us_per_a": 0.3217182096259996,
+  "implied_i_base_for_a_pu_4_a": 12.433240893171813,
+  "rows": [
+    {
+      "ts_us": 100.0,
+      "ts_lambda_over_2": 3.32687074829932,
+      "fundamental_gain": 0.9617256839415622,
+      "fundamental_phase_deg": -1.2553823630656185,
+      "ripple_rms_v": 194.68981829657653,
+      "period2_content": 0.9011181927154073,
+      "limit_cycle": true
+    },
+    {
+      "ts_us": 80.0,
+      "ts_lambda_over_2": 2.661496598639456,
+      "fundamental_gain": 0.9744450866630476,
+      "fundamental_phase_deg": -0.6676094886504894,
+      "ripple_rms_v": 164.48259029199065,
+      "period2_content": 0.9110135053505926,
+      "limit_cycle": true
+    },
+    {
+      "ts_us": 65.0,
+      "ts_lambda_over_2": 2.1624659863945572,
+      "fundamental_gain": 0.9828417448691428,
+      "fundamental_phase_deg": -0.32119638524578353,
+      "ripple_rms_v": 70.55461349904432,
+      "period2_content": 0.678583468237544,
+      "limit_cycle": true
+    },
+    {
+      "ts_us": 60.0,
+      "ts_lambda_over_2": 1.996122448979592,
+      "fundamental_gain": 0.9833728756217779,
+      "fundamental_phase_deg": -0.30855067749903453,
+      "ripple_rms_v": 0.017541134412660548,
+      "period2_content": 3.516415058438771e-16,
+      "limit_cycle": false
+    },
+    {
+      "ts_us": 55.0,
+      "ts_lambda_over_2": 1.8297789115646257,
+      "fundamental_gain": 0.9838728397869171,
+      "fundamental_phase_deg": -0.34438892293773526,
+      "ripple_rms_v": 0.017581888617818554,
+      "period2_content": 4.240741028609064e-06,
+      "limit_cycle": false
+    },
+    {
+      "ts_us": 50.0,
+      "ts_lambda_over_2": 1.66343537414966,
+      "fundamental_gain": 0.98437238151039,
+      "fundamental_phase_deg": -0.38023942569685365,
+      "ripple_rms_v": 0.017622778712849438,
+      "period2_content": 1.8254433473617894e-16,
+      "limit_cycle": false
+    },
+    {
+      "ts_us": 40.0,
+      "ts_lambda_over_2": 1.330748299319728,
+      "fundamental_gain": 0.9853699363780901,
+      "fundamental_phase_deg": -0.45194155024602745,
+      "ripple_rms_v": 0.017704331236206194,
+      "period2_content": 1.1756018488947173e-05,
+      "limit_cycle": false
+    }
+  ]
+}
