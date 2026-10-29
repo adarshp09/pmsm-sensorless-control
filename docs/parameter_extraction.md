@@ -150,3 +150,30 @@ Notes:
 
 All unresolved rows must stay `null`; the Phase 03e derived SI ranges (under D-015)
 are in `docs/flc_spec.md` §(c). The FLC is not implemented.
+
+## Estimator / controller status (Phase 05a Step 4, `docs/estimator_spec.md`)
+
+Rendered-page extraction (pp.825–829).
+
+| Item | Value | Unit | Source | Status |
+| --- | --- | --- | --- | --- |
+| Position estimate form | `θ̂_e = −arctan(Ê_α/Ê_β)` | rad | Eq.(8), p.825 | verified (direct form; the paper's block diagram uses the Q-PLL instead) |
+| Q-PLL structure | two multipliers (`cos θ̂`, `sin θ̂`) → `Δe` → `PI` → `ω̂` → `1/s` → `θ̂` | - | Fig.1, p.825 | verified (block only) |
+| Q-PLL error `Δe` algebra |  | - | Fig.1 only | unresolved |
+| Q-PLL PI gains |  | - | not printed | unresolved |
+| Q-PLL normalization algebra |  | - | label only | unresolved |
+| Speed equation | `ω̂` = Q-PLL PI output | rad/s | Fig.1 | partial (no equation) |
+| Electrical↔mechanical conversion |  | - | not printed | unresolved |
+| Angle wrapping convention |  | - | not printed | unresolved |
+| Estimator input | filtered `Ê_f` from DSOGI-FLL | V | Fig.7, p.828; Eq.(12) | verified |
+| Speed-loop frequency | 1000 | Hz | Table III, p.828 | verified |
+| Current-loop / sampling frequency | 10000 | Hz | Table III, p.828 | verified |
+| Switching frequency | 10000 | Hz | Section V, p.829 | verified |
+| Inverter dead time | 2 | µs | Section V, p.829 | verified |
+| `i_d` reference | 0 | A | Fig.7, p.828 | verified |
+| DC-bus voltage `V_DC` |  | V | Fig.7 (symbol only) | unresolved |
+| Controller PI gains (speed/current) |  | - | not printed | unresolved |
+| Load steps | 50 % rated (sim) / 20 % rated (exp) | - | Sections IV-D, V-D | verified |
+| Phase 05b targets (position/speed errors) | see `docs/estimator_spec.md` §(b) | rad / rpm | Sections IV-V, Table IV | verified |
+
+The estimator and controller are **not** implemented (Phase 05b/06).

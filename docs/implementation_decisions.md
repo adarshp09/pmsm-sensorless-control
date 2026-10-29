@@ -511,3 +511,48 @@ inputs by default
 - **Scope:** open-loop ideal-FOC replica only — no inverter non-idealities, no load
   steps, no field weakening, no DSOGI-FLL, no rotor position/speed estimation.
 - **Type:** scope / caveat.
+
+---
+
+## Phase 05a — filter prelude (2026-10-29)
+
+## D-040 — SOGI realization: biquad vs the paper's two-integrator form
+
+- **Decision/finding:** `filters/sogi.py` uses the prewarped-bilinear biquad `D(z)`/
+  `Q(z)` (D-019). The paper's Fig.4 (p.826) shows the **two-integrator** SOGI-QSG
+  `v̇′ = ω′[k_s(v−v′) − qv′]`, `q̇v′ = ω′ v′`, each integrator discretized with
+  Eq.(17). An experiment-only implementation of the latter matches the biquad at
+  **constant ω′ to ≤1e-14 gain / ≤1e-11 deg**, but in the **closed loop** (ω′
+  time-varying) it gives a **materially different ω′ bias at Ts = 100 µs: +9.468 vs
+  +7.912 Hz (Δ = 1.56 Hz, ≈20 %)**, converging with Ts (50 µs Δ 0.19 Hz, 25 µs Δ
+  0.03 Hz, stable sigmoid Δ 0).
+- **Consequence:** the SOGI *realization* matters when ω′ varies. Adopting the paper's
+  Figure-4 structure is **proposed as a separate, approved step**; **no src change**
+  is made here. If adopted, D-019's biquad stays as the constant-ω′ equivalent.
+- **Type:** analysis + proposal.
+
+## D-041 — The −5.9° DSOGI-FLL phase offset is the high-frequency ω′ band
+
+- **Finding (band-split replay, Step 2b):** replaying the SOGI open-loop with the
+  recorded closed-loop ω′(t) replaced by its steady-window mean, or mean + the bands
+  below ω_e/2 or in [ω_e/2, 3ω_e], all give the *static* filtered phase; only the band
+  **above 3ω_e ≈ 200 Hz** reproduces the closed-loop value (sign 100 µs: high band
+  −7.17° vs mean +7.45° vs full −7.44°). The full replay reproduces the closed loop
+  bit-for-bit.
+- **Consequence:** the −5.9° (and its 50/25 µs companions) is caused by the fast
+  ω′ jitter/aliasing driven by the sign observer's ripple, not by the low/mid
+  frequency content. This **tests and confirms** the Phase 03 relabel of §14.2
+  (previously HYPOTHESIS — untested). The stable sigmoid's clean ω′ shows no offset.
+- **Type:** verification finding.
+
+## D-042 — Static ε_f(ω′) balance explains the sigmoid but not the sign bias
+
+- **Finding (Step 3):** the zero crossing of `mean ε_f(ω′)` over the window is at
+  +0.220 / +0.057 / +0.014 Hz for sign @100/50/25 µs, versus the closed-loop mean
+  biases +7.912 / +4.974 / +2.201 Hz (2.8 / 1.1 / 0.6 % of the bias). For the stable
+  sigmoid the crossing is at ω_true (bias ≈ 0).
+- **Consequence:** the static balance point **explains the sigmoid** (no bias) but
+  **not the sign bias** (<20 %); dynamic effects remain, independently confirming
+  `phase03.md` §14.5 (also previously HYPOTHESIS — untested). The four-term split
+  shows fund×fund is the restoring term and ripple×ripple the small biasing term.
+- **Type:** verification finding.

@@ -461,10 +461,11 @@ implemented `D` phase is **`+atan((r²−1)/(k_s r))` with `r = ω′/ω`** (lea
 check of the raw→PNS transfer matches `½(D+jQ)` (r=1.104: +8.09° measured vs +7.98°
 predicted; r=1.25: +17.68° vs +17.65°). **The earlier "−atan / inverted formula"
 claim is retracted.** The static transfer is confirmed; the *closed-loop* measured
-filtered−raw phase is negative. **HYPOTHESIS — untested:** it is explained by
-`ω′(t)` being time-varying and correlated with the signal, so the static transfer
-does not apply. This is carried to the Phase 05 prelude; it is not a filter bug and
-has not been independently verified (e.g. by an `ω′(t)` replay).
+filtered−raw phase is negative. **CONFIRMED (Phase 05a, D-041):** a band-split replay
+of `ω′(t)` (`experiments/05a_filter_prelude.py`) shows the offset is caused by the
+**high-frequency band of `ω′(t)` (above 3ω_e ≈ 200 Hz)** — the high band alone
+reproduces the closed-loop phase, while the mean/low/mid bands give the static value.
+It is not a filter bug.
 
 ### 14.3 Paper-literal output `v′` vs positive sequence (Step 3)
 
@@ -538,10 +539,10 @@ zero (Phase 04 Step 0c correction).
 
 **Verdict: the open-loop ε_f budget does NOT explain the sign-observer bias.**
 The sign agrees but the magnitude is **36× / 83× / 148×** too small (≫2×), and the
-white-ripple mean is seed-dominated. **HYPOTHESIS — untested:** the bias is a
-discrete/aliasing and nonlinear-loop effect rather than the steady-state ripple
-ε_f; the budget is disproven but the mechanism is unproven and is carried to the
-Phase 05 prelude.
+white-ripple mean is seed-dominated. **CONFIRMED (Phase 05a, D-042):** the static
+`ε_f(ω′)` balance point is far below the bias (2.8 / 1.1 / 0.6 % of it at
+100/50/25 µs), so dynamic effects remain — a discrete/aliasing and nonlinear-loop
+effect rather than the steady-state ripple `ε_f`.
 
 ### 14.6 Ramp metrics with the windowed fit (Step 6)
 

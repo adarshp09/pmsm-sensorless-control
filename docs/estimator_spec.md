@@ -1,0 +1,104 @@
+# Estimator & controller spec sheet (Phase 05a Step 4)
+
+Extracted from **rendered pages** of `docs/act.pdf` (not only the text layer): pages
+825, 826, 827, 828 (printed numbering; PDF pages 3–6). Every item is marked
+**PRINTED** (with page/equation/figure) or **UNPRINTED** (→ `null` in
+`parameter_extraction.md`). **No estimator or controller is implemented.**
+
+Scope: the rotor position/speed estimator (Q-PLL) that Phase 05b will build, the
+paper's own test scenarios and reported error numbers (Phase 05b targets), and the
+controller details a later closed-loop phase would need.
+
+---
+
+## (a) Position / speed estimation
+
+| Item | Status | Source / value |
+| --- | --- | --- |
+| Position from back EMF (direct) | **PRINTED** | Eq.(8), p.825: `θ̂_e = −arctan(Ê_α / Ê_β)` — one-argument `arctan`, a single minus sign **outside** the arctan, argument `Ê_α/Ê_β` |
+| Q-PLL **structure** | **PRINTED** | Fig.1, p.825 |
+| Q-PLL inputs | **PRINTED** | `Ê_α`, `Ê_β` (Fig.1) — i.e. the DSOGI-FLL output `Ê_f` (Eq.(12); Fig.7, p.828) |
+| Q-PLL error `Δe` algebra | **UNPRINTED** | Fig.1 shows two multipliers (with `cos θ̂`, `sin θ̂`), a `−` combining node and a signal labelled `Δ_e`; no closed-form equation is printed |
+| Q-PLL loop filter | **PRINTED (block only)** | Fig.1: a `PI` block whose output is `ω̂` |
+| Q-PLL PI gains (`kp`, `ki`) | **UNPRINTED** | none printed (Fig.1 has no numbers) |
+| Q-PLL normalization | **PRINTED (label)** | the text calls it a "normalized" Q-PLL; the normalization algebra is not printed |
+| Q-PLL VCO / integrator | **PRINTED (block only)** | Fig.1: `1/s` integrating `ω̂` → `θ̂` |
+| Speed estimate | **PRINTED (block only)** | `ω̂` is the Q-PLL PI output (Fig.1); **no speed equation** is printed |
+| Electrical↔mechanical speed conversion (`ω_m = ω̂/p` or `ω̂·60/2πp`) | **UNPRINTED** | not printed anywhere |
+| Angle wrapping / normalization convention (e.g. `(−π, π]`) | **UNPRINTED** | not printed |
+| Phase compensation on `Ê_f` before the PLL | **UNPRINTED (none for the proposed method)** | the paper states the DSOGI-FLL keeps fundamental amplitude/phase unchanged (Eqs.(13)–(16)); the LPF phase-compensation discussion applies only to the *conventional* SMO it replaces |
+| Which signal feeds the estimator | **PRINTED** | the **filtered** `Ê_f` from the DSOGI-FLL (Fig.7, p.828; Eq.(12)) |
+| Startup / low-speed handling | **PRINTED (qualitative)** | Section IV-E / V-E: the method needs another strategy for start-up and low speed |
+
+**Discrepancy to note:** Eq.(8) is printed with the minus sign *outside* the
+arctangent and the argument `Ê_α/Ê_β`. With the paper's back-EMF convention
+`E = ω_e ψ_f[−sin θ_e, cos θ_e]` (Eq.(2)), this yields `θ̂_e = θ_e + π/2` (a
+constant quadrature offset); the paper prints Eq.(8) as a *direct* estimate but
+also recommends the Q-PLL (Fig.1) "to improve the accuracy", which is what its own
+block diagram (Fig.7) actually uses. **UNRESOLVED** whether Eq.(8) carries an
+implicit quadrant/offset convention; flagged for Phase 05b.
+
+## (b) The paper's own scenarios and reported error numbers (Phase 05b targets)
+
+Scenario definitions (PRINTED):
+
+| Scenario | Definition | Source |
+| --- | --- | --- |
+| Sim — no-load variable speed | 500 r/min no-load, ramp to 1000 r/min at 1.5 s, steady at 2 s | Section IV-B/C, pp.826–827; Fig.9/11/12 |
+| Sim — constant speed + load step | 1000 r/min, load steps to 50 % rated at 1.5 s | Section IV-D, p.827; Fig.13 |
+| Exp — no-load variable speed | reference 500 → 1000 r/min | Section V-C, p.829; Fig.17/18 |
+| Exp — constant speed + load step | 1000 r/min, 20 % rated load disturbance | Section V-D, p.829; Fig.19/20 |
+
+Reported numbers (improved SMO unless stated; PRINTED):
+
+| Scenario | Metric | Value | Source |
+| --- | --- | --- | --- |
+| Sim, no-load | max speed error | **≈ 5 r/min** | Section IV-C, p.827 |
+| Sim, no-load | steady position error | **≈ 0.07 rad** | Section IV-C, p.827 |
+| Sim, no-load | max dynamic position error | **≈ 0.2 rad** (STASMO-CVGI 0.3 rad) | Section IV-C, p.827 |
+| Sim, no-load | STASMO-CVGI position error @500/1000 r/min | 0.12 / 0.15 rad | Section IV-C, p.827 |
+| Sim, 50 % load @1000 r/min | dynamic max speed error | **23 r/min** | Section IV-D, p.827 |
+| Sim, 50 % load | steady mean speed error | **5 r/min** (STASMO-CVGI 8 r/min) | Section IV-D, p.827 |
+| Sim, 50 % load | dynamic max position error | **0.22 rad** (STASMO-CVGI 0.3 rad) | Section IV-D, p.827 |
+| Sim, 50 % load | steady position error | **0.08–0.1 rad** (STASMO-CVGI −0.15…−0.12 rad) | Section IV-D, p.827 |
+| Exp, no-load @500 r/min | max speed / position error | **15 r/min / 0.1256 rad** (STASMO: 25 r/min / 0.32 rad) | Section V-C, p.829 |
+| Exp, no-load @1000 r/min | max speed / position error | **10 r/min / 0.08 rad** (STASMO: 20 r/min / 0.2 rad) | Section V-C, p.829 |
+| Exp, 20 % load @1000 r/min | speed error | **≈ 10 r/min** (STASMO max 20 r/min) | Section V-D, p.829 |
+| Exp, 20 % load @1000 r/min | position error | **0.152 rad** (STASMO 0.184 rad) | Section V-D, p.829 |
+| Table IV @1000 r/min | summary | **0.08 rad, 10 rpm**; low harmonics, no amplitude attenuation, no phase delay | Table IV, p.830 |
+
+These are the Phase 05b acceptance targets. Baselines to reproduce: STASMO-CVGI,
+SMO+LPF, STASMO+CVGI (see `configs/experiments.yaml`).
+
+## (c) Controller details for a later closed-loop phase
+
+| Item | Status | Source / value |
+| --- | --- | --- |
+| Control topology | **PRINTED** | Fig.7, p.828: cascade — speed PI → `i_q*`; `i_d* = 0`; two current PIs → `dq/αβ` → SVPWM → inverter → PMSM |
+| `i_d` reference | **PRINTED** | `i_d* = 0` (Fig.7) |
+| Speed loop | **PRINTED (block only)** | one `PI` on `ω_ref − ω̂`; output `i_q*` (Fig.7) |
+| Current loops | **PRINTED (block only)** | two `PI` blocks on `i_d*−i_d`, `i_q*−i_q` (Fig.7) |
+| Speed-loop frequency | **PRINTED** | **1 kHz** (Table III, p.828) |
+| Current-loop / sampling frequency | **PRINTED** | **10 kHz** (Table III, p.828) |
+| Switching frequency | **PRINTED** | **10 kHz** (Section V, p.829) |
+| Inverter dead time | **PRINTED** | **2 µs** (Section V, p.829) |
+| PWM | **PRINTED (block)** | `SVPWM` (Fig.7) |
+| DC-bus voltage `V_DC` | **UNPRINTED (value)** | symbol shown (Fig.7); no number → `null` |
+| PI gains (`kp`, `ki`) speed & current | **UNPRINTED** | none printed |
+| Inverter model (switching/dead-time compensation block) | **UNPRINTED** | no model beyond "SVPWM + inverter + 2 µs dead time" |
+| Current sensing | **PRINTED (block)** | 16-bit ADC (Fig.7) |
+| Load profile | **PRINTED (partial)** | rated load 7.7 N·m (Table III); load steps = 50 % rated (sim) / 20 % rated (exp) (Sections IV-D, V-D). The full torque-vs-time shape is not printed |
+| Mechanical model (J, friction) | **PRINTED (J only)** | `J = 0.00153 kg·m²` (Table III); friction **UNPRINTED** |
+| Speed reference profile | **PRINTED** | 500 → 1000 r/min (Sections IV-C, V-C) |
+
+## UNPRINTED summary (→ `null` in `parameter_extraction.md`)
+
+- Q-PLL: error algebra, `kp`/`ki`, normalization, VCO/VCO gain.
+- Speed equation and electrical↔mechanical conversion.
+- Angle wrapping convention.
+- Controller PI gains (speed and current), DC-bus voltage, PWM/dead-time model.
+- Viscous/static friction.
+- Simulation solver, timestep (beyond 10 kHz), injected-noise levels.
+
+**No estimator or controller code is written from this spec until Phase 05b/06 is
+approved.**
