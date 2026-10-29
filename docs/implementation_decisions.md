@@ -425,6 +425,36 @@ inputs by default
 - **Type:** experimental result, **conditional on the assumed Ke/Kec/MF/operator/grid
   values**; not a paper reproduction.
 
+## Phase 04b — fixed-gain control and metric cleanup
+
+## D-035 — Unified sliding-surface metrics; old RMSE/mean|S| pair retracted
+
+- **Decision:** report `rms_s_alpha`, `rms_s_beta` (per-axis RMS), `mean|S|`, and
+  `RMS|S| = sqrt(mean(Sα²+Sβ²))`, all from the **sample-instant** `S_pre` over the
+  same window.
+- **Why:** the old `current_rmse_a` used the **post-update** estimate while
+  `mean|S|` used `S_pre`; one Euler step reduces the error, which is why the old
+  "RMSE" appeared smaller than `mean|S|` in 5 of 6 rows. With `S_pre` for both,
+  `RMS|S| >= mean|S|` always.
+- **Consequence:** the old columns are marked/retracted; the Phase 04 tables are
+  rewritten with the unified definitions.
+- **Type:** metric definition (correction).
+
+## D-036 — Matched fixed-gain control; FLC claims re-based
+
+- **Decision:** compare the FLC against constant-gain `SigmoidSMO` cells
+  (kF ∈ {0.35,0.5,0.75,1.0} × aF ∈ {0.1,0.2,0.4,0.6,1.0}, plus the FLC time-mean
+  `0.355/0.591`) and against the Pareto front in `(t_conv, ripple)` and
+  `(t_conv, |gain−1|)`.
+- **Result:** 7 fixed-gain cells at `Ts=100 us` (16 across both Ts) **dominate the
+  FLC nominal on ripple, |gain−1|, |phase| and RMS|S| simultaneously**; the matched
+  fixed-gain cell has lower ripple (0.96 vs 1.23 V) and lower `max|S|` (2.78 vs
+  3.36 A). **No FLC cell lies beyond the fixed-gain Pareto front.**
+- **Retraction:** the Phase 04 claim "the FLC strongly helps at 100 us" held only
+  against the **limit-cycle default** (kF=aF=1); it does **not** hold against matched
+  fixed-gain control. The stable fixed sigmoid at `Ts=50 us` remains best.
+- **Type:** experimental result (conditional on the assumed FLC values).
+
 ## D-026 — Metric redefinition and re-based claims
 
 - **Decision:** replace `std(E - one-period moving average)` with the Phase 03b

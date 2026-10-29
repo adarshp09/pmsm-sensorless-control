@@ -34,6 +34,9 @@ htmlcov/
 .idea/
 .DS_Store
 
+# Command Code local state (taste, sessions)
+.commandcode/
+
 # Local experiment output (keep the directory, ignore generated results)
 experiments/**/output/
 experiments/**/*.npz
