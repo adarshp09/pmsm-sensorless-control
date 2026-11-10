@@ -1,0 +1,271 @@
+{
+  "k_eff": 19.359999999999996,
+  "k0_v": 179.62924780409975,
+  "a0_per_a": 0.5388877434122991,
+  "design_amp_v": 55.54335811546754,
+  "w_n_rad_s": 125.66370614359172,
+  "step0b_basis": {
+    "definition": "all Phase 05b angle/speed rows use the SAME `_angle_metrics`/`_speed_metrics` helpers -> pointwise mean/std/rms/max over a window mask (steady = last 8 cycles; ramp settled = [0.75, 1.5] s). None of them is a windowed fit.",
+    "premise_test": "the ramp speed max and the constant-speed speed max share one basis; the ~20x gap is physical (the constant-speed QPLL speed estimate carries a few-rpm ripple while the ramp tracks smoothly), not a metric artefact.",
+    "rows": {
+      "Ts100": {
+        "recomputed": {
+          "angle_mean_deg": -1.1025449951619868,
+          "angle_rms_deg": 1.1026321408358324,
+          "angle_max_abs_deg": 1.1390715665815645,
+          "speed_mean_rpm": 0.0024766979208276636,
+          "speed_rms_rpm": 0.06655543427582651,
+          "speed_max_abs_rpm": 0.14745308970221424
+        },
+        "json_settled": {
+          "mean_rpm": 0.0024766979208276636,
+          "std_rpm": 0.06650933617961338,
+          "max_abs_rpm": 0.14745308970221424
+        },
+        "reproduces_json": true
+      },
+      "Ts100|const100": {
+        "pointwise": {
+          "angle_mean_deg": 0.01395021871723205,
+          "angle_rms_deg": 1.568036623826246,
+          "angle_max_abs_deg": 5.556164326787752,
+          "speed_mean_rpm": 0.20445553304593284,
+          "speed_rms_rpm": 2.891936023879849,
+          "speed_max_abs_rpm": 9.192676592885622
+        }
+      },
+      "Ts100|const200": {
+        "pointwise": {
+          "angle_mean_deg": -0.03713624119517903,
+          "angle_rms_deg": 0.5398727236141203,
+          "angle_max_abs_deg": 2.02839158766516,
+          "speed_mean_rpm": 0.14627605880870806,
+          "speed_rms_rpm": 1.9418108667992686,
+          "speed_max_abs_rpm": 6.210631385544308
+        }
+      },
+      "Ts100|const500": {
+        "pointwise": {
+          "angle_mean_deg": -0.20254134613998664,
+          "angle_rms_deg": 0.3791236474177973,
+          "angle_max_abs_deg": 1.442404217285065,
+          "speed_mean_rpm": 0.22844912517263463,
+          "speed_rms_rpm": 2.976228772429712,
+          "speed_max_abs_rpm": 9.406345799556147
+        }
+      },
+      "Ts100|const1000": {
+        "pointwise": {
+          "angle_mean_deg": -0.5201187649183984,
+          "angle_rms_deg": 0.5242583495683629,
+          "angle_max_abs_deg": 0.7253685692566288,
+          "speed_mean_rpm": 0.06359704528005,
+          "speed_rms_rpm": 1.150470631156284,
+          "speed_max_abs_rpm": 3.404939098672346
+        }
+      },
+      "Ts100|const2000": {
+        "pointwise": {
+          "angle_mean_deg": -1.4512166806727294,
+          "angle_rms_deg": 1.4512855368954678,
+          "angle_max_abs_deg": 1.4718745377042086,
+          "speed_mean_rpm": 0.0006828750799840252,
+          "speed_rms_rpm": 1.9648804162006364,
+          "speed_max_abs_rpm": 2.8066080417002786
+        }
+      },
+      "Ts50": {
+        "recomputed": {
+          "angle_mean_deg": -1.6779853610253521,
+          "angle_rms_deg": 1.6782610321806797,
+          "angle_max_abs_deg": 1.743482075437028,
+          "speed_mean_rpm": -0.005696983168814824,
+          "speed_rms_rpm": 0.0666768613947651,
+          "speed_max_abs_rpm": 0.15564863002952878
+        },
+        "json_settled": {
+          "mean_rpm": -0.005696983168814824,
+          "std_rpm": 0.06643303566924334,
+          "max_abs_rpm": 0.15564863002952878
+        },
+        "reproduces_json": true
+      },
+      "Ts50|const100": {
+        "pointwise": {
+          "angle_mean_deg": -0.09877478872386904,
+          "angle_rms_deg": 1.5574081579283188,
+          "angle_max_abs_deg": 5.631667743153122,
+          "speed_mean_rpm": 0.20307779764903092,
+          "speed_rms_rpm": 2.869434590855106,
+          "speed_max_abs_rpm": 9.134782842751713
+        }
+      },
+      "Ts50|const200": {
+        "pointwise": {
+          "angle_mean_deg": -0.21004623447606016,
+          "angle_rms_deg": 0.5690536406973972,
+          "angle_max_abs_deg": 2.177989137085168,
+          "speed_mean_rpm": 0.14462924472797276,
+          "speed_rms_rpm": 1.9115432082641,
+          "speed_max_abs_rpm": 6.133962170493762
+        }
+      },
+      "Ts50|const500": {
+        "pointwise": {
+          "angle_mean_deg": -0.5539941706978484,
+          "angle_rms_deg": 0.6330225035322796,
+          "angle_max_abs_deg": 1.7511479369195022,
+          "speed_mean_rpm": 0.2204204638976467,
+          "speed_rms_rpm": 2.8662820085279277,
+          "speed_max_abs_rpm": 9.146290575558394
+        }
+      },
+      "Ts50|const1000": {
+        "pointwise": {
+          "angle_mean_deg": -1.1676735813469121,
+          "angle_rms_deg": 1.169027228885272,
+          "angle_max_abs_deg": 1.349315323298072,
+          "speed_mean_rpm": 0.06195122964181506,
+          "speed_rms_rpm": 0.9985290261433508,
+          "speed_max_abs_rpm": 2.911635785208876
+        }
+      },
+      "Ts50|const2000": {
+        "pointwise": {
+          "angle_mean_deg": -2.683857581736446,
+          "angle_rms_deg": 2.683893537006926,
+          "angle_max_abs_deg": 2.7039113534139023,
+          "speed_mean_rpm": -6.073993278905269e-05,
+          "speed_rms_rpm": 1.937294904191185,
+          "speed_max_abs_rpm": 2.766801254795536
+        }
+      }
+    }
+  },
+  "step0c_bias_model": {
+    "Ts100|100rpm": {
+      "measured_bias_deg": 0.01395021871723205,
+      "linear_lag_deg": -0.17759822305620337,
+      "half_sample_deg": 0.12000000000000001,
+      "predicted_with_half_deg": -0.057598223056203365,
+      "residual_with_half_deg": 0.07154844177343542,
+      "predicted_no_half_deg": -0.17759822305620337,
+      "residual_no_half_deg": 0.1915484417734354
+    },
+    "Ts100|200rpm": {
+      "measured_bias_deg": -0.03713624119517903,
+      "linear_lag_deg": -0.35519303345859893,
+      "half_sample_deg": 0.24000000000000002,
+      "predicted_with_half_deg": -0.11519303345859891,
+      "residual_with_half_deg": 0.07805679226341988,
+      "predicted_no_half_deg": -0.35519303345859893,
+      "residual_no_half_deg": 0.3180567922634199
+    },
+    "Ts100|500rpm": {
+      "measured_bias_deg": -0.20254134613998664,
+      "linear_lag_deg": -0.8879228704662037,
+      "half_sample_deg": 0.6,
+      "predicted_with_half_deg": -0.2879228704662037,
+      "residual_with_half_deg": 0.08538152432621704,
+      "predicted_no_half_deg": -0.8879228704662037,
+      "residual_no_half_deg": 0.685381524326217
+    },
+    "Ts100|1000rpm": {
+      "measured_bias_deg": -0.5201187649183984,
+      "linear_lag_deg": -1.7754194540941368,
+      "half_sample_deg": 1.2,
+      "predicted_with_half_deg": -0.5754194540941369,
+      "residual_with_half_deg": 0.05530068917573849,
+      "predicted_no_half_deg": -1.7754194540941368,
+      "residual_no_half_deg": 1.2553006891757383
+    },
+    "Ts100|2000rpm": {
+      "measured_bias_deg": -1.4512166806727294,
+      "linear_lag_deg": -3.547435964701706,
+      "half_sample_deg": 2.4,
+      "predicted_with_half_deg": -1.1474359647017063,
+      "residual_with_half_deg": -0.3037807159710231,
+      "predicted_no_half_deg": -3.547435964701706,
+      "residual_no_half_deg": 2.096219284028977
+    },
+    "Ts50|100rpm": {
+      "measured_bias_deg": -0.09877478872386904,
+      "linear_lag_deg": -0.17759822305620337,
+      "half_sample_deg": 0.060000000000000005,
+      "predicted_with_half_deg": -0.11759822305620338,
+      "residual_with_half_deg": 0.01882343433233434,
+      "predicted_no_half_deg": -0.17759822305620337,
+      "residual_no_half_deg": 0.07882343433233434
+    },
+    "Ts50|200rpm": {
+      "measured_bias_deg": -0.21004623447606016,
+      "linear_lag_deg": -0.35519303345859893,
+      "half_sample_deg": 0.12000000000000001,
+      "predicted_with_half_deg": -0.23519303345859893,
+      "residual_with_half_deg": 0.02514679898253877,
+      "predicted_no_half_deg": -0.35519303345859893,
+      "residual_no_half_deg": 0.14514679898253877
+    },
+    "Ts50|500rpm": {
+      "measured_bias_deg": -0.5539941706978484,
+      "linear_lag_deg": -0.8879228704662037,
+      "half_sample_deg": 0.3,
+      "predicted_with_half_deg": -0.5879228704662036,
+      "residual_with_half_deg": 0.03392869976835522,
+      "predicted_no_half_deg": -0.8879228704662037,
+      "residual_no_half_deg": 0.33392869976835526
+    },
+    "Ts50|1000rpm": {
+      "measured_bias_deg": -1.1676735813469121,
+      "linear_lag_deg": -1.7754194540941368,
+      "half_sample_deg": 0.6,
+      "predicted_with_half_deg": -1.1754194540941367,
+      "residual_with_half_deg": 0.0077458727472246025,
+      "predicted_no_half_deg": -1.7754194540941368,
+      "residual_no_half_deg": 0.6077458727472247
+    },
+    "Ts50|2000rpm": {
+      "measured_bias_deg": -2.683857581736446,
+      "linear_lag_deg": -3.547435964701706,
+      "half_sample_deg": 1.2,
+      "predicted_with_half_deg": -2.347435964701706,
+      "residual_with_half_deg": -0.33642161703473983,
+      "predicted_no_half_deg": -3.547435964701706,
+      "residual_no_half_deg": 0.8635783829652603
+    }
+  },
+  "step0c_ramp": {
+    "omega_dot_e_rad_s2": 139.62634015954634,
+    "ramp_offset_deg": 0.5066059182116889,
+    "rows": {
+      "Ts100|model@750rpm": {
+        "measured_ramp_bias_deg": -1.1025449951619868,
+        "const_bias_deg": -0.43175105748171816,
+        "ramp_offset_deg": 0.5066059182116889,
+        "predicted_deg": -0.938356975693407,
+        "residual_deg": -0.16418801946857975
+      },
+      "Ts100|measured-interp@750rpm": {
+        "measured_ramp_bias_deg": -1.1025449951619868,
+        "const_bias_deg": -0.3613300555291925,
+        "ramp_offset_deg": 0.5066059182116889,
+        "predicted_deg": -0.8679359737408814,
+        "residual_deg": -0.2346090214211054
+      },
+      "Ts50|model@750rpm": {
+        "measured_ramp_bias_deg": -1.6779853610253521,
+        "const_bias_deg": -0.8817510574817182,
+        "ramp_offset_deg": 0.5066059182116889,
+        "predicted_deg": -1.388356975693407,
+        "residual_deg": -0.289628385331945
+      },
+      "Ts50|measured-interp@750rpm": {
+        "measured_ramp_bias_deg": -1.6779853610253521,
+        "const_bias_deg": -0.8608338760223803,
+        "ramp_offset_deg": 0.5066059182116889,
+        "predicted_deg": -1.3674397942340693,
+        "residual_deg": -0.31054556679128287
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+# Closed-loop FOC drive parameters — ASSUMPTIONS (not from the paper).
+#
+# Every value here is a local implementation choice; `null` means unresolved and
+# the loader raises ConfigError. The paper prints no PI gains, no DC-bus value,
+# no inverter delay and no anti-windup rule.
+# See docs/estimator_spec.md §(c), docs/phase06a.md and D-047+.
+
+meta:
+  name: drive_assumptions
+  status: assumed
+  notes: >
+    ASSUMPTION — not from paper. The drive/servo gains, DC-bus voltage and the
+    inverter computation delay are design choices: the paper prints the loop
+    frequencies only. Gains come from the stated design formulas, frozen before
+    any scenario is run; no tuning toward the paper's reported numbers.
+
+parameters:
+  # ASSUMPTION — not from paper: DC-bus voltage, hinted by the printed back-EMF
+  # base 311/sqrt(3) V (D-015). Phase-voltage limit = V_dc / sqrt(3).
+  "inverter.dc_bus_voltage":            {value: 311.0, unit: "V",  source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: one control-period computation delay (u computed
+  # at k is applied over [k+1, k+2)); 0.5 Ts more from the zero-order hold.
+  "inverter.delay_samples":             {value: 1,     unit: "-",  source: "ASSUMPTION — not from paper"}
+
+  # ASSUMPTION — not from paper: current-loop crossover (Kp = alpha_c Ld,
+  # Ki = alpha_c Rs). 500 Hz -> PM ~ 63 deg with 1.5 Ts delay.
+  "current_loop.bandwidth_alpha_c_hz":  {value: 500.0, unit: "Hz", source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: dq cross-coupling decoupling ON.
+  "current_loop.decoupling":            {value: 1,     unit: "-",  source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: back-EMF feed-forward compensation OFF.
+  "current_loop.back_emf_compensation": {value: 0,     unit: "-",  source: "ASSUMPTION — not from paper"}
+
+  # ASSUMPTION — not from paper: speed-loop bandwidth and damping
+  # (Kp = 2 zeta alpha_w J / Kt, Ki = alpha_w^2 J / Kt).
+  "speed_loop.bandwidth_alpha_w_hz":    {value: 50.0,  unit: "Hz", source: "ASSUMPTION — not from paper"}
+  "speed_loop.damping_zeta":            {value: 1.0,   unit: "-",  source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: i_q* clamp at +/- 2 I_rated.
+  "speed_loop.i_q_clamp_factor":        {value: 2.0,   unit: "-",  source: "ASSUMPTION — not from paper"}
+
+  # ASSUMPTION — not from paper: viscous friction b = 0 (paper value is null).
+  "machine.viscous_friction_b":         {value: 0.0,   unit: "N.m.s/rad", source: "ASSUMPTION — not from paper"}
+
+  # ASSUMPTION — not from paper: RK4 sub-steps per control period (>= 4 required).
+  "integration.substeps_per_ts":        {value: 4,     unit: "-",  source: "ASSUMPTION — not from paper"}
+
+specs:
+  # ASSUMPTION — not from paper: anti-windup is conditional integration with the
+  # integrator and the output clamped at the voltage limit.
+  anti_windup: "conditional integration; integrator/output clamped at V_dc/sqrt(3)"
+  # ASSUMPTION — not from paper: inverter is an average-value model (no PWM, no
+  # dead time); dead time / PWM are deliberately out of scope here.
+  inverter_model: "average-value, phase-voltage limit V_dc/sqrt(3), 1-sample delay"

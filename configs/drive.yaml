@@ -1,0 +1,39 @@
+# Closed-loop FOC drive parameters — PRINTED (paper-reported) values only.
+#
+# STATUS: PARTIALLY VERIFIED.
+#
+# The paper prints the controller STRUCTURE (Fig.7, p.828) and the loop/switch
+# frequencies and dead time (Table III, p.828; Section V, p.829), and the i_d
+# reference (Fig.7). It prints NO controller PI gains and no DC-bus value
+# (`rating.dc_bus_voltage` is null). Every unprinted drive value is an ASSUMPTION
+# in `configs/drive_assumptions.yaml`; a null there raises ConfigError.
+#
+# Loaded and validated by `pmsm_sensorless.simulation.drive`.
+
+meta:
+  name: drive
+  status: partially_verified
+  source_document: "docs/act.pdf, Fig.7 p.828; Table III p.828; Section V p.829"
+  notes: >
+    PRINTED drive items only. Controller PI gains, DC-bus voltage, the inverter
+    delay and the anti-windup are not printed and must not be guessed here.
+
+parameters:
+  # --- Loop / switching rates (printed) ---
+  "control.current_loop_frequency":  {value: 10000, unit: "Hz", source: "Table III, p.828; derived from 10 kHz"}
+  "control.speed_loop_frequency":    {value: 1000,  unit: "Hz", source: "Table III, p.828; derived from 1 kHz"}
+  "control.switching_frequency":     {value: 10000, unit: "Hz", source: "Section V, p.829; derived from 10 kHz"}
+  "control.inverter_dead_time":      {value: 0.000002, unit: "s", source: "Section V, p.829; derived from 2 us"}
+
+  # --- Current reference (printed) ---
+  "control.i_d_reference":           {value: 0.0, unit: "A", source: "Fig.7, p.828 (i_d* = 0)"}
+
+# Structural (non-scalar) printed items.
+specs:
+  topology: >
+    Fig.7, p.828: cascade speed PI -> i_q*; i_d* = 0; two current PIs -> dq/alpha-beta
+    -> SVPWM -> inverter -> PMSM
+  pi_gains: null          # not printed
+  dc_bus_voltage: null    # Fig.7 shows the symbol only; value unresolved
+  inverter_model: null    # no model printed beyond "SVPWM + inverter + 2 us dead time"
+  current_sensing: "16-bit ADC (Fig.7, p.828)"

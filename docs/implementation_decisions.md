@@ -611,3 +611,63 @@ inputs by default
   voltage vs inverter, our `E_hat`/assumed PLL bandwidth) and **makes no reproduction
   claim** despite our errors being numerically smaller.
 - **Type:** scope / reporting.
+
+---
+
+## Phase 06a — closed-loop drive with encoder feedback (2026-10-29)
+
+## D-047 — Drive gains from the stated design formulas (ASSUMPTION)
+
+- **Decision:** `simulation/drive.py` closes dq current PIs and a mechanical-speed PI on
+  the **true** angle/speed (`TrueSource`, encoder baseline). Gains are fixed by design
+  formulas before any scenario runs, and every non-printed value is a labelled
+  ASSUMPTION in `configs/drive_assumptions.yaml` (null → `ConfigError`):
+  `Kp_c = α_c Ld`, `Ki_c = α_c Rs`, `α_c = 2π·500 Hz`; `Kp_w = 2ζα_ω J/Kt`,
+  `Ki_w = α_ω² J/Kt`, `Kt = ½·3 p ψ_f`, `ζ = 1`, `α_ω = 2π·50 Hz`; `i_q*` clamp
+  `±2 I_rated`; decoupling ON, back-EMF feed-forward OFF; anti-windup = conditional
+  integration with the integrator/output clamped at the voltage limit.
+- **Printed (kept):** current loop 10 kHz, speed loop 1 kHz, switching 10 kHz, dead
+  time 2 µs, `i_d* = 0` (Table III / Fig.7 / Section V).
+- **Type:** implementation choices (assumed). **No tuning toward the paper's numbers.**
+
+## D-048 — Average-value inverter with one-sample delay (ASSUMPTION)
+
+- **Decision:** the inverter is an average-value model with `V_dc = 311 V` (hinted by the
+  printed back-EMF base 311/√3), phase-voltage limit `V_dc/√3 = 179.56 V`, and a
+  **one-sample computation delay** (voltage computed at `k` applied over `[k+1, k+2)`).
+  No PWM and no 2 µs dead time (deferred to Phase 06c). The plant is advanced with RK4
+  over ≥4 sub-steps per `Ts` and a zero-order-held voltage.
+- **Type:** implementation choices (assumed).
+
+## D-049 — Pluggable angle/speed source; `TrueSource` is the only ground-truth path
+
+- **Decision:** the controller receives `(i_αβ, θ_src, ω_src, references)`; the
+  `(θ, ω)` pair comes from an `AngleSpeedSource`. The only source implemented is
+  `TrueSource`, which reads the plant's true `θ_e/ω_e` (labelled *encoder baseline*). A
+  structure test asserts the drive imports no observer/filter/fuzzy/estimation module,
+  so Phase 06b can swap in an estimator source without touching the controller.
+- **Type:** architectural constraint (extends D-012/D-024).
+
+## D-050 — Metrics from the true state; no conventional-SMO baseline
+
+- **Decision:** the drive metrics are computed from the **true** state (evaluation
+  layer); the current loop is checked against the exact discrete ZOH+PI+delay model and
+  the speed loop against the designed second-order response.
+- **Caveat:** `arctan` on the raw **sign** observer `E_hat` is unusable (bang-bang wrap
+  glitches) and **no conventional-SMO baseline exists** (its LPF cutoff is `null`), so no
+  "improved vs conventional" claim can be made yet.
+- **Type:** metric definition + scope caveat.
+
+## D-051 — GATE passed; open-loop angle-bias model check
+
+- **GATE:** with `TrueSource`, a 0 → 1000 rpm no-load step and a rated-load step at
+  1000 rpm give steady speed error < 0.1 rpm, `|i_d| < 3 % I_rated`, `i_q` within 1 % of
+  `T_L/Kt`, and no voltage-limit saturation after the transient. **PASSED** (see
+  `docs/phase06a.md`).
+- **Bias model (Step 0c):** the constant-speed steady angle bias closes to ≲0.09°
+  against `−atan(ωLd/(Rs+K_eff)) + ω Ts/2` (half-sample hypothesis **confirmed**: the
+  `+ω Ts/2` term cuts the 1000 rpm/100 µs residual from +1.26° to +0.06°). The ramp bias
+  closes to ~0.2–0.3° as constant bias + `ω̇_e/ω_n²`. The earlier "budget ±0.001°" is an
+  identity at constant speed, not a model check.
+- **Loop margins (discrete):** current 493.4 Hz / 63.2° PM; speed 97.0 Hz / 39.9° PM.
+- **Type:** experimental result (conditional on the assumed drive values).

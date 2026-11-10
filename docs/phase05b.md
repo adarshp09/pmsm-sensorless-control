@@ -72,11 +72,70 @@ in this cell set.**
 | 500 rpm | 50 µs | −0.55 / 1.75 | 9.15 | 0.081 |
 | 1000 rpm | 50 µs | −1.17 / 1.35 | 2.91 | 0.038 |
 | 2000 rpm | 50 µs | −2.68 / 2.70 | 2.77 | 0.032 |
-| ramp (settled 0.75–1.5 s) | 100 µs | −1.10 / 1.14 | 0.15 | — |
-| ramp (settled) | 50 µs | −1.68 / 1.74 | 0.16 | — |
+| ramp (settled 0.75–1.5 s) | 100 µs | −1.10 / 1.14 | 0.15 ᵃ | — |
+| ramp (settled) | 50 µs | −1.68 / 1.74 | 0.16 ᵃ | — |
 
 Lock-in time scales as 1/|E| (loop gain ∝ amplitude): 0.61 s at 100 rpm → 0.030 s at
 2000 rpm. The angle bias grows with speed (observer discrete lag, see the budget).
+
+### Step 0b (Phase 06a) — metric basis and the ramp rows recomputed pointwise
+
+Every angle/speed row in this document is **pointwise**: the same
+`_angle_metrics`/`_speed_metrics` helpers (mean/std/RMS/max of the wrapped error over a
+window mask) are used for the constant-speed rows (last 8 cycles) and the ramp rows
+(settled window [0.75, 1.5] s). No row is a windowed fit, so the constant-speed and
+ramp rows **do share one basis**. The ~20× gap in speed max (2.8–9.4 rpm at constant
+speed vs 0.15 rpm on the ramp) is therefore **physical, not a metric artefact**: the
+constant-speed QPLL speed estimate carries a few-rpm ripple driven by the
+filtered-signal ripple, whereas the ramp estimate tracks smoothly. (This corrects the
+Phase 06a Step 0b premise that the two could not share a basis.)
+
+The ramp rows recomputed pointwise by `experiments/06a_step0_analysis.py` (which
+reproduces `estimator_eval.json` exactly, `reproduces_json = True`):
+
+| input | angle mean / RMS / max (deg) | speed mean / RMS / max (rpm) |
+| --- | --- | --- |
+| ramp, 100 µs | −1.1025 / 1.1026 / 1.1391 ᵃ | +0.0025 / 0.0666 / 0.1475 ᵇ |
+| ramp, 50 µs | −1.6780 / 1.6783 / 1.7435 ᵃ | −0.0057 / 0.0667 / 0.1556 ᵇ |
+
+ᵃ Supersedes the earlier ramp angle "−1.10/1.14" and "−1.68/1.74" (identical to 2 d.p.,
+now stated with RMS and as pointwise). ᵇ Supersedes the earlier ramp speed "0.15/0.16
+rpm" (identical max, now stated with mean/RMS).
+
+**Angle bias is large at constant speed and small on the ramp?** No: the *angle* rows
+are consistent (ramp mean −1.10° vs const-1000 −0.52°). Only the *speed* ripple differs,
+for the physical reason above.
+
+### Step 0c (Phase 06a) — angle-bias model check (no new runs)
+
+For the nominal cell the measured steady angle bias is compared with
+`−atan(ω_e Ld/(Rs+K_eff)) + ω_e Ts/2` (`K_eff = k0 a0 kF aF/2 = 19.36`; the `+ω_e Ts/2`
+is the half-sample term, i.e. evaluating the error against `θ_true(t_k + Ts/2)`):
+
+| input | measured | −atan(…) | +ω Ts/2 | predicted | residual |
+| --- | --- | --- | --- | --- | --- |
+| 100 rpm, 100 µs | +0.014 | −0.178 | +0.120 | −0.058 | +0.072 |
+| 500 rpm, 100 µs | −0.203 | −0.888 | +0.600 | −0.288 | +0.085 |
+| 1000 rpm, 100 µs | −0.520 | −1.775 | +1.200 | −0.575 | +0.055 |
+| 2000 rpm, 100 µs | −1.451 | −3.547 | +2.400 | −1.147 | −0.304 |
+| 1000 rpm, 50 µs | −1.168 | −1.775 | +0.600 | −1.175 | +0.008 |
+| 2000 rpm, 50 µs | −2.684 | −3.547 | +1.200 | −2.347 | −0.336 |
+
+The **half-sample hypothesis holds**: without the `+ω Ts/2` term the residual would be
+`measured + atan(…)` = +1.26° at 1000 rpm/100 µs; with it the residual is +0.06°. The
+model closes to ≲0.09° at 100–1000 rpm for both Ts; at 2000 rpm it leaves −0.30/−0.34°
+(the observer's discrete lag beyond the half-sample model).
+
+The ramp bias is the constant-speed bias plus the type-2 PLL ramp offset
+`ω̇_e/ω_n² = 139.63/15791 = 0.507°` (`ω̇_e = p·500 rpm/1.5 s`, `ω_n = 2π·20 Hz`):
+100 µs: −0.432 − 0.507 = −0.939° predicted vs −1.103° measured (residual −0.16°);
+50 µs: −0.882 − 0.507 = −1.388° vs −1.678° (−0.29°). So the ramp bias closes to
+~0.2–0.3°.
+
+> **Note (`docs/phase06a.md` §Step 0):** the earlier "bias budget closes to ±0.001°"
+> is an **identity at constant speed** — with the whole budget evaluated on the same
+> settled window it must balance; it says nothing about the model. This bias-model check
+> (measured vs an *independent* analytical model) is the informative one.
 
 **Filter comparison at 1000 rpm, Ts = 100 µs** (QPLL): raw phase error grows with
 speed, so the filter helps the sign observer (raw `none` gives wrap glitches);
@@ -132,7 +191,7 @@ for jitter.
 
 | Scenario | Paper value | Ours (nominal cell) | Main setup differences |
 | --- | --- | --- | --- |
-| no-load variable speed (sim/exp) | sim: ≈5 rpm, 0.07 rad, 0.2 rad dyn; exp: 15 rpm/0.1256 rad @500, 10 rpm/0.08 rad @1000 | settled: angle mean −1.10/−1.68°, max 1.14/1.74°; speed max 0.15 rpm | **open-loop ideal-FOC feedforward**, not closed-loop speed/position control; our `E_hat` = matched-sigmoid SMO (paper: FSMO); **assumed** QPLL gains; ideal voltage, no dead time/PWM |
+| no-load variable speed (sim/exp) | sim: ≈5 rpm, 0.07 rad, 0.2 rad dyn; exp: 15 rpm/0.1256 rad @500, 10 rpm/0.08 rad @1000 | settled **pointwise** (Step 0b): angle mean/RMS/max −1.10/1.10/1.14° (100 µs), −1.68/1.68/1.74° (50 µs); speed max 0.1475/0.1556 rpm | **open-loop ideal-FOC feedforward**, not closed-loop speed/position control; our `E_hat` = matched-sigmoid SMO (paper: FSMO); **assumed** QPLL gains; ideal voltage, no dead time/PWM |
 | steady 1000 rpm (Table IV) | 0.08 rad, 10 rpm | angle mean −0.52/−1.17°, max 0.73/1.35°; speed max 3.40 rpm | same as above |
 
 Our open-loop angle/speed errors are *smaller* than the paper's closed-loop figures,

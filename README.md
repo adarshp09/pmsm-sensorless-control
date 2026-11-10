@@ -1,15 +1,15 @@
 # PMSM Sensorless Control — Fuzzy Logic + DSOGI-FLL SMO
 
-> **Status: Phases 00–04 complete (including verification sub-phases 03b–03f and
-> 04b). Phase 05 (rotor position/speed estimation) not started.**
+> **Status: Phases 00–05 complete (including verification sub-phases 03b–03f, 04b and
+> the 05a filter prelude). Phase 06a (closed-loop encoder baseline) complete.**
 >
 > The PMSM plant (Eqs.1–2), the Clarke transform, the conventional (sign) /
-> sigmoid / fuzzy-adaptive sliding-mode observers (Eqs.3–7) and the DSOGI-FLL
-> back-EMF filter (Eqs.9–19) are implemented and tested. There is **no** rotor
-> position/speed estimator, **no** closed-loop controller and **no** integrated
-> simulation yet. Results so far are observer/filter studies under a
-> short-circuited (`u=0`) plant (Phase 04c adds an open-loop nominal-drive
-> scenario); they are **not** a reproduction of the paper's reported accuracy.
+> sigmoid / fuzzy-adaptive sliding-mode observers (Eqs.3–7), the DSOGI-FLL
+> back-EMF filter (Eqs.9–19), the position/speed estimators (Eq.(8) + Q-PLL) and a
+> closed-loop FOC drive with **true-angle** feedback (encoder baseline) are
+> implemented and tested. The estimator is **not yet inside the control loop**
+> (Phase 06b), and there is no integrated sensorless simulation yet. Results are
+> **not** a reproduction of the paper's reported accuracy.
 
 ## Objective
 
@@ -99,18 +99,18 @@ pmsm-sensorless-control/
 │   ├── observers/            # sign / sigmoid / FLC-adaptive SMO (Eqs.3–7)
 │   ├── filters/              # SOGI / DSOGI-FLL (Eqs.9–19)
 │   ├── fuzzy/                # FLC Mamdani engine (Tables I–II)
-│   ├── estimation/           # FLL/position/speed — still a docstring stub
-│   ├── simulation/           # scenarios / integration (Phase 04c nominal drive)
+│   ├── estimation/           # position/speed estimators (Eq.(8) alpha-arctan + Q-PLL)
+│   ├── simulation/           # scenarios / integration (04c ideal FOC; 06a closed-loop drive)
 │   └── evaluation/           # metrics / plots — still a docstring stub
 ├── experiments/              # per-phase scripts + output/ result JSONs & plots
 ├── tests/
 └── notebooks/
 ```
 
-Sub-packages still documented as empty (`estimation`, and the placeholder
-docstrings in `simulation`/`evaluation`) contain only a docstring: no
-position/speed estimator or scenario code for those exists yet. `simulation`
-gains the Phase 04c nominal-drive generator.
+The `evaluation` sub-package remains a docstring stub. `simulation` holds the
+Phase 04c nominal-drive generator and the Phase 06a closed-loop drive (`drive.py`,
+which composes the controller with a pluggable angle/speed source; `TrueSource` is
+the encoder baseline).
 
 ## Environment setup
 
@@ -138,9 +138,10 @@ pytest
 ```
 
 Tests cover the plant (Eqs.1–2), Clarke, the conventional/sigmoid/FLC observers,
-SOGI/DSOGI-FLL, configuration loading/validation, the discrete-stability bound
-(D-027), the reported-injection fix (D-025), the ramp metrics and the
-layer-separation structure invariants.
+SOGI/DSOGI-FLL, the position/speed estimators, the closed-loop drive (Phase 06a),
+configuration loading/validation, the discrete-stability bound (D-027), the
+reported-injection fix (D-025), the ramp metrics and the layer-separation structure
+invariants.
 
 ## Implementation roadmap
 
@@ -154,7 +155,9 @@ layer-separation structure invariants.
 | 04c | Nominal-drive scenario + 04b re-check (housekeeping) | completed |
 | 05a | Filter prelude (offset/bias diagnosis) + estimator spec sheet | completed |
 | 05b | Position/speed estimator (Eq.(8) + Q-PLL) + open-loop evaluation | completed |
-| 05 | Integration: full sensorless estimator (position/speed) | in progress (05a–05b done; closed loop next) |
+| 05 | Integration: full sensorless estimator (position/speed) | in progress (05a–05b done; estimator in loop next) |
+| 06a | Closed-loop FOC drive with encoder (true-angle) feedback | completed |
+| 06b | Estimator inside the control loop (sensorless) | not started |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
 

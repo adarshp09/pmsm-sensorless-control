@@ -178,3 +178,27 @@ choice is named PROVISIONAL and cross-referenced to
   1000 rpm; `zeta = 0.707`, `f_n = 20 Hz`, normalization OFF.
 - **Speed:** `omega_hat` is the Q-PLL PI output; `omega_m = omega_hat / p` is DERIVED
   (`p` printed, Table III). No speed equation is printed.
+
+## 12. Phase 06a drive conventions (2026-10-29)
+
+- **dq model** (Eq.(1) in the rotor frame, `Ld = Lq`, `Kt = ½·3 p ψ_f`):
+  `Ld i̇_d = v_d − Rs i_d + ω_e Ld i_q`,
+  `Ld i̇_q = v_q − Rs i_q − ω_e Ld i_d − ω_e ψ_f`,
+  `J ω̇_m = Kt i_q − T_L − B ω_e / p`. Park pair is amplitude-invariant, `α` aligned with
+  phase `a`, so `i_d = i_q = 0` at rest and `ω_m = ω_e / p`.
+- **Current-loop design (ASSUMPTION):** `Kp_c = α_c Ld`, `Ki_c = α_c Rs` with
+  `α_c = 2π·500 Hz`; the discrete PI zero approximately cancels the plant pole `Rs/Ld`,
+  so the continuous open loop is `α_c/s` (crossover `α_c`, PM `90° − α_c·1.5Ts ≈ 63°` at
+  `Ts = 100 µs`). Decoupling ON, back-EMF feed-forward OFF. Discrete realization:
+  `v = Kp e + I`, `I ← I + Ki e Ts` (conditional integration; no update when saturated).
+- **Speed-loop design (ASSUMPTION):** `Kp_w = 2ζα_ω J/Kt`, `Ki_w = α_ω² J/Kt` with
+  `ζ = 1`, `α_ω = 2π·50 Hz`; closed loop `s² + 2ζα_ω s + α_ω²`. `i_q*` clamped at
+  `±2 I_rated`.
+- **Discretization / delay:** current loop at `Ts = 100 µs` (10 kHz), speed loop at
+  `1 ms` (1 kHz). Inverter: **one-sample computation delay** — the voltage computed at
+  `k` is applied over `[k+1, k+2)`; plus the zero-order hold (`½ Ts`). Average-value,
+  phase-voltage limit `V_dc/√3`. Plant RK4 over ≥4 sub-steps per `Ts`.
+- **Anti-windup:** conditional integration (the integrator is advanced only while the
+  output is inside the limit) with the integrator and output clamped at the limit.
+- **Status:** all drive gains, `V_dc`, delay and anti-windup are ASSUMPTION (D-047/D-048);
+  the loop frequencies, switching frequency, dead time and `i_d* = 0` are printed.

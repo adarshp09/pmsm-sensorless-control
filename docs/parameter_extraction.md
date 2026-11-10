@@ -176,4 +176,29 @@ Rendered-page extraction (pp.825–829).
 | Load steps | 50 % rated (sim) / 20 % rated (exp) | - | Sections IV-D, V-D | verified |
 | Phase 05b targets (position/speed errors) | see `docs/estimator_spec.md` §(b) | rad / rpm | Sections IV-V, Table IV | verified |
 
-The estimator and controller are **not** implemented (Phase 05b/06).
+The position/speed estimator is **implemented** (Phase 05b); the closed-loop controller
+is implemented as the Phase 06a **encoder baseline** (`simulation/drive.py`), not yet in
+the estimator loop (Phase 06b).
+
+## Drive status (Phase 06a, `configs/drive.yaml` + `configs/drive_assumptions.yaml`)
+
+| Parameter | Symbol | Value | Unit | Source | Status |
+| --- | --- | --- | --- | --- | --- |
+| current-loop frequency | — | 10000 | Hz | Table III, p.828 | verified |
+| speed-loop frequency | — | 1000 | Hz | Table III, p.828 | verified |
+| switching frequency | — | 10000 | Hz | Section V, p.829 | verified |
+| inverter dead time | — | 2 | µs | Section V, p.829 | verified (not modeled in 06a) |
+| `i_d` reference | `i_d*` | 0 | A | Fig.7, p.828 | verified |
+| DC-bus voltage | `V_DC` | 311 | V | symbol only (Fig.7); hinted by the 311/√3 base | **assumed** |
+| inverter delay | — | 1 | sample | `drive_assumptions.yaml` | **assumed** |
+| current-loop bandwidth | `α_c` | 500 | Hz | `drive_assumptions.yaml` | **assumed** |
+| decoupling / back-EMF FF | — | ON / OFF | - | `drive_assumptions.yaml` | **assumed** |
+| speed-loop bandwidth | `α_ω` | 50 | Hz | `drive_assumptions.yaml` | **assumed** |
+| speed-loop damping | `ζ` | 1 | - | `drive_assumptions.yaml` | **assumed** |
+| `i_q*` clamp | — | 2 | ×I_rated | `drive_assumptions.yaml` | **assumed** |
+| viscous friction | `B` | 0 | N.m.s/rad | `drive_assumptions.yaml` | **assumed** |
+| RK4 sub-steps per `Ts` | — | 4 | - | `drive_assumptions.yaml` | **assumed** |
+
+Controller PI gains are DERIVED from `α_c/α_ω` (`Kp_c = α_c Ld`, `Ki_c = α_c Rs`,
+`Kp_w = 2ζα_ω J/Kt`, `Ki_w = α_ω² J/Kt`, `Kt = ½·3 p ψ_f`); the paper prints none.
+`I_rated = 9.678 A` is derived (D-037). No tuning toward the paper's numbers.
