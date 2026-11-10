@@ -858,7 +858,56 @@ inputs by default
   recovers without sat but persistent 36° (FLL pinned); 400 rpm → diverges. The clamp
   changes the failure mode, it does not restore low-speed tracking.
 - **Consequence:** **GATE 2 = FAIL** → **STOP**; scenario suite / sensitivity not run;
-  Phase 06c not started. All paper class-A/B scenarios (500 rpm no-load, 1000 rpm loaded
-  steps) pass. A low-speed *loaded* capability needs a stronger estimator (higher Γ /
-  error normalization / amplitude-compensated FLL) — a separate approved change.
+  Phase 06c not started. *(Correction, Phase 06b-6: the earlier claim that all paper
+  class-A/B scenarios pass was wrong — those were gate sub-cases, not the scenario suite,
+  which had not been run.)* A low-speed *loaded* capability needs a stronger estimator
+  (higher Γ / error normalization / amplitude-compensated FLL) — a separate approved
+  change.
 - **Type:** implementation choice (assumed) + experimental result / blocker.
+
+---
+
+## Phase 06b-6 — re-scope to the paper's scenarios; sensorless suite (2026-10-30)
+
+## D-063 — Gate P PASS on the paper scenarios; suite run; no reproduction claim
+
+- **Re-scope:** the paper prints values only for sim 50 % @1000, exp 20 % @1000, the
+  no-load 500→1000 ramp and Table IV steady @1000 (`estimator_spec.md` §06b-6 Step 0d).
+  The 500 rpm **loaded** steps were our own gates; they move to a stress table, not gates.
+- **Gate P (chain B, matched cell, clamp ON, advance off; on reported): PASS** on all four
+  — S1 ramp peak 2.2° / steady 0.61°; S2 sim 50 % peak 21.7° / steady 0.56°; S3 exp 20 %
+  peak 7.5° / steady 0.59°; S4 steady 0.7° / 0.61°. No saturation, no guard trip, advance
+  on/off equivalent. **Clamp ablation:** identical with clamp OFF (the floor never engages
+  on paper scenarios).
+- **S1 bandwidth:** uses `α_ω = 2.5 Hz` (the 500 rpm value) — a fixed bandwidth for a
+  500→1000 ramp must be safe at the low end (10 Hz is marginal at 500 rpm and diverges
+  with advance off).
+- **Suite:** all paper scenarios pass; sensorless cost ≈ 0 dip/recovery vs the encoder
+  baseline at the same `α_ω` (the dip is set by `α_ω`). Steady estimation errors are far
+  below the paper's (0.6° vs 4°, 0.14 vs 5 rpm), but **dynamic** transient estimation
+  errors during load steps are **larger** (111.7 vs 23 rpm; 40.4 vs 10 rpm) because our
+  speed loop is slow. **No reproduction claim** — every setup differs (encoder start-up,
+  ideal voltage, assumed gains, slow loop).
+- **Type:** experimental result (conditional on the frozen assumptions).
+
+## D-064 — Documented limitation: low-speed / high-load steps lose synchronism
+
+- **Stress table (beyond paper, informational):** 500 rpm 20 % and 50 % steps → synchronism
+  loss (peak 180°, saturation 1.0); 1000 rpm **rated (100 %)** step → synchronism loss
+  (peak 180°); 500 rpm start-up under 20 % load → **PASS** (0.4°). The paper's 1000 rpm
+  **50 %** step passes; 100 % does not, so the load-step limit is between 50 % and 100 %
+  at 1000 rpm.
+- **Root cause:** the DSOGI-FLL's amplitude-driven gain is too weak at low `|E|` (and the
+  transient is too large at 100 % load); neither a bandwidth change (06b-4) nor a
+  frequency floor (06b-5) fixes it.
+- **Consequence:** accepted as a documented limitation of this composition; a fix needs a
+  stronger estimator (higher Γ / error normalization / amplitude-compensated FLL) or a
+  load-rate limit — separate approved changes. Gates are not re-opened.
+- **Type:** experimental result / documented limitation.
+
+## D-065 — 06b-5 "all paper scenarios pass" correction
+
+- **Correction:** the Phase 06b-5 claim that all paper class-A/B scenarios passed was wrong
+  — those were **gate sub-cases**, not the paper's scenario suite, which had not run. The
+  suite runs in 06b-6 (D-063). Corrected in `estimator_spec.md`, `phase06b.md`, and D-062.
+- **Type:** reporting correction.

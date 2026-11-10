@@ -1,0 +1,602 @@
+{
+  "note": "Phase 06b-6 Gate P: paper scenarios S1-S4, chain B, matched cell, clamp ON, advance off/on; ablation clamp OFF. Pass: peak |theta_hat-theta| < 30 deg, no saturation after transient, no FLL guard trip.",
+  "rule": {
+    "500": 2.5,
+    "1000": 10.0
+  },
+  "gate": "PASS",
+  "results": {
+    "S1_no_load_ramp|advoff|clampon": {
+      "handed_over": true,
+      "switch_time_s": 0.35710000000000003,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 2.235023680254214,
+      "steady_theta_err_max_deg": 2.235023680254214,
+      "dynamic_theta_err": {
+        "mean": 1.6735815795695475,
+        "rms": 1.7035595563129735,
+        "max": 2.235023680254214
+      },
+      "dynamic_omega_err": {
+        "mean": 0.14908572456834104,
+        "rms": 0.349036520744635,
+        "max": 2.1551994773713434
+      },
+      "steady_theta_err": {
+        "mean": 0.6100827054687638,
+        "rms": 0.6100846728306567,
+        "max": 0.6124178720452231
+      },
+      "steady_omega_err": {
+        "mean": 0.09205991659387397,
+        "rms": 0.10222035842046338,
+        "max": 0.14630866218493457
+      },
+      "peak_i_q_a": 3.1769237564986113,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 56.2589901000356,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -12.401718264236175,
+      "overshoot_rpm": 12.950354174151858,
+      "recovery_10rpm_s": 1.1339000000000001,
+      "recovery_1pct_s": 1.1620000000000001,
+      "passed": true
+    },
+    "S1_no_load_ramp|advoff|clampoff": {
+      "handed_over": true,
+      "switch_time_s": 0.35710000000000003,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 2.235023680254214,
+      "steady_theta_err_max_deg": 2.235023680254214,
+      "dynamic_theta_err": {
+        "mean": 1.6735815795695475,
+        "rms": 1.7035595563129735,
+        "max": 2.235023680254214
+      },
+      "dynamic_omega_err": {
+        "mean": 0.14908572456834104,
+        "rms": 0.349036520744635,
+        "max": 2.1551994773713434
+      },
+      "steady_theta_err": {
+        "mean": 0.6100827054687638,
+        "rms": 0.6100846728306567,
+        "max": 0.6124178720452231
+      },
+      "steady_omega_err": {
+        "mean": 0.09205991659387397,
+        "rms": 0.10222035842046338,
+        "max": 0.14630866218493457
+      },
+      "peak_i_q_a": 3.1769237564986113,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 56.2589901000356,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -12.401718264236175,
+      "overshoot_rpm": 12.950354174151858,
+      "recovery_10rpm_s": 1.1339000000000001,
+      "recovery_1pct_s": 1.1620000000000001,
+      "passed": true
+    },
+    "S1_no_load_ramp|advon|clampon": {
+      "handed_over": true,
+      "switch_time_s": 0.35710000000000003,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 2.235144376793288,
+      "steady_theta_err_max_deg": 2.235144376793288,
+      "dynamic_theta_err": {
+        "mean": 1.673591495519269,
+        "rms": 1.7036371275023556,
+        "max": 2.235144376793288
+      },
+      "dynamic_omega_err": {
+        "mean": 0.14907904814090195,
+        "rms": 0.34806971533399605,
+        "max": 2.141931663505567
+      },
+      "steady_theta_err": {
+        "mean": 0.6100838122365878,
+        "rms": 0.6100857754065493,
+        "max": 0.6124151813763161
+      },
+      "steady_omega_err": {
+        "mean": 0.0921072692443825,
+        "rms": 0.10227269049086904,
+        "max": 0.14635688364577285
+      },
+      "peak_i_q_a": 3.176923621380855,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 56.26192999388958,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -12.417081108159868,
+      "overshoot_rpm": 13.003781769481758,
+      "recovery_10rpm_s": 1.1340000000000001,
+      "recovery_1pct_s": 1.1619000000000002,
+      "passed": true
+    },
+    "S1_no_load_ramp|advon|clampoff": {
+      "handed_over": true,
+      "switch_time_s": 0.35710000000000003,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 2.235144376793288,
+      "steady_theta_err_max_deg": 2.235144376793288,
+      "dynamic_theta_err": {
+        "mean": 1.673591495519269,
+        "rms": 1.7036371275023556,
+        "max": 2.235144376793288
+      },
+      "dynamic_omega_err": {
+        "mean": 0.14907904814090195,
+        "rms": 0.34806971533399605,
+        "max": 2.141931663505567
+      },
+      "steady_theta_err": {
+        "mean": 0.6100838122365878,
+        "rms": 0.6100857754065493,
+        "max": 0.6124151813763161
+      },
+      "steady_omega_err": {
+        "mean": 0.0921072692443825,
+        "rms": 0.10227269049086904,
+        "max": 0.14635688364577285
+      },
+      "peak_i_q_a": 3.176923621380855,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 56.26192999388958,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -12.417081108159868,
+      "overshoot_rpm": 13.003781769481758,
+      "recovery_10rpm_s": 1.1340000000000001,
+      "recovery_1pct_s": 1.1619000000000002,
+      "passed": true
+    },
+    "S2_sim_50pct_1000|advoff|clampon": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 21.69939553122591,
+      "steady_theta_err_max_deg": 21.69939553122591,
+      "dynamic_theta_err": {
+        "mean": 1.6768541857097639,
+        "rms": 3.8152693735584955,
+        "max": 21.69939553122591
+      },
+      "dynamic_omega_err": {
+        "mean": 6.982338511183399,
+        "rms": 21.32827126987231,
+        "max": 111.73912281950929
+      },
+      "steady_theta_err": {
+        "mean": 0.5571632660497576,
+        "rms": 0.5571650237159259,
+        "max": 0.5591361671887668
+      },
+      "steady_omega_err": {
+        "mean": 0.0874844454445391,
+        "rms": 0.09719537914420444,
+        "max": 0.13878998074674445
+      },
+      "peak_i_q_a": 19.43960640622268,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -209.95759650897426,
+      "overshoot_rpm": 1.0712872962836226,
+      "recovery_10rpm_s": 0.09450000000000003,
+      "recovery_1pct_s": 0.09450000000000003,
+      "passed": true
+    },
+    "S2_sim_50pct_1000|advoff|clampoff": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 21.69939553122591,
+      "steady_theta_err_max_deg": 21.69939553122591,
+      "dynamic_theta_err": {
+        "mean": 1.6768541857097639,
+        "rms": 3.8152693735584955,
+        "max": 21.69939553122591
+      },
+      "dynamic_omega_err": {
+        "mean": 6.982338511183399,
+        "rms": 21.32827126987231,
+        "max": 111.73912281950929
+      },
+      "steady_theta_err": {
+        "mean": 0.5571632660497576,
+        "rms": 0.5571650237159259,
+        "max": 0.5591361671887668
+      },
+      "steady_omega_err": {
+        "mean": 0.0874844454445391,
+        "rms": 0.09719537914420444,
+        "max": 0.13878998074674445
+      },
+      "peak_i_q_a": 19.43960640622268,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -209.95759650897426,
+      "overshoot_rpm": 1.0712872962836226,
+      "recovery_10rpm_s": 0.09450000000000003,
+      "recovery_1pct_s": 0.09450000000000003,
+      "passed": true
+    },
+    "S2_sim_50pct_1000|advon|clampon": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 21.44619927696817,
+      "steady_theta_err_max_deg": 21.44619927696817,
+      "dynamic_theta_err": {
+        "mean": 1.6660742912091095,
+        "rms": 3.750918686316729,
+        "max": 21.44619927696817
+      },
+      "dynamic_omega_err": {
+        "mean": 6.655443188836597,
+        "rms": 20.74620449106775,
+        "max": 108.51468524139251
+      },
+      "steady_theta_err": {
+        "mean": 0.5571632756244514,
+        "rms": 0.5571650368632372,
+        "max": 0.5591382149293076
+      },
+      "steady_omega_err": {
+        "mean": 0.08756965310421339,
+        "rms": 0.09729030771535907,
+        "max": 0.13893580787830562
+      },
+      "peak_i_q_a": 19.43957544968004,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -207.55099613130758,
+      "overshoot_rpm": 0.8112024517817491,
+      "recovery_10rpm_s": 0.09410000000000007,
+      "recovery_1pct_s": 0.09410000000000007,
+      "passed": true
+    },
+    "S2_sim_50pct_1000|advon|clampoff": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 21.44619927696817,
+      "steady_theta_err_max_deg": 21.44619927696817,
+      "dynamic_theta_err": {
+        "mean": 1.6660742912091095,
+        "rms": 3.750918686316729,
+        "max": 21.44619927696817
+      },
+      "dynamic_omega_err": {
+        "mean": 6.655443188836597,
+        "rms": 20.74620449106775,
+        "max": 108.51468524139251
+      },
+      "steady_theta_err": {
+        "mean": 0.5571632756244514,
+        "rms": 0.5571650368632372,
+        "max": 0.5591382149293076
+      },
+      "steady_omega_err": {
+        "mean": 0.08756965310421339,
+        "rms": 0.09729030771535907,
+        "max": 0.13893580787830562
+      },
+      "peak_i_q_a": 19.43957544968004,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -207.55099613130758,
+      "overshoot_rpm": 0.8112024517817491,
+      "recovery_10rpm_s": 0.09410000000000007,
+      "recovery_1pct_s": 0.09410000000000007,
+      "passed": true
+    },
+    "S3_exp_20pct_1000|advoff|clampon": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 7.497471895213466,
+      "steady_theta_err_max_deg": 7.497471895213466,
+      "dynamic_theta_err": {
+        "mean": 0.9634888855524337,
+        "rms": 1.48106658887383,
+        "max": 7.497471895213466
+      },
+      "dynamic_omega_err": {
+        "mean": 2.531012387987578,
+        "rms": 7.562264320598311,
+        "max": 40.41531024275146
+      },
+      "steady_theta_err": {
+        "mean": 0.5890256020759905,
+        "rms": 0.5890272632932948,
+        "max": 0.5909989131399371
+      },
+      "steady_omega_err": {
+        "mean": 0.08749523630892359,
+        "rms": 0.09721172545223679,
+        "max": 0.13868135054110292
+      },
+      "peak_i_q_a": 19.43960640622268,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -79.56068360973454,
+      "overshoot_rpm": 0.26249113786157846,
+      "recovery_10rpm_s": 0.06400000000000006,
+      "recovery_1pct_s": 0.06400000000000006,
+      "passed": true
+    },
+    "S3_exp_20pct_1000|advoff|clampoff": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 7.497471895213466,
+      "steady_theta_err_max_deg": 7.497471895213466,
+      "dynamic_theta_err": {
+        "mean": 0.9634888855524337,
+        "rms": 1.48106658887383,
+        "max": 7.497471895213466
+      },
+      "dynamic_omega_err": {
+        "mean": 2.531012387987578,
+        "rms": 7.562264320598311,
+        "max": 40.41531024275146
+      },
+      "steady_theta_err": {
+        "mean": 0.5890256020759905,
+        "rms": 0.5890272632932948,
+        "max": 0.5909989131399371
+      },
+      "steady_omega_err": {
+        "mean": 0.08749523630892359,
+        "rms": 0.09721172545223679,
+        "max": 0.13868135054110292
+      },
+      "peak_i_q_a": 19.43960640622268,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -79.56068360973454,
+      "overshoot_rpm": 0.26249113786157846,
+      "recovery_10rpm_s": 0.06400000000000006,
+      "recovery_1pct_s": 0.06400000000000006,
+      "passed": true
+    },
+    "S3_exp_20pct_1000|advon|clampon": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 7.413330787761421,
+      "steady_theta_err_max_deg": 7.413330787761421,
+      "dynamic_theta_err": {
+        "mean": 0.9605868458684408,
+        "rms": 1.4625850321041376,
+        "max": 7.413330787761421
+      },
+      "dynamic_omega_err": {
+        "mean": 2.422690655810745,
+        "rms": 7.369349323313061,
+        "max": 40.15664543114512
+      },
+      "steady_theta_err": {
+        "mean": 0.589025610851897,
+        "rms": 0.5890272755240961,
+        "max": 0.5910009600802504
+      },
+      "steady_omega_err": {
+        "mean": 0.08758404437599154,
+        "rms": 0.0973103362119891,
+        "max": 0.13883620522445392
+      },
+      "peak_i_q_a": 19.43957544968004,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -78.69747999655154,
+      "overshoot_rpm": 0.17243644450937248,
+      "recovery_10rpm_s": 0.06430000000000002,
+      "recovery_1pct_s": 0.06430000000000002,
+      "passed": true
+    },
+    "S3_exp_20pct_1000|advon|clampoff": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 7.413330787761421,
+      "steady_theta_err_max_deg": 7.413330787761421,
+      "dynamic_theta_err": {
+        "mean": 0.9605868458684408,
+        "rms": 1.4625850321041376,
+        "max": 7.413330787761421
+      },
+      "dynamic_omega_err": {
+        "mean": 2.422690655810745,
+        "rms": 7.369349323313061,
+        "max": 40.15664543114512
+      },
+      "steady_theta_err": {
+        "mean": 0.589025610851897,
+        "rms": 0.5890272755240961,
+        "max": 0.5910009600802504
+      },
+      "steady_omega_err": {
+        "mean": 0.08758404437599154,
+        "rms": 0.0973103362119891,
+        "max": 0.13883620522445392
+      },
+      "peak_i_q_a": 19.43957544968004,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "dip_rpm": -78.69747999655154,
+      "overshoot_rpm": 0.17243644450937248,
+      "recovery_10rpm_s": 0.06430000000000002,
+      "recovery_1pct_s": 0.06430000000000002,
+      "passed": true
+    },
+    "S4_steady_1000|advoff|clampon": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 0.6574102196462795,
+      "steady_theta_err_max_deg": 0.6123099241867587,
+      "dynamic_theta_err": {
+        "mean": 0.6102587398592757,
+        "rms": 0.6102603419169025,
+        "max": 0.6122393294594473
+      },
+      "dynamic_omega_err": {
+        "mean": 0.08754292304044232,
+        "rms": 0.09726127784327336,
+        "max": 0.13854903185324266
+      },
+      "steady_theta_err": {
+        "mean": 0.6102587398592757,
+        "rms": 0.6102603419169025,
+        "max": 0.6122393294594473
+      },
+      "steady_omega_err": {
+        "mean": 0.08754292304044232,
+        "rms": 0.09726127784327336,
+        "max": 0.13854903185324266
+      },
+      "peak_i_q_a": 19.43960640622268,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "passed": true
+    },
+    "S4_steady_1000|advoff|clampoff": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 0.6574102196462795,
+      "steady_theta_err_max_deg": 0.6123099241867587,
+      "dynamic_theta_err": {
+        "mean": 0.6102587398592757,
+        "rms": 0.6102603419169025,
+        "max": 0.6122393294594473
+      },
+      "dynamic_omega_err": {
+        "mean": 0.08754292304044232,
+        "rms": 0.09726127784327336,
+        "max": 0.13854903185324266
+      },
+      "steady_theta_err": {
+        "mean": 0.6102587398592757,
+        "rms": 0.6102603419169025,
+        "max": 0.6122393294594473
+      },
+      "steady_omega_err": {
+        "mean": 0.08754292304044232,
+        "rms": 0.09726127784327336,
+        "max": 0.13854903185324266
+      },
+      "peak_i_q_a": 19.43960640622268,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "passed": true
+    },
+    "S4_steady_1000|advon|clampon": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 0.6479102651629107,
+      "steady_theta_err_max_deg": 0.6123143170671578,
+      "dynamic_theta_err": {
+        "mean": 0.6102587407082402,
+        "rms": 0.6102603461508606,
+        "max": 0.6122415374443225
+      },
+      "dynamic_omega_err": {
+        "mean": 0.08763417786760286,
+        "rms": 0.09736232332084346,
+        "max": 0.1386997733329525
+      },
+      "steady_theta_err": {
+        "mean": 0.6102587407082402,
+        "rms": 0.6102603461508606,
+        "max": 0.6122415374443225
+      },
+      "steady_omega_err": {
+        "mean": 0.08763417786760286,
+        "rms": 0.09736232332084346,
+        "max": 0.1386997733329525
+      },
+      "peak_i_q_a": 19.43957544968004,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "passed": true
+    },
+    "S4_steady_1000|advon|clampoff": {
+      "handed_over": true,
+      "switch_time_s": 0.2036,
+      "fll_status": "ok",
+      "guard_fail_time_s": null,
+      "peak_theta_err_deg": 0.6479102651629107,
+      "steady_theta_err_max_deg": 0.6123143170671578,
+      "dynamic_theta_err": {
+        "mean": 0.6102587407082402,
+        "rms": 0.6102603461508606,
+        "max": 0.6122415374443225
+      },
+      "dynamic_omega_err": {
+        "mean": 0.08763417786760286,
+        "rms": 0.09736232332084346,
+        "max": 0.1386997733329525
+      },
+      "steady_theta_err": {
+        "mean": 0.6102587407082402,
+        "rms": 0.6102603461508606,
+        "max": 0.6122415374443225
+      },
+      "steady_omega_err": {
+        "mean": 0.08763417786760286,
+        "rms": 0.09736232332084346,
+        "max": 0.1386997733329525
+      },
+      "peak_i_q_a": 19.43957544968004,
+      "saturation_fraction": 0.0,
+      "saturation_after_transient": 0.0,
+      "peak_voltage_v": 92.4617786559358,
+      "v_limit_v": 179.55593371797363,
+      "passed": true
+    }
+  }
+}

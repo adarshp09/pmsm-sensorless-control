@@ -228,7 +228,31 @@ under a torque transient.
 
 **Conclusion:** clamping `min_omega` is necessary but **not sufficient** at 500 rpm under
 load; the low-speed loaded transient needs a fundamentally stronger estimator (higher Γ /
-error normalization / amplitude-compensated FLL), which is out of scope here. All
-**paper** class-A/B scenarios (500 rpm no-load, 1000 rpm loaded steps) pass.
+error normalization / amplitude-compensated FLL), which is out of scope here.
+*(Correction, Phase 06b-6: the 06b-5 claim that "all paper class-A/B scenarios pass" was
+wrong — those were **gate sub-cases** (a 1000 rpm steady run and 1000 rpm load steps), not
+the paper's scenario suite, which had not been run. It is run in Phase 06b-6.)*
 
 **Status:** clamp floor is ASSUMPTION — not from paper; Gate 2 not met at 500 rpm loaded.
+
+---
+
+## Phase 06b-6 Step 0d — the scenarios the paper actually prints
+
+Every scenario the paper reports a number for (no others are printed). **Basis:** all
+quoted speed/position figures are **estimation errors** `(|ω̂−ω|, |θ̂−θ|)`, confirmed from
+the rendered pages in Phase 06b-2 Step 0b (Fig.13 middle panel "Speed error(r/min)" and
+caption "estimation errors"; Fig.19 plots `N_err` and the text calls it "estimation
+error"). They are **not** actual speed deviations.
+
+| # | Scenario | Setup | Speed | Load | Duration / timing | Quoted metric | Source |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | Sim, no-load variable speed | start 500, increase to 1000, steady at 2 s | 500 → 1000 rpm | none | ramp ends 1.5 s, steady at 2 s | max speed err ≈5 rpm; steady pos ≈0.07 rad; dynamic pos ≈0.2 rad | IV-C, Fig.11/12 |
+| S2 | Sim, constant speed + load step | load suddenly increased at 1.5 s | 1000 rpm | **50 % rated** | step at 1.5 s | dynamic max speed 23 rpm; steady mean speed 5 rpm; dynamic pos 0.22 rad; steady pos 0.08–0.1 rad | IV-D, Fig.13 |
+| S3 | Exp, no-load variable speed | reference 500 → 1000 | 500 → 1000 rpm | none | — | 15 rpm / 0.1256 rad @500; 10 rpm / 0.08 rad @1000 | V-C, Fig.17/18 |
+| S4 | Exp, constant speed + load step | 20 % rated load disturbance | 1000 rpm | **20 % rated** | — | speed err ≈10 rpm; position err 0.152 rad | V-D, Fig.19/20 |
+| S5 | Table IV | steady at 1000 rpm (load not stated) | 1000 rpm | not stated | steady | 0.08 rad, 10 rpm | Table IV, p.832 |
+
+The 500 rpm **loaded** steps used in the 06b-3…06b-5 gates are **not** paper scenarios —
+they were added by our own gates and are treated in 06b-6 as an "beyond paper" stress
+table, not gates.
