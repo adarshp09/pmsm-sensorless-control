@@ -59,10 +59,10 @@ parameters:
   # (1-sample computation delay + 0.5-sample zero-order hold).
   "angle_advance.delay_samples":        {value: 1.5,   unit: "-",   source: "ASSUMPTION — not from paper"}
 
-  # --- Phase 06b-3: operating-point decoupled sensorless speed-loop bandwidths ---
-  # ASSUMPTION — not from paper: low-speed point accepts the relaxed PM >= 10 deg
-  # (measured PM 10.8 deg); see D-059.
-  "speed_loop.alpha_w_hz_at_500rpm":    {value: 5.0,   unit: "Hz",  source: "ASSUMPTION — not from paper"}
+  # --- Phase 06b-3/4: operating-point decoupled sensorless speed-loop bandwidths ---
+  # ASSUMPTION — not from paper: low-speed point softened 5 -> 2.5 Hz in Phase 06b-4
+  # (Gate 2b @500 rpm lost synchronism at 5 Hz / PM 10.8 deg); target PM >= 30 deg.
+  "speed_loop.alpha_w_hz_at_500rpm":    {value: 2.5,   unit: "Hz",  source: "ASSUMPTION — not from paper"}
   # ASSUMPTION — not from paper: 1000 rpm point targets PM >= 45 deg (measured 14.6 deg).
   "speed_loop.alpha_w_hz_at_1000rpm":   {value: 10.0,  unit: "Hz",  source: "ASSUMPTION — not from paper"}
 

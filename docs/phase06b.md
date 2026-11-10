@@ -303,3 +303,50 @@ operating point to steady-state / no-load transients only.
 - **Low-speed load transient fails:** the relaxed 10.8° PM at 500 rpm cannot absorb a
   20 % load step.
 - Gate 2 not met → **STOP**; no class-B scenario suite run; Phase 06c not started.
+
+---
+
+# Phase 06b-4 — softened low-speed bandwidth (2.5 Hz)
+
+Softens the 500 rpm bandwidth to `α_ω = 2.5 Hz` (1000 rpm retained at 10 Hz) to raise the
+low-speed phase margin. **No src change**; config + experiment only.
+Scripts: `experiments/06b4_margins.py`, `experiments/06b4_gate.py`.
+
+**Step 0** — Phase 06b-3 committed `9be88ec`, tagged `phase-06b3-complete`; justification
+in `estimator_spec.md` (§Phase 06b-4) and D-061.
+
+## Step 1 — margin verification (`06b4_margins.py`)
+
+`L = L_enc × T_est` (chain B, f_n = 20 Hz, 06b-2 T_est):
+
+| 500 rpm α_ω | PM | GM | fc |
+| --- | --- | --- | --- |
+| 1.5 Hz | 74.0° | 258 dB | 3.4 Hz |
+| 2.0 Hz | 72.8° | 206 dB | 4.7 Hz |
+| **2.5 Hz** | **65.5°** | **165 dB** | **6.6 Hz** |
+| 3.0 Hz | 57.0° | 131 dB | 9.1 Hz |
+| 4.0 Hz | 29.4° | 77 dB | 13.4 Hz |
+| 5.0 Hz | 10.8° | 33 dB | 16.4 Hz |
+
+**Target PM ≥ 30° at 2.5 Hz — PASS (65.5°).** 1000 rpm @ 10 Hz unchanged (PM 14.6°).
+
+## Step 2 — staged gate (`06b4_gate.py`)
+
+| gate | 500 rpm | 1000 rpm (regression) |
+| --- | --- | --- |
+| 2a steady (no-load) | **PASS** (peak/steady 0.3°, no sat) | **PASS** (0.6°) |
+| 2a steady (20 % load) | **FAIL** — start-up-under-load trips the FLL at 60 ms | **PASS** (0.6°) |
+| 2b 20 % load step | **FAIL** — FLL guard-fail 36 ms after step; peak 35.9°, steady 7.3°, dip −215 rpm | **PASS** (peak 7.5°, dip −79.6 rpm, 64 ms) |
+| 2c 50 % step | — | **PASS** (peak 21.7°, dip −210 rpm, 95 ms) |
+
+Advance off/on same. **GATE 2 = FAIL** (500 rpm load transients).
+
+**Diagnosis.** The softened loop is well damped (PM 65.5°), so the 500 rpm failure is
+**not** the speed loop: the **unclamped DSOGI-FLL loses lock** (`ω′ < 0`) on the torque
+transient. At 500 rpm |E| = 27.8 V (vs 55.5 V at 1000 rpm), so the FLL's amplitude-driven
+error/gain is ~4× smaller and the transient drives `ω′` negative. 1000 rpm is clean.
+
+**Per the rules → STOP.** The class-B scenario suite and sensitivity (Step 3 of 06b-3)
+are not run; Phase 06c not started. Next lever: `min_omega` clamping on the FLL (a
+non-default library option; would be a separate approved change), or a start-up/handover
+strategy that applies load only above ~1000 rpm.

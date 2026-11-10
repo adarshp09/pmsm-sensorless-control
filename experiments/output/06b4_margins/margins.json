@@ -1,0 +1,64 @@
+{
+  "note": "Phase 06b-4 Step 1: verify the softened 500 rpm bandwidth (2.5 Hz) with the 06b-2 measured T_est; L = L_enc x T_est, chain B, f_n = 20 Hz.",
+  "rule": {
+    "alpha_w_500_hz": 2.5,
+    "alpha_w_1000_hz": 10.0
+  },
+  "targets": {
+    "pm_min_deg": 30.0,
+    "gm_min_db": 6.0
+  },
+  "softened_500rpm": {
+    "crossover_hz": 6.6329337590959625,
+    "pm_deg": 65.46660831253804,
+    "gm_db": 165.27250974506558
+  },
+  "softened_500rpm_pass": true,
+  "grid_500rpm": {
+    "rpm500_aw1.5": {
+      "crossover_hz": 3.3601702631651613,
+      "pm_deg": 73.95299565727954,
+      "gm_db": 258.12548297755467
+    },
+    "rpm500_aw2": {
+      "crossover_hz": 4.660901710073296,
+      "pm_deg": 72.75050319660576,
+      "gm_db": 206.12753784152477
+    },
+    "rpm500_aw2.5": {
+      "crossover_hz": 6.6329337590959625,
+      "pm_deg": 65.46660831253804,
+      "gm_db": 165.27250974506558
+    },
+    "rpm500_aw3": {
+      "crossover_hz": 9.144033876280954,
+      "pm_deg": 57.01456929868867,
+      "gm_db": 131.43823242574075
+    },
+    "rpm500_aw4": {
+      "crossover_hz": 13.362299542444347,
+      "pm_deg": 29.377764288420877,
+      "gm_db": 76.91797494938321
+    },
+    "rpm500_aw5": {
+      "crossover_hz": 16.354518164792633,
+      "pm_deg": 10.828982598722774,
+      "gm_db": 33.29915965524029
+    },
+    "rpm500_aw7.5": {
+      "crossover_hz": 23.239898483740223,
+      "pm_deg": -21.066047349978078,
+      "gm_db": null
+    },
+    "rpm500_aw10": {
+      "crossover_hz": 30.562363123919518,
+      "pm_deg": -48.5321535255903,
+      "gm_db": null
+    }
+  },
+  "regression_1000rpm": {
+    "crossover_hz": 25.155710903368323,
+    "pm_deg": 14.631883194406896,
+    "gm_db": 56.734539181072286
+  }
+}

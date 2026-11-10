@@ -816,3 +816,25 @@ inputs by default
   grid) or a faster low-speed estimator phase — separate approved changes — or restricting
   the 500 rpm point to steady/no-load operation.
 - **Type:** experimental result / blocker.
+
+---
+
+## Phase 06b-4 — softened low-speed bandwidth (2026-10-30)
+
+## D-061 — 500 rpm bandwidth softened 5 → 2.5 Hz; low-speed failure is the FLL, not the loop
+
+- **Decision (ASSUMPTION — not from paper):** `speed_loop.alpha_w_hz_at_500rpm = 2.5`
+  (1000 rpm retained at 10 Hz), frozen before the time-domain run. Against the measured
+  `L = L_enc × T_est` (chain B, `f_n = 20 Hz`), 500 rpm @ 2.5 Hz gives **PM 65.5°,
+  GM 165 dB, crossover 6.6 Hz** (target PM ≥ 30°, up from 10.8° at 5 Hz).
+- **Gate result:** the softened loop passes the **steady** 500 rpm gate (no-load peak/steady
+  0.3°) and all 1000 rpm regression gates (2a 0.6°, 2b 7.5° / dip −79.6 rpm, 2c 21.7° /
+  dip −210 rpm), but the 500 rpm **load transient** still fails: the **unclamped
+  DSOGI-FLL loses lock** (`ω′ < 0`) 36 ms after a 20 % step (peak 35.9°, steady 7.3°); a
+  start-up-under-load trips it at 60 ms.
+- **Diagnosis:** at 500 rpm `|E| = 27.8 V` (vs 55.5 V at 1000 rpm), so the FLL's
+  amplitude-driven gain is ~4× smaller and the torque transient drives `ω′` negative —
+  an **estimator-amplitude** limit, **not** the speed-loop bandwidth. `min_omega` clamping
+  is the next lever (a non-default FLL option, separate approval).
+- **Consequence:** **GATE 2 = FAIL** → **STOP**; no scenario suite; Phase 06c not started.
+- **Type:** implementation choice (assumed) + experimental result / blocker.

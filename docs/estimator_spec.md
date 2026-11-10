@@ -175,3 +175,27 @@ low-speed phase margin:
   time-domain boundary (stable ≤ 15 Hz).
 
 **Status:** decoupling and the low-speed relaxation are ASSUMPTION — not from paper.
+
+---
+
+## Phase 06b-4 — softening the 500 rpm bandwidth to 2.5 Hz (D-061)
+
+**Justification (D-061).** Phase 06b-3 passed all 1000 rpm gates but failed Gate 2b at
+500 rpm at `α_ω = 5 Hz` (PM 10.8°): a 20 % load step excited the lightly damped loop past
+synchronism. Softening the low-speed bandwidth increases the phase margin and damping:
+against the 06b-2 measured `L = L_enc × T_est` (chain B, `f_n = 20 Hz`), `α_ω = 2.5 Hz`
+at 500 rpm gives **PM 65.5°, GM 165 dB, crossover 6.6 Hz** (target PM ≥ 30°), up from
+10.8° at 5 Hz. The 1000 rpm bandwidth is retained at 10 Hz (PM 14.6°). Frozen before the
+time-domain run (`configs/drive_assumptions.yaml`
+`speed_loop.alpha_w_hz_at_500rpm = 2.5`).
+
+**Result (Step 2 gate).** The softened loop passes the **steady** 500 rpm gate (no-load:
+peak 0.3°, steady 0.3°) and all 1000 rpm regression gates (2a 0.6°, 2b 7.5°, 2c 21.7°),
+but the 500 rpm **load transient** still fails: the **unclamped DSOGI-FLL loses lock**
+(guards `ω′ < 0`) 36 ms after a 20 % step (peak `|θ̂−θ|` 35.9°, steady 7.3°), and a
+start-up-under-load trips it at 60 ms. That is an **estimator-amplitude** limitation at
+low speed (|E| = 27.8 V at 500 rpm vs 55.5 V at 1000 rpm), **not** the speed-loop
+bandwidth. `min_omega` clamping (a non-default FLL option) would be the next lever.
+
+**Status:** softened bandwidth is ASSUMPTION — not from paper; Gate 2 still not met at
+500 rpm (load transients).

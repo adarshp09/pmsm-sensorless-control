@@ -160,6 +160,7 @@ invariants.
 | 06b | Estimator inside the control loop (sensorless) | partial: chain + Gate 1 OK; Gate 2 failed (D-054) |
 | 06b-2 | Estimator-aware speed loop: measured T_est + margins | stopped at Step 2 (no feasible α_ω*, D-058) |
 | 06b-3 | Operating-point decoupling + low-speed relaxation | partial: Gate 2a/2b@1000/2c pass; 2b@500 fails (D-060) |
+| 06b-4 | Softened low-speed bandwidth (2.5 Hz) | partial: 500 rpm steady + all 1000 rpm pass; 500 rpm load transient trips the FLL (D-061) |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
 
