@@ -729,3 +729,46 @@ inputs by default
   loop), so 06b compares on that basis only. The plant friction `B·\omega_e` is
   consistent with the documented `B·\omega_m` (no fix).
 - **Type:** verification / reporting correction.
+
+---
+
+## Phase 06b-2 — estimator-aware speed loop (2026-10-30)
+
+## D-056 — Paper load-step quantities are estimation errors; 06a's α_ω was encoder-only
+
+- **Finding (rendered pages, D-056):** the quoted load-step figures are speed
+  **estimation** errors `|ω−ω̂|`: Fig.13 (sim 50 %) has a "Speed error(r/min)" panel and
+  the caption says "… estimation errors"; Fig.19 (exp 20 %) plots `N_ref/N_actual/N_err`
+  and the text calls ~10 rpm the "estimation error" (the actual dip is a separate
+  annotated ΔN ≈ 45 rpm). Load amplitudes confirmed 50 % (sim) / 20 % (exp). No PI
+  gains/bandwidth or minimum speed are printed; start-up is qualitative.
+- **Process note:** Phase 06a's `α_ω = 50 Hz` was frozen as an encoder-only design, and
+  Gate 2 used the **rated** step (harsher than the paper's 20 %/50 %) — a scope mismatch,
+  not a tuning error.
+- **Type:** paper verification + process note.
+
+## D-057 — Measured estimator response T_est; H1 supported, H2 refuted
+
+- **Decision:** measure `T_est(jω)` on the open-loop nominal drive with a 0.5 % sinusoidal
+  speed modulation (f_m 2–200 Hz, 500/1000 rpm, matched cell), chains A (raw E_hat) and B
+  (DSOGI v'), Q-PLL `f_n` as experiment overrides. Linear (gain < 0.02 % across
+  ε = 0.25/0.5/1 % at 20 Hz).
+- **Result:** chain B −3 dB ≈ 83 Hz (1000 rpm) / 41 Hz (500 rpm) at `f_n = 20`; the
+  `f_n` widening **saturates** at a speed-dependent cap (≈116 Hz / ≈49 Hz at f_n = 200),
+  supporting **H1** (DSOGI envelope). Chain A is **narrower** than B (−3 dB 42 vs 83 Hz),
+  **refuting H2**.
+- **Type:** measurement.
+
+## D-058 — No feasible α_ω* in the frozen grid → STOP before Step 3
+
+- **Rule (frozen):** `α_ω*` = largest grid value with PM ≥ 45° and GM ≥ 6 dB at both
+  speeds, chain B `f_n = 20 Hz`.
+- **Result:** **none** qualifies. With `L = L_enc × T_est`, chain B PM is 10.8° at
+  500 rpm even for `α_ω = 5 Hz` (1000 rpm: 54.1°); PM falls monotonically with `α_ω`
+  (1000 rpm: 14.6° at 10 Hz, −8.2° at 15 Hz). The margin model is **conservative by ~one
+  grid step** vs the 06b time-domain boundary (stable ≤ 15 Hz, unstable ≥ 20 Hz) at
+  1000 rpm, and much worse at 500 rpm (T_est narrower, envelope ∝ speed).
+- **Consequence:** `α_ω* = None`; per the phase rule, **STOP** and report. Steps 3–4 not
+  run. No src or config change was made (`git diff --stat phase-06b-gate2-fail -- src
+  configs` is empty).
+- **Type:** analysis result / blocker.

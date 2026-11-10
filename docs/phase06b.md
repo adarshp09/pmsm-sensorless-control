@@ -134,3 +134,113 @@ clean), and would be a new approved step.
   ASSUMPTIONS (D-053).
 - The class-B scenario grid and paper comparison are **not reported**: Gate 2 failed
   before them.
+
+---
+
+# Phase 06b-2 — Estimator-aware speed loop + staged gate
+
+Resolves the Gate-2 failure by measuring the estimator response and choosing the speed
+loop from it. **No src change**; Q-PLL `f_n` variations are experiment-level overrides.
+Scripts: `experiments/06b2_estimator_response.py` (Step 1),
+`experiments/06b2_margins.py` (Step 2). Outputs under `experiments/output/06b2_*`.
+
+## Step 0
+
+**0a** — Phase 06b committed `51d35b8`, tagged `phase-06b-gate2-fail`. Repo:
+`/Users/adarshpanjwani/Desktop/ACT/project/pmsm-sensorless-control`; branch `master`;
+**no git remotes** (`git remote -v` empty).
+
+**0b — paper quantity (rendered pages, PyMuPDF).** The quoted load-step numbers are
+**speed *estimation* errors `|ω−ω̂|`**, not actual speed deviations:
+- Sim 50 % (Fig.13, p.830): three panels "Speed(r/min)", **"Speed error(r/min)"**,
+  "Rotor position error(rad)"; caption *"Speed and position estimation errors …"*.
+  The 23 rpm dynamic / 5 rpm steady are the middle-panel error.
+- Exp 20 % (Fig.19, p.832): y-axis "Rotor Speed(120 rpm/div)" with traces `N_ref`,
+  `N_actual`, `N_err(10 rpm/div)` and an annotated **actual dip ΔN = 45/48 rpm**;
+  Section V-D: *"the estimation error of the improved SMO remains around 10 r/min"* —
+  the ~10 rpm is `N_err`.
+- Load amplitudes confirmed printed: sim **50 %** rated at 1.5 s, exp **20 %** rated.
+- **No** speed-loop PI gains/bandwidth (Fig.7 has no numbers), **no minimum speed**
+  printed; Table III gives only the 1 kHz speed-loop rate. Start-up is qualitative
+  (Section V-E). Table IV's `N_err` = 10 rpm is also an estimation error.
+- Since no dynamic figure is an actual dip, `dip ∝ 1/α_ω` does **not** apply to the
+  paper; for reference our **encoder** baseline dips 37 rpm at 50 % load / `α_ω = 50 Hz`
+  (14.9 rpm at 20 %). Recorded in `estimator_spec.md` §Phase 06b-2 Step 0b.
+
+**0c — process note.** `α_ω = 50 Hz` was frozen in Phase 06a as an **encoder-only**
+design; Gate 2 (06b) then used the **rated** step, harsher than the paper's 20 %/50 %.
+Neither was tuned against a sensorless loop — the failure is a design-scope mismatch,
+not a tuning error.
+
+## Step 1 — measured estimator response T_est
+
+Open-loop nominal drive (04c generator, `I_q = I_rated`), sinusoidal speed
+(`ε = 0.5 %`), matched cell, Ts = 100 µs; window = [0.25 s, end], ≥ 8 modulation periods.
+
+| chain (f_n) | speed | −3 dB | phase @25 Hz | @50 Hz |
+| --- | --- | --- | --- | --- |
+| A (20 Hz) | 1000 | 41.7 Hz | −47.9° | −73.8° |
+| A (200 Hz) | 1000 | >200 Hz | −0.4° | −2.2° |
+| B (20 Hz) | 1000 | 83.0 Hz | −50.3° | −84.6° |
+| B (50 Hz) | 1000 | 108.2 Hz | −11.8° | −47.4° |
+| B (200 Hz) | 1000 | 116.3 Hz | −2.8° | −12.6° |
+| A (20 Hz) | 500 | 26.2 Hz | −79.4° | −90.3° |
+| B (20 Hz) | 500 | 41.4 Hz | −94.8° | −246.1° |
+| B (200 Hz) | 500 | 48.9 Hz | −15.9° | −151.7° |
+
+FLL status: **locked** in all runs. The response is **linear** (gain 1.3578/1.3579/1.3580
+at f_m = 20 Hz for ε = 0.25/0.5/1 % → <0.02 % variation). Chain B shows a real resonance
+(gain ≈ 1.36 near 20 Hz at 1000 rpm).
+
+**H1 (DSOGI envelope caps T_est; raising f_n in B does not widen it) — SUPPORTED.** The
+−3 dB saturates with f_n: at 1000 rpm B goes 83→108→116 Hz for f_n 20→50→200; at 500 rpm
+41→49→49 Hz — a **speed-dependent cap** (≈2× for 2× speed), matching the envelope
+`2/(k_s ω')` corner (≈47 Hz at 1000 rpm).
+
+**H2 (chain A is markedly wider than B at equal f_n) — REFUTED.** At f_n = 20 Hz chain A
+is **narrower** than B: −3 dB 41.7 vs 83.0 Hz at 1000 rpm and 26.2 vs 41.4 Hz at 500 rpm.
+(The raw-`E_hat` Q-PLL rolls off like a 2nd-order loop; the filtered v′) has a resonance
+that inflates its −3 dB even though its phase at 50 Hz is worse, −84.6° vs −73.8°.)
+
+## Step 2 — margins and design rule
+
+`L(jω) = L_enc(jω)` (06a discrete model: ζ = 1 PI, current loop + 1.5 Ts delay, 1 kHz
+ZOH) `× T_est(jω)` (measured, log-interpolated, **no extrapolation** outside [2, 200] Hz).
+
+Phase margin (°) for chain B (f_n = 20 Hz):
+
+| α_ω | 500 rpm PM (GM) | 1000 rpm PM (GM) |
+| --- | --- | --- |
+| 5 | 10.8 (33 dB) | 54.1 (192 dB) |
+| 7.5 | −21.1 | 30.0 |
+| 10 | −48.5 | 14.6 (57 dB) |
+| 15 | −72.6 | −8.2 |
+| 20 | −90.7 | −25.7 |
+| 30 | −118.4 | −89.3 |
+| 50 | −157.7 | −194.6 |
+
+(Chain A is similar: 26.8° at 500 rpm / 56.2° at 1000 rpm for α_ω = 5, falling with α_ω.)
+
+**Design rule (ASSUMPTION, frozen before Step 3):** `α_ω*` = the largest grid value with
+PM ≥ 45° and GM ≥ 6 dB at **both** speeds for chain B at f_n = 20 Hz.
+**No grid value qualifies** (500 rpm is already 10.8° at α_ω = 5 Hz) ⟹
+**`α_ω* = None` ⟹ STOP** (per the phase rule: "if no feasible α_ω, stop and report").
+
+**Predicted vs time-domain boundary.** The margin model (chain B, 1000 rpm) crosses
+PM = 0 between α_ω = 10 (14.6°) and 15 Hz (−8.2°) — i.e. it predicts marginal stability
+at ~10–12 Hz, consistent with the 06b time-domain finding (constant-load stable ≤ 15 Hz,
+unstable ≥ 20 Hz) but **conservative by ~one grid step**. At 500 rpm the model is much
+worse (10.8° even at 5 Hz) because T_est is narrower there (envelope ∝ speed); 06b did
+not test 500 rpm in the loop.
+
+## Outcome — STOP at Step 2
+
+With the frozen 05b estimator (`f_n = 20 Hz`) and the measured chain-B response, **no
+speed-loop bandwidth in the required grid meets PM ≥ 45° / GM ≥ 6 dB at both 500 and
+1000 rpm**. Steps 3 (staged gate) and 4 (scenarios/sensitivity) are **not run**.
+
+The exhaustive-but-disallowed alternatives (filtering/rate-limiting `ω̂`, extrapolating
+`T_est` below 2 Hz, or lowering PM below 45°) are out of scope per the phase rules. The
+next step needs a decision: either accept a lower PM at 500 rpm (state the margin), or
+change the estimator (e.g. a faster-phase chain / higher `f_n` with its DSOGI cap) — both
+are separate, approved changes.

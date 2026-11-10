@@ -222,3 +222,19 @@ choice is named PROVISIONAL and cross-referenced to
   ground truth); the FLL is initialised at `ω' = p·ω_h` (nonzero design constant). Then
   the source returns `(θ̂, ω̂)` and the drive closes on the estimates (D-053).
 - **Status:** all handover/advance values are ASSUMPTION — not from paper.
+
+## 14. Phase 06b-2 speed-loop design with the estimator (2026-10-30)
+
+- **Loop model:** `L(jω) = L_enc(jω) · T_est(jω)`, where `L_enc` is the Phase 06a
+  discrete speed loop (`ζ = 1` PI, mechanical ZOH plant, current loop `α_c/(s+α_c)` with
+  its 1.5 Ts delay, 1 kHz ZOH half-sample) and `T_est(jω)` is the *measured*
+  `ω̂_m/ω_m` of the estimator chain (log-interpolated; **never extrapolated** outside the
+  2–200 Hz measurement grid).
+- **Measured T_est (matched cell, `f_n = 20 Hz`):** chain B −3 dB ≈ 83 Hz (1000 rpm) /
+  41 Hz (500 rpm); phase at 25/50 Hz ≈ −50/−85° at 1000 rpm, −95/−246° at 500 rpm. Chain
+  A (raw `E_hat`) is narrower. A real resonance (gain ≈ 1.36 near 20 Hz) is present.
+- **Design rule (ASSUMPTION):** `α_ω*` = largest grid value with PM ≥ 45° and GM ≥ 6 dB
+  at both 500 and 1000 rpm for chain B at `f_n = 20 Hz`. **No grid value qualifies**
+  (`α_ω* = None`), so the sensorless speed loop is not closed (D-058).
+- **Status:** T_est is measured (not a paper value); the PM/GM thresholds are the
+  phase's frozen design rule.

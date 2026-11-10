@@ -102,3 +102,46 @@ SMO+LPF, STASMO+CVGI (see `configs/experiments.yaml`).
 
 **No estimator or controller code is written from this spec until Phase 05b/06 is
 approved.**
+
+---
+
+## Phase 06b-2 Step 0b — rendered-page re-check of the load-step quantities
+
+Re-read from the **rendered pages** (PyMuPDF) of `docs/act.pdf`, pages 5–10
+(printed 827–832). Question: do the quoted load-step numbers denote the estimation
+error `(ω−ω̂)`, the reference error `(ω_ref−ω̂)`, or the actual speed deviation?
+
+**Sim, 50 % load (Fig. 13, printed p.830).** Fig. 13 is a three-panel plot with
+y-axes **"Speed(r/min)"** (top), **"Speed error(r/min)"** (middle, ticks 0/15/30) and
+**"Rotor position error(rad)"** (bottom); caption verbatim *"Speed and position
+estimation errors under 1000 r/min with 50 % rated load disturbance."* Section IV-D
+text: *"the maximum error of the speed in the dynamic process is 23 r/min. After
+entering the steady state … the average error of the improved SMO becomes 5 r/min."*
+⟹ the **23 rpm / 5 rpm are speed *estimation* errors** `|ω−ω̂|` (the encoder gives the
+actual speed; the actual speed is the separate top "Speed" panel), **not** an actual
+speed deviation.
+
+**Exp, 20 % load (Fig. 19/20, printed p.832).** Fig. 19 y-axis **"Rotor
+Speed(120 rpm/div)"** with in-plot traces **`N_ref`, `N_actual`, `N_err(10 rpm/div)`**;
+the *actual* speed dip during the step is annotated **ΔN = 45 / 48 r/min**
+(STASMO-CVGI / improved). Section V-D text: *"During the load process, the estimation
+error of the improved SMO remains around 10 r/min."* ⟹ the quoted **~10 rpm is the
+speed *estimation* error** (`N_err`), while **ΔN ≈ 45 r/min is the actual dip** — the
+figure shows both.
+
+**Load amplitudes (confirmed printed).** Sim = **50 % of rated** at 1.5 s, 1000 rpm
+(Section IV-D text + Fig. 13 caption); exp = **20 % of rated**, 1000 rpm
+(Fig. 19/20 captions + Section V-D).
+
+**Controller / start-up printed items.** Table III (printed p.828) lists **speed-loop
+control frequency 1 kHz**, sampling and current-loop 10 kHz — **no DC-bus row**;
+Fig. 7 prints **no PI gains or bandwidth**; **no minimum speed** is printed, and
+Section V-E states only *"other control methods need to be used for start-up and
+low-speed range"* (qualitative). Table IV's `N_err` (10 r/min for FSMO+DSOGI) is likewise
+an estimation error.
+
+**If a *dynamic* figure were an actual dip** (it is not — Fig. 13's is an estimation
+error), `dip ∝ 1/α_ω` would apply. For reference, our **encoder** baseline gives a
+**37 rpm** dip at 50 % load for `α_ω = 50 Hz` (14.9 rpm at 20 % load). The exp Fig. 19
+**actual** dip ΔN ≈ 45 rpm at **20 %** load is ~3× ours, implying a hardware
+speed-loop bandwidth ≈ 17 Hz — indicative only (hardware includes dead time/PWM).

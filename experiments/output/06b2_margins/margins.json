@@ -1,0 +1,165 @@
+{
+  "note": "Phase 06b-2 margins with the measured T_est. L = L_enc (06a discrete model, zeta=1 PI, current loop + delays, 1 kHz ZOH) x T_est (measured, log-interp). alpha_w* rule frozen before Step 3.",
+  "rule": {
+    "pm_min_deg": 45.0,
+    "gm_min_db": 6.0,
+    "definition": "largest grid alpha_w with PM>=45 and GM>=6 dB at both speeds, chain B f_n=20 Hz"
+  },
+  "alpha_w_grid": [
+    5.0,
+    7.5,
+    10.0,
+    15.0,
+    20.0,
+    30.0,
+    50.0
+  ],
+  "alpha_w_star_hz": null,
+  "table": {
+    "A_fn20|rpm500|aw5": {
+      "crossover_hz": 13.87708520540443,
+      "pm_deg": 26.794732419214256,
+      "gm_db": 123.80826290503265
+    },
+    "A_fn20|rpm500|aw7.5": {
+      "crossover_hz": 17.460400067448074,
+      "pm_deg": 6.07403652867103,
+      "gm_db": 32.79953997427935
+    },
+    "A_fn20|rpm500|aw10": {
+      "crossover_hz": 20.032219643164066,
+      "pm_deg": -6.987125108645586,
+      "gm_db": null
+    },
+    "A_fn20|rpm500|aw15": {
+      "crossover_hz": 23.841109180397435,
+      "pm_deg": -18.311480747163813,
+      "gm_db": null
+    },
+    "A_fn20|rpm500|aw20": {
+      "crossover_hz": 27.01357291455761,
+      "pm_deg": -27.120195931803778,
+      "gm_db": null
+    },
+    "A_fn20|rpm500|aw30": {
+      "crossover_hz": 32.456017232107676,
+      "pm_deg": -39.10681103514435,
+      "gm_db": null
+    },
+    "A_fn20|rpm500|aw50": {
+      "crossover_hz": 41.485797398349455,
+      "pm_deg": -53.46675049325128,
+      "gm_db": null
+    },
+    "A_fn20|rpm1000|aw5": {
+      "crossover_hz": 12.547619649062733,
+      "pm_deg": 56.20032975820145,
+      "gm_db": 290.945580522091
+    },
+    "A_fn20|rpm1000|aw7.5": {
+      "crossover_hz": 18.739356478501406,
+      "pm_deg": 35.57876810091878,
+      "gm_db": 207.04777200073846
+    },
+    "A_fn20|rpm1000|aw10": {
+      "crossover_hz": 22.787262221222736,
+      "pm_deg": 22.267291944739867,
+      "gm_db": 141.76358693779537
+    },
+    "A_fn20|rpm1000|aw15": {
+      "crossover_hz": 29.20495877156722,
+      "pm_deg": 3.945477987344674,
+      "gm_db": 33.17660200592582
+    },
+    "A_fn20|rpm1000|aw20": {
+      "crossover_hz": 33.9747457984388,
+      "pm_deg": -6.1165829187496,
+      "gm_db": null
+    },
+    "A_fn20|rpm1000|aw30": {
+      "crossover_hz": 41.813737066392655,
+      "pm_deg": -20.6290373315704,
+      "gm_db": null
+    },
+    "A_fn20|rpm1000|aw50": {
+      "crossover_hz": 54.27287102149495,
+      "pm_deg": -40.203277551143714,
+      "gm_db": null
+    },
+    "B_fn20|rpm500|aw5": {
+      "crossover_hz": 16.354518164792633,
+      "pm_deg": 10.828982598722774,
+      "gm_db": 33.29915965524029
+    },
+    "B_fn20|rpm500|aw7.5": {
+      "crossover_hz": 23.239898483740223,
+      "pm_deg": -21.066047349978078,
+      "gm_db": null
+    },
+    "B_fn20|rpm500|aw10": {
+      "crossover_hz": 30.562363123919518,
+      "pm_deg": -48.5321535255903,
+      "gm_db": null
+    },
+    "B_fn20|rpm500|aw15": {
+      "crossover_hz": 32.80313184617444,
+      "pm_deg": -72.5741692985547,
+      "gm_db": null
+    },
+    "B_fn20|rpm500|aw20": {
+      "crossover_hz": 34.5182477456354,
+      "pm_deg": -90.71815409640647,
+      "gm_db": null
+    },
+    "B_fn20|rpm500|aw30": {
+      "crossover_hz": 37.16411548388253,
+      "pm_deg": -118.35976243338092,
+      "gm_db": null
+    },
+    "B_fn20|rpm500|aw50": {
+      "crossover_hz": 41.03743610522541,
+      "pm_deg": -157.67470000742594,
+      "gm_db": null
+    },
+    "B_fn20|rpm1000|aw5": {
+      "crossover_hz": 13.267700362287506,
+      "pm_deg": 54.14536446243437,
+      "gm_db": 191.92199897519174
+    },
+    "B_fn20|rpm1000|aw7.5": {
+      "crossover_hz": 20.34854594780133,
+      "pm_deg": 30.041207601597563,
+      "gm_db": 114.59817605803775
+    },
+    "B_fn20|rpm1000|aw10": {
+      "crossover_hz": 25.155710903368323,
+      "pm_deg": 14.631883194406896,
+      "gm_db": 56.734539181072286
+    },
+    "B_fn20|rpm1000|aw15": {
+      "crossover_hz": 34.685759678441364,
+      "pm_deg": -8.245893951701333,
+      "gm_db": null
+    },
+    "B_fn20|rpm1000|aw20": {
+      "crossover_hz": 44.54846927178736,
+      "pm_deg": -25.726667486345917,
+      "gm_db": null
+    },
+    "B_fn20|rpm1000|aw30": {
+      "crossover_hz": 58.12447086009754,
+      "pm_deg": -89.33332067585559,
+      "gm_db": null
+    },
+    "B_fn20|rpm1000|aw50": {
+      "crossover_hz": 76.93278243117568,
+      "pm_deg": -194.55518270189975,
+      "gm_db": null
+    }
+  },
+  "time_domain_06b": {
+    "stable_max_alpha_w_hz_constant_load": 15.0,
+    "unstable_at_hz": 20.0,
+    "note": "06b time-domain: constant-load stable <=15 Hz; a load step destabilised even 10 Hz"
+  }
+}

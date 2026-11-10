@@ -158,6 +158,7 @@ invariants.
 | 05 | Integration: full sensorless estimator (position/speed) | in progress (05a–05b done; estimator in loop next) |
 | 06a | Closed-loop FOC drive with encoder (true-angle) feedback | completed |
 | 06b | Estimator inside the control loop (sensorless) | partial: chain + Gate 1 OK; Gate 2 failed (D-054) |
+| 06b-2 | Estimator-aware speed loop: measured T_est + margins | stopped at Step 2 (no feasible α_ω*, D-058) |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
 
