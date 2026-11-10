@@ -1,0 +1,123 @@
+{
+  "note": "Phase 06b-3 Step 1: verify the operating-point decoupled speed-loop rule against L = L_enc x T_est (chain B, f_n=20 Hz; 06b-2 T_est). No extrapolation.",
+  "proposed_rule": {
+    "rpm500": 5.0,
+    "rpm1000": 10.0,
+    "criteria": {
+      "500": {
+        "pm_min_deg": 10.0,
+        "gm_min_db": 6.0
+      },
+      "1000": {
+        "pm_min_deg": 45.0,
+        "gm_min_db": 6.0
+      }
+    }
+  },
+  "checks": {
+    "500": {
+      "alpha_w_hz": 5.0,
+      "criteria": {
+        "pm_min_deg": 10.0,
+        "gm_min_db": 6.0
+      },
+      "margins": {
+        "crossover_hz": 16.354518164792633,
+        "pm_deg": 10.828982598722774,
+        "gm_db": 33.29915965524029
+      },
+      "pm_ok": true,
+      "gm_ok": true,
+      "pass": true
+    },
+    "1000": {
+      "alpha_w_hz": 10.0,
+      "criteria": {
+        "pm_min_deg": 45.0,
+        "gm_min_db": 6.0
+      },
+      "margins": {
+        "crossover_hz": 25.155710903368323,
+        "pm_deg": 14.631883194406896,
+        "gm_db": 56.734539181072286
+      },
+      "pm_ok": false,
+      "gm_ok": true,
+      "pass": false
+    }
+  },
+  "grid": {
+    "rpm500_aw5": {
+      "crossover_hz": 16.354518164792633,
+      "pm_deg": 10.828982598722774,
+      "gm_db": 33.29915965524029
+    },
+    "rpm500_aw7.5": {
+      "crossover_hz": 23.239898483740223,
+      "pm_deg": -21.066047349978078,
+      "gm_db": null
+    },
+    "rpm500_aw10": {
+      "crossover_hz": 30.562363123919518,
+      "pm_deg": -48.5321535255903,
+      "gm_db": null
+    },
+    "rpm500_aw15": {
+      "crossover_hz": 32.80313184617444,
+      "pm_deg": -72.5741692985547,
+      "gm_db": null
+    },
+    "rpm500_aw20": {
+      "crossover_hz": 34.5182477456354,
+      "pm_deg": -90.71815409640647,
+      "gm_db": null
+    },
+    "rpm500_aw30": {
+      "crossover_hz": 37.16411548388253,
+      "pm_deg": -118.35976243338092,
+      "gm_db": null
+    },
+    "rpm500_aw50": {
+      "crossover_hz": 41.03743610522541,
+      "pm_deg": -157.67470000742594,
+      "gm_db": null
+    },
+    "rpm1000_aw5": {
+      "crossover_hz": 13.267700362287506,
+      "pm_deg": 54.14536446243437,
+      "gm_db": 191.92199897519174
+    },
+    "rpm1000_aw7.5": {
+      "crossover_hz": 20.34854594780133,
+      "pm_deg": 30.041207601597563,
+      "gm_db": 114.59817605803775
+    },
+    "rpm1000_aw10": {
+      "crossover_hz": 25.155710903368323,
+      "pm_deg": 14.631883194406896,
+      "gm_db": 56.734539181072286
+    },
+    "rpm1000_aw15": {
+      "crossover_hz": 34.685759678441364,
+      "pm_deg": -8.245893951701333,
+      "gm_db": null
+    },
+    "rpm1000_aw20": {
+      "crossover_hz": 44.54846927178736,
+      "pm_deg": -25.726667486345917,
+      "gm_db": null
+    },
+    "rpm1000_aw30": {
+      "crossover_hz": 58.12447086009754,
+      "pm_deg": -89.33332067585559,
+      "gm_db": null
+    },
+    "rpm1000_aw50": {
+      "crossover_hz": 76.93278243117568,
+      "pm_deg": -194.55518270189975,
+      "gm_db": null
+    }
+  },
+  "largest_alpha_w_1000rpm_with_pm45": 5.0,
+  "verdict": "FAIL"
+}

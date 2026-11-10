@@ -772,3 +772,47 @@ inputs by default
   run. No src or config change was made (`git diff --stat phase-06b-gate2-fail -- src
   configs` is empty).
 - **Type:** analysis result / blocker.
+
+---
+
+## Phase 06b-3 — operating-point decoupling and low-speed relaxation (2026-10-30)
+
+> Numbering note: the phase brief asked for D-056/D-057, but Phase 06b-2 already used
+> D-056–D-058, so the log continues at **D-059/D-060**.
+
+## D-059 — Operating-point decoupled speed-loop bandwidths + low-speed PM relaxation (ASSUMPTION)
+
+- **Decision (ASSUMPTION — not from paper):** the sensorless speed loop uses
+  `α_ω = 5 Hz` at 500 rpm and `α_ω = 10 Hz` at 1000 rpm
+  (`configs/drive_assumptions.yaml` `speed_loop.alpha_w_hz_at_{500,1000}rpm`, applied
+  per scenario as an experiment-level override). The low-speed point accepts the relaxed
+  **PM ≥ 10°** because `T_est` is speed-dependent (DSOGI envelope corner ≈ 41 Hz at
+  500 rpm vs ≈ 83 Hz at 1000 rpm), the loop remains stable (PM > 0, GM 33 dB), and the
+  paper prints no low-speed requirement. The encoder-only 06a value (50 Hz) is unchanged
+  for the encoder baseline.
+- **Handover threshold lowered 500 → 400 rpm:** at the 500 rpm operating point a
+  ζ = 1 loop never overshoots, so `ω̂` cannot exceed a threshold equal to the operating
+  speed; ω_h must sit below the lowest operating speed.
+- **Step-1 verification:** 500 rpm @ 5 Hz PM 10.8° / GM 33.3 dB (meets the relaxed
+  target); 1000 rpm @ 10 Hz PM 14.6° / GM 56.7 dB (stable but **below the 45° target**;
+  45° would need 5 Hz → PM 54.1°).
+- **Type:** implementation choices (assumed).
+
+## D-060 — Gate 2 passes at steady state and 1000 rpm transients; fails the 500 rpm load step
+
+- **Result (decoupled rule, chain B, f_n = 20 Hz, advance off/on):**
+  - **2a** (steady, no-load & 20 % load): **PASS** at 500 rpm (peak 0.4°, steady 0.3°)
+    and 1000 rpm (peak 0.7°, steady 0.6°), no saturation.
+  - **2b** (20 % load step): **1000 rpm PASS** (peak 7.5°, dip −79.6 rpm, recover 64 ms,
+    no sat); **500 rpm FAIL** — FLL guard-fail, peak 71.5°, dip −223.7 rpm.
+  - **2c** (50 % / rated step at 1000 rpm): **PASS** (peak 21.7°, dip −210 rpm, recover
+    95 ms, no sat).
+- **Diagnosis:** the relaxed 10.8° PM at 500 rpm is sufficient for handover/steady state
+  but a 20 % load step excites the lightly damped low-speed loop past synchronism. The
+  paper's own class-B steps are at **1000 rpm** and pass; the 500 rpm step is this
+  phase's extra gate.
+- **Consequence:** **GATE 2 = FAIL** → **STOP**; class-B scenario suite / sensitivity not
+  run; Phase 06c not started. A fix needs `α_ω < 5 Hz` at 500 rpm (outside the agreed
+  grid) or a faster low-speed estimator phase — separate approved changes — or restricting
+  the 500 rpm point to steady/no-load operation.
+- **Type:** experimental result / blocker.

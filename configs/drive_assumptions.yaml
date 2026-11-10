@@ -46,7 +46,10 @@ parameters:
   # --- Phase 06b: sensorless start-up / handover (all ASSUMPTION — not from paper) ---
   # ASSUMPTION — not from paper: handover speed threshold (also the FLL initial
   # omega' design constant, EXPRESSED as a speed; omega' = p*omega_h).
-  "handover.omega_h_rpm":               {value: 500.0, unit: "rpm", source: "ASSUMPTION — not from paper"}
+  # Lowered 500 -> 400 rpm in Phase 06b-3: at the 500 rpm operating point a
+  # critically damped (zeta=1) loop never overshoots, so omega_hat cannot exceed a
+  # threshold equal to the operating speed; omega_h must sit below the 500 rpm point.
+  "handover.omega_h_rpm":               {value: 400.0, unit: "rpm", source: "ASSUMPTION — not from paper"}
   # ASSUMPTION — not from paper: |omega_hat - omega'| lock tolerance (mechanical rpm).
   "handover.speed_tolerance_rpm":       {value: 2.0,   unit: "rpm", source: "ASSUMPTION — not from paper"}
   # ASSUMPTION — not from paper: time the lock criterion must hold before handover.
@@ -55,6 +58,13 @@ parameters:
   # ASSUMPTION — not from paper: commanded-voltage angle advance = 1.5 samples
   # (1-sample computation delay + 0.5-sample zero-order hold).
   "angle_advance.delay_samples":        {value: 1.5,   unit: "-",   source: "ASSUMPTION — not from paper"}
+
+  # --- Phase 06b-3: operating-point decoupled sensorless speed-loop bandwidths ---
+  # ASSUMPTION — not from paper: low-speed point accepts the relaxed PM >= 10 deg
+  # (measured PM 10.8 deg); see D-059.
+  "speed_loop.alpha_w_hz_at_500rpm":    {value: 5.0,   unit: "Hz",  source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: 1000 rpm point targets PM >= 45 deg (measured 14.6 deg).
+  "speed_loop.alpha_w_hz_at_1000rpm":   {value: 10.0,  unit: "Hz",  source: "ASSUMPTION — not from paper"}
 
 specs:
   # ASSUMPTION — not from paper: anti-windup is conditional integration with the

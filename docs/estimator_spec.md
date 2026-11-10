@@ -145,3 +145,33 @@ error), `dip ∝ 1/α_ω` would apply. For reference, our **encoder** baseline g
 **37 rpm** dip at 50 % load for `α_ω = 50 Hz` (14.9 rpm at 20 % load). The exp Fig. 19
 **actual** dip ΔN ≈ 45 rpm at **20 %** load is ~3× ours, implying a hardware
 speed-loop bandwidth ≈ 17 Hz — indicative only (hardware includes dead time/PWM).
+
+---
+
+## Phase 06b-3 — operating-point decoupling and low-speed margin relaxation
+
+**Decision (D-059 in `implementation_decisions.md`; numbered D-059 because Phase 06b-2
+already used D-056–D-058).** Justification for operating-point decoupling and the relaxed
+low-speed phase margin:
+
+- The Phase 06b-2 measurement shows `T_est(jω)` is **speed-dependent**: the DSOGI-FLL
+  envelope corner is ≈ 41 Hz at 500 rpm vs ≈ 83 Hz at 1000 rpm (chain B, f_n = 20 Hz),
+  so the estimator phase lag at a given frequency is much larger at low speed. A single
+  global `α_ω` therefore cannot meet one margin target at both speeds.
+- **Low-speed relaxation (`PM ≥ 10°` for ≤ 500 rpm):** at 500 rpm even `α_ω = 5 Hz`
+  gives PM 10.8° (D-058); the loop is *stable* but lightly damped. This is accepted for
+  the low-speed operating point because (i) the plant is still stable (PM > 0, GM 33 dB),
+  (ii) the paper gives no low-speed requirement, and (iii) the paper itself prints that
+  start-up/low speed need another strategy. It is a stated, labelled relaxation.
+- **Operating-point decoupling:** the sensorless speed loop uses `α_ω = 5 Hz` at 500 rpm
+  and `α_ω = 10 Hz` at 1000 rpm (per-scenario, from `configs/drive_assumptions.yaml`
+  `speed_loop.alpha_w_hz_at_{500,1000}rpm`). The encoder-only Phase 06a value (50 Hz) is
+  unchanged for the encoder baseline.
+- **Verification caveat (Step 1):** against the measured `L = L_enc × T_est`, the
+  500 rpm point meets the relaxed target (PM 10.8° ≥ 10°, GM 33 dB), but the **1000 rpm
+  point at 10 Hz gives PM 14.6° < 45°** (GM 56.7 dB) — stable but below the 45° design
+  target; the 45°-meeting bandwidth at 1000 rpm is 5 Hz (PM 54.1°). Step 2's time-domain
+  gates are the arbiter; the margin model is ~one grid step conservative vs the 06b
+  time-domain boundary (stable ≤ 15 Hz).
+
+**Status:** decoupling and the low-speed relaxation are ASSUMPTION — not from paper.

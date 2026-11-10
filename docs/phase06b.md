@@ -244,3 +244,62 @@ The exhaustive-but-disallowed alternatives (filtering/rate-limiting `ω̂`, extr
 next step needs a decision: either accept a lower PM at 500 rpm (state the margin), or
 change the estimator (e.g. a faster-phase chain / higher `f_n` with its DSOGI cap) — both
 are separate, approved changes.
+
+---
+
+# Phase 06b-3 — operating-point decoupling and low-speed relaxation
+
+Tests the proposed decoupled speed-loop rule (5 Hz at 500 rpm with relaxed PM ≥ 10°;
+10 Hz at 1000 rpm) against the margin model, then the staged gate. **No src change**;
+config: `configs/drive_assumptions.yaml`. Scripts: `experiments/06b3_margins.py`,
+`experiments/06b3_gate.py`.
+
+**Step 0** — Phase 06b-2 committed `c24ce8d`, tagged `phase-06b2-complete`. Justification
+for decoupling / low-speed PM relaxation recorded in `estimator_spec.md` (§Phase 06b-3)
+and D-059.
+
+## Step 1 — margin verification (`06b3_margins.py`)
+
+`L = L_enc × T_est` (chain B, f_n = 20 Hz, 06b-2 T_est):
+
+| operating point | PM | GM | crossover | target | result |
+| --- | --- | --- | --- | --- | --- |
+| 500 rpm, α_ω = 5 Hz | 10.8° | 33.3 dB | 16.4 Hz | PM ≥ 10° | **PASS** |
+| 1000 rpm, α_ω = 10 Hz | **14.6°** | 56.7 dB | 25.2 Hz | PM ≥ 45° | **FAIL** |
+
+The 1000 rpm point at 10 Hz is **stable but below the 45° target**; the 45°-meeting
+bandwidth at 1000 rpm is 5 Hz (PM 54.1°). The margin model is ~one grid step
+conservative versus the 06b time domain (stable ≤ 15 Hz), so Step 2 is the arbiter.
+
+## Step 2 — staged gate (`06b3_gate.py`)
+
+Handover threshold **ω_h lowered 500 → 400 rpm**: at a 500 rpm operating point a
+critically damped (ζ = 1) loop never overshoots, so `ω̂` cannot exceed a threshold equal
+to the operating speed.
+
+| gate | 500 rpm | 1000 rpm |
+| --- | --- | --- |
+| 2a steady (no-load, 20 %) | **PASS** (peak 0.4°, steady 0.3°, no sat) | **PASS** (peak 0.7°, steady 0.6°, no sat) |
+| 2b 20 % load step | **FAIL** — FLL guard-fail, peak 71.5°, dip −223.7 rpm | **PASS** — peak 7.5°, dip −79.6 rpm, recover 64 ms, no sat |
+| 2c 50 % (rated) load step | — | **PASS** — peak 21.7°, dip −210 rpm, recover 95 ms, no sat |
+
+Advance off and on behave the same. **GATE 2 = FAIL** (2b at 500 rpm).
+
+**Diagnosis.** Steady state is stable at both speeds (the relaxed 10.8° PM at 500 rpm is
+enough for handover and regulation), and the 1000 rpm load steps pass. The **500 rpm
+*load step*** excites the lightly damped low-speed loop (PM 10.8°) past synchronism. The
+paper's own class-B load steps are at **1000 rpm** (sim 50 % / exp 20 %), which pass; the
+500 rpm load step is the extra gate from this phase.
+
+**Per the rules → STOP** (gate failure). Steps 3–4 (scenario suite, sensitivity) are not
+run. A fix would need `α_ω < 5 Hz` at 500 rpm (outside the agreed grid) or a faster
+low-speed estimator phase — both separate, approved changes; or restrict the 500 rpm
+operating point to steady-state / no-load transients only.
+
+## Outcome
+
+- **Decoupling works for steady state:** Gate 2a passes at 500 rpm (5 Hz) and 1000 rpm
+  (10 Hz); 2b/2c pass at 1000 rpm.
+- **Low-speed load transient fails:** the relaxed 10.8° PM at 500 rpm cannot absorb a
+  20 % load step.
+- Gate 2 not met → **STOP**; no class-B scenario suite run; Phase 06c not started.
