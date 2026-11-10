@@ -105,9 +105,22 @@ def build_observer(cell: str, stack: Stack):
     raise ValueError(f"unknown cell {cell!r}; expected one of {CELLS}")
 
 
-def build_fll(initial_omega: float) -> DSOGIFLL:
-    """DSOGI-FLL at library defaults (LPF off, no clamps, no normalization)."""
-    return DSOGIFLL(DSOGIFLLParameters(K_S, GAMMA, initial_omega))
+def build_fll(initial_omega: float, *, min_omega: float | None = None,
+              max_omega: float | None = None) -> DSOGIFLL:
+    """DSOGI-FLL at library defaults except optional frequency clamps.
+
+    ``min_omega``/``max_omega`` (``None`` = no clamp) are electrical rad/s and are the
+    only non-default options (Phase 06b-5).
+    """
+    return DSOGIFLL(DSOGIFLLParameters(K_S, GAMMA, initial_omega,
+                                       min_omega=min_omega, max_omega=max_omega))
+
+
+def fll_min_omega_rad_s(stack: "Stack") -> float | None:
+    """Lower ``omega'`` clamp from ``configs/drive_assumptions.yaml`` (mechanical rpm)."""
+    cfg = config.load_config("drive_assumptions", directory=stack.config_dir)
+    rpm = config.resolve_parameter(cfg, "fll.min_omega_rpm", unit="rpm")
+    return stack.pole_pairs * rpm * RPM_TO_RAD_S
 
 
 def build_qpll(stack: Stack, *, initial_theta: float = 0.0, initial_omega: float = 0.0) -> QPLL:

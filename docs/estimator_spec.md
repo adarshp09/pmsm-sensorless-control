@@ -199,3 +199,36 @@ bandwidth. `min_omega` clamping (a non-default FLL option) would be the next lev
 
 **Status:** softened bandwidth is ASSUMPTION — not from paper; Gate 2 still not met at
 500 rpm (load transients).
+
+---
+
+## Phase 06b-5 — DSOGI-FLL minimum-frequency clamp (D-062)
+
+**Justification (D-062).** Phase 06b-4 showed the 500 rpm loop is well-damped (PM 65.5°)
+but the **unclamped** DSOGI-FLL drives `ω′ < 0` on a load transient (|E| = 27.8 V, ~4×
+smaller amplitude-driven FLL gain than at 1000 rpm). The FLL already exposes
+`DSOGIFLLParameters.min_omega` (applied as `ω′ ← max(ω′, min_omega)` after each update,
+`src/pmsm_sensorless/filters/dsogi_fll.py`), so **no src change** is needed: the floor is a
+config key (`fll.min_omega_rpm = 100` rpm mechanical → `ω′ₘᵢₙ = p·ω_m = 41.9 rad/s`) and
+an experiment-level `build_fll(..., min_omega=...)`.
+
+**Step-1 static check.** With the floor far below the operating frequency, the static
+open-loop chain (observer → FLL → Q-PLL) is **bit-identical** to the unclamped chain at
+500 and 1000 rpm (`max|ΔE_hat| = 0`, `max|Δf| = 0`): the clamp never engages in normal
+operation.
+
+**Step-2 result.** The clamp **removes the guard trip** and fixes **start-up-under-load**
+(Gate 2a passes at 500 and 1000 rpm, no-load and 20 % load; peak/steady ≤ 0.7°); 1000 rpm
+2b/2c pass. **But the 500 rpm 20 % load step still fails**, and the floor sweep shows no
+value works: 100 rpm → diverges (peak 180°, saturation 0.89); 200 rpm → diverges (180°);
+300 rpm → recovers without saturation but holds a **persistent 36°** angle error (FLL
+pinned at the floor); 400 rpm → diverges (180°). The clamp changes the failure mode from
+"guard trip" to "pinned at the floor / divergence"; it does not restore low-speed tracking
+under a torque transient.
+
+**Conclusion:** clamping `min_omega` is necessary but **not sufficient** at 500 rpm under
+load; the low-speed loaded transient needs a fundamentally stronger estimator (higher Γ /
+error normalization / amplitude-compensated FLL), which is out of scope here. All
+**paper** class-A/B scenarios (500 rpm no-load, 1000 rpm loaded steps) pass.
+
+**Status:** clamp floor is ASSUMPTION — not from paper; Gate 2 not met at 500 rpm loaded.

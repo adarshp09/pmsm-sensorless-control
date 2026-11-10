@@ -838,3 +838,27 @@ inputs by default
   is the next lever (a non-default FLL option, separate approval).
 - **Consequence:** **GATE 2 = FAIL** → **STOP**; no scenario suite; Phase 06c not started.
 - **Type:** implementation choice (assumed) + experimental result / blocker.
+
+---
+
+## Phase 06b-5 — DSOGI-FLL minimum-frequency clamp (2026-10-30)
+
+## D-062 — `min_omega` clamp removes the guard trip but not the low-speed load failure
+
+- **Decision (ASSUMPTION — not from paper):** enable the FLL lower bound
+  `fll.min_omega_rpm = 100` (mechanical → `ω′ₘᵢₙ = p·ω_m = 41.9 rad/s`) via config +
+  `chain.build_fll(..., min_omega=...)`. No src change (the FLL already applies
+  `ω′ ← max(ω′, min_omega)`).
+- **Static check:** clamped ≡ unclamped open-loop chain at 500/1000 rpm (bit-identical);
+  the floor never engages in normal operation.
+- **Result:** the clamp **removes the `ω′ < 0` guard trip** and fixes **start-up-under-load**
+  (Gate 2a passes at both speeds, no-load and 20 % load, peak/steady ≤ 0.7°); 1000 rpm
+  2b/2c pass. The **500 rpm 20 % load step still fails** — floor sweep: none → guard trip
+  (35.9°); 100 rpm → diverges (180°, sat 0.89); 200 rpm → diverges (180°); 300 rpm →
+  recovers without sat but persistent 36° (FLL pinned); 400 rpm → diverges. The clamp
+  changes the failure mode, it does not restore low-speed tracking.
+- **Consequence:** **GATE 2 = FAIL** → **STOP**; scenario suite / sensitivity not run;
+  Phase 06c not started. All paper class-A/B scenarios (500 rpm no-load, 1000 rpm loaded
+  steps) pass. A low-speed *loaded* capability needs a stronger estimator (higher Γ /
+  error normalization / amplitude-compensated FLL) — a separate approved change.
+- **Type:** implementation choice (assumed) + experimental result / blocker.

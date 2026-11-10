@@ -350,3 +350,55 @@ error/gain is ~4× smaller and the transient drives `ω′` negative. 1000 rpm i
 are not run; Phase 06c not started. Next lever: `min_omega` clamping on the FLL (a
 non-default library option; would be a separate approved change), or a start-up/handover
 strategy that applies load only above ~1000 rpm.
+
+---
+
+# Phase 06b-5 — DSOGI-FLL minimum-frequency clamp
+
+Enables the FLL `min_omega` floor to stop `ω′ < 0` collapse on low-speed transients.
+**No src change** (the FLL already supports `min_omega`); config + experiment only.
+Script: `experiments/06b5_gate.py`.
+
+**Step 0** — Phase 06b-4 committed `4052dea`, tagged `phase-06b4-complete`; justification
+in `estimator_spec.md` (§Phase 06b-5) and D-062.
+
+## Step 1 — clamp configuration and static check
+
+`configs/drive_assumptions.yaml`: `fll.min_omega_rpm = 100` (mechanical) →
+`ω′ₘᵢₙ = p·ω_m = 41.9 rad/s`; `chain.build_fll(initial_omega, *, min_omega=...)`.
+**Static open-loop check — IDENTICAL**: with the floor far below the operating frequency,
+the clamped and unclamped chains are bit-identical at 500 and 1000 rpm
+(`max|ΔE_hat| = 0`, `max|Δf| = 0`); the clamp never engages normally.
+
+## Step 2 — staged gate (`06b5_gate.py`)
+
+| gate | 500 rpm | 1000 rpm |
+| --- | --- | --- |
+| 2a steady (no-load, 20 % incl. start-up-under-load) | **PASS** (peak 0.4°, steady 0.3°, no sat, no guard trip) | **PASS** (0.7°, 0.6°) |
+| 2b 20 % load step | **FAIL** — no guard trip, but diverges/pins (see sweep) | **PASS** (peak 7.5°, dip −79.6 rpm, 64 ms) |
+| 2c 50 % step | — | **PASS** (peak 21.7°, dip −210 rpm, 95 ms) |
+
+Advance off/on same. **GATE 2 = FAIL** (500 rpm load step).
+
+**500 rpm 20 % step — floor sweep** (this is the crux):
+
+| `min_omega` floor | result |
+| --- | --- |
+| none | guard trip, peak 35.9° |
+| 100 rpm (configured) | **diverges** — peak 180°, saturation 0.89 |
+| 200 rpm | **diverges** — peak 180° |
+| 300 rpm | recovers, no sat, but **persistent 36°** error (FLL pinned at the floor) |
+| 400 rpm | **diverges** — peak 180° |
+
+**Diagnosis.** The clamp does what it says — it **removes the guard trip** and fixes
+start-up-under-load (2a now passes with a 20 % load from rest, which failed in 06b-4) — but
+it does **not** restore low-speed tracking on a torque transient: it changes the failure
+mode from "guard trip" to "pinned at the floor / divergence". At 500 rpm the FLL's
+amplitude-driven gain is too weak to re-lock after the step; a floor only stops `ω′` going
+negative.
+
+**Outcome.** **GATE 2 = FAIL** at 500 rpm loaded → **STOP**; the class-B scenario suite
+and sensitivity are not run; Phase 06c not started. All **paper** class-A/B scenarios
+(500 rpm no-load; 1000 rpm 20 %/50 % loaded steps) pass. A genuine low-speed loaded
+capability needs a stronger estimator (higher Γ, error normalization, or an
+amplitude-compensated FLL) — a separate, approved change.

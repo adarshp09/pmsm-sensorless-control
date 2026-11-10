@@ -66,6 +66,12 @@ parameters:
   # ASSUMPTION — not from paper: 1000 rpm point targets PM >= 45 deg (measured 14.6 deg).
   "speed_loop.alpha_w_hz_at_1000rpm":   {value: 10.0,  unit: "Hz",  source: "ASSUMPTION — not from paper"}
 
+  # --- Phase 06b-5: DSOGI-FLL minimum frequency clamp ---
+  # ASSUMPTION — not from paper: lower clamp on omega' as a mechanical speed floor
+  # (converted to electrical omega' = p*omega_m). Prevents omega' < 0 collapse on
+  # low-speed load transients; far below 500 rpm normal operation, so no effect there.
+  "fll.min_omega_rpm":                  {value: 100.0, unit: "rpm", source: "ASSUMPTION — not from paper"}
+
 specs:
   # ASSUMPTION — not from paper: anti-windup is conditional integration with the
   # integrator and the output clamped at the voltage limit.
