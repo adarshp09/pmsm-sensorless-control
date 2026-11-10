@@ -279,7 +279,7 @@ def test_run_drive_signature_has_no_ground_truth_estimator() -> None:
     names = set(inspect.signature(run_drive).parameters)
     assert names == {
         "plant", "parameters", "ts", "duration", "load_torque", "source",
-        "speed_ref_rpm", "i_q_ref", "omega_e_fixed", "initial_state",
+        "speed_ref_rpm", "i_q_ref", "omega_e_fixed", "initial_state", "angle_advance",
     }
 
 

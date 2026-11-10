@@ -671,3 +671,61 @@ inputs by default
   identity at constant speed, not a model check.
 - **Loop margins (discrete):** current 493.4 Hz / 63.2° PM; speed 97.0 Hz / 39.9° PM.
 - **Type:** experimental result (conditional on the assumed drive values).
+
+---
+
+## Phase 06b — sensorless closed loop (2026-10-30)
+
+## D-052 — Estimator chain composed only in `experiments/chain.py`
+
+- **Decision:** the SMO → DSOGI-FLL `v'` → Q-PLL chain is composed in
+  `experiments/chain.py` (`EstimatorSource`) and plugs into the 06a `AngleSpeedSource`
+  interface. `src/` modules stay decoupled: the drive imports no observer/filter/
+  estimation module, and the chain imports no plant. `drive.py` gains one optional,
+  backward-compatible flag (`angle_advance`, default OFF); default behaviour is
+  bit-identical to Phase 06a (regression test).
+- **Voltage alignment:** the observer consumes the voltage **actually applied over the
+  observed interval** (the drive's `DriveSample.u`, i.e. the last command under the
+  1-sample delay) with the current sample. **GATE 1 passed**: E_hat gain/phase/ripple in
+  the encoder-driven loop match the 04c nominal-drive values for the matched cell
+  (Δgain −0.0002, Δphase +0.013°, Δripple −2.8e-5).
+- **Type:** architecture (extends D-024/D-049) + verification.
+
+## D-053 — Start-up / handover and angle advance (ASSUMPTION)
+
+- **Decision (ASSUMPTION — not from paper):** encoder-driven start-up with the chain in
+  the background; handover when an **estimator-internal** criterion holds
+  (`ω̂_m ≥ ω_h`, `|ω̂_m − ω'_m| < tol` for `t_lock`; mechanical rpm; no ground truth).
+  FLL initial `ω' = p·ω_h` (nonzero design constant). Frozen values: `ω_h = 500 rpm`,
+  `tol = 2 rpm`, `t_lock = 50 ms`. Angle advance `1.5·ω̂·Ts` (computation delay + ½ ZOH),
+  default OFF.
+- **Printed (kept):** the paper states only that start-up/low speed need another
+  strategy (qualitative); no initial position, `ω'`, lock rule or handover is printed.
+- **Type:** implementation choices (assumed).
+
+## D-054 — GATE 2 FAILED: the estimated speed destabilises the speed loop
+
+- **Finding:** with the frozen 06a speed loop (`α_ω = 50 Hz`) the sensorless loop loses
+  synchronism ~48 ms after handover (peak `|θ̂−θ|` 86°/180°, FLL guard-fail) on the
+  rated-load step at 1000 rpm, matched cell, advance off/on. Isolation: the estimated
+  **angle** alone is stable (0.52°); the estimated **speed** in the speed loop is the
+  cause (true-speed feedback is stable). The loop is stable only for `α_ω ≲ 15 Hz` at
+  constant load; a load **step** destabilises even `α_ω = 10 Hz`. Raising the Q-PLL
+  `f_n` to 200 Hz does not fix it.
+- **Consequence:** per the phase rule the class-B scenario grid and its sensitivity are
+  **not run**. A fix (filter/rate-limit `ω̂`; set `α_ω` from the estimator bandwidth;
+  review `ω̂`-based decoupling) is a **separate approved step** — the estimator/chain is
+  Gate-1 clean, so this is a controller-side problem.
+- **Type:** experimental result / blocker.
+
+## D-055 — Phase 05b/06a metric-basis correction (`|ω̂−ω|` is a transient in the window)
+
+- **Finding:** the ~20× constant-vs-ramp speed-error gap in `phase05b.md` is a
+  **transient-in-window artefact**: the short constant-speed runs put the "steady"
+  window inside the decaying FLL/Q-PLL envelope. A post-transient window gives 0.147 rpm,
+  matching the ramp. `docs/phase05b.md` and `docs/phase06a.md` are amended.
+- **Also:** the paper's class-B speed/position numbers are **estimator errors**
+  `(|ω̂−ω|, |θ̂−θ|)` (a steady 5 rpm cannot be an actual error under an integral speed
+  loop), so 06b compares on that basis only. The plant friction `B·\omega_e` is
+  consistent with the documented `B·\omega_m` (no fix).
+- **Type:** verification / reporting correction.

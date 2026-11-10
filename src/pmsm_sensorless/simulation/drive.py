@@ -67,6 +67,10 @@ _SQRT3 = math.sqrt(3.0)
 _TWO_PI = 2.0 * math.pi
 _RPM_TO_RAD_S = _TWO_PI / 60.0
 
+#: Angle advance compensating the commanded-voltage delay (Phase 06b, ASSUMPTION):
+#: one control-period computation delay plus half a zero-order hold = 1.5 samples.
+_ANGLE_ADVANCE_SAMPLES = 1.5
+
 
 def _park(i_alpha: float, i_beta: float, theta_e: float) -> tuple[float, float]:
     """Amplitude-invariant Park transform ``(i_alpha, i_beta) -> (i_d, i_q)``."""
@@ -454,6 +458,7 @@ def run_drive(
     i_q_ref: float | Callable[[float], float] | None = None,
     omega_e_fixed: float | None = None,
     initial_state: PMSMState | None = None,
+    angle_advance: bool = False,
 ) -> DriveResult:
     """Run the closed-loop drive for ``duration`` seconds.
 
@@ -474,6 +479,10 @@ def run_drive(
         omega_e_fixed: Prescribed electrical speed [rad/s] (prescribed plant).
         initial_state: Starting :class:`PMSMState`; defaults to rest at
             ``omega_e_fixed``.
+        angle_advance: If ``True``, the commanded voltage's inverse Park uses
+            ``theta_src + 1.5 * omega_src * dt`` to compensate the 1-sample
+            computation delay plus the half-sample zero-order hold (Phase 06b).
+            Default ``False`` (bit-identical to Phase 06a).
 
     Raises:
         ValueError: On an inconsistent mode/plant combination.
@@ -527,6 +536,9 @@ def run_drive(
             u_alpha=float(u_applied[0]), u_beta=float(u_applied[1]),
         )
         theta_src, omega_src = source(sample, state)
+        theta_out = theta_src + (
+            _ANGLE_ADVANCE_SAMPLES * omega_src * dt if angle_advance else 0.0
+        )
 
         i_d, i_q = _park(state.i_alpha, state.i_beta, theta_src)
         if speed_mode:
@@ -539,7 +551,7 @@ def run_drive(
             i_q_ref_k = i_q_ref_fn(t)
 
         v_d, v_q, sat = current.step(i_d, i_q, p.i_d_ref, i_q_ref_k, omega_src, dt)
-        u_cmd = _inv_park(v_d, v_q, theta_src)
+        u_cmd = _inv_park(v_d, v_q, theta_out)
 
         out["u_alpha"][k], out["u_beta"][k] = u_applied
         out["u_cmd_alpha"][k], out["u_cmd_beta"][k] = u_cmd

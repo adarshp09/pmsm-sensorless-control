@@ -43,6 +43,19 @@ parameters:
   # ASSUMPTION — not from paper: RK4 sub-steps per control period (>= 4 required).
   "integration.substeps_per_ts":        {value: 4,     unit: "-",  source: "ASSUMPTION — not from paper"}
 
+  # --- Phase 06b: sensorless start-up / handover (all ASSUMPTION — not from paper) ---
+  # ASSUMPTION — not from paper: handover speed threshold (also the FLL initial
+  # omega' design constant, EXPRESSED as a speed; omega' = p*omega_h).
+  "handover.omega_h_rpm":               {value: 500.0, unit: "rpm", source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: |omega_hat - omega'| lock tolerance (mechanical rpm).
+  "handover.speed_tolerance_rpm":       {value: 2.0,   unit: "rpm", source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: time the lock criterion must hold before handover.
+  "handover.lock_time_s":               {value: 0.05,  unit: "s",   source: "ASSUMPTION — not from paper"}
+
+  # ASSUMPTION — not from paper: commanded-voltage angle advance = 1.5 samples
+  # (1-sample computation delay + 0.5-sample zero-order hold).
+  "angle_advance.delay_samples":        {value: 1.5,   unit: "-",   source: "ASSUMPTION — not from paper"}
+
 specs:
   # ASSUMPTION — not from paper: anti-windup is conditional integration with the
   # integrator and the output clamped at the voltage limit.
@@ -50,3 +63,9 @@ specs:
   # ASSUMPTION — not from paper: inverter is an average-value model (no PWM, no
   # dead time); dead time / PWM are deliberately out of scope here.
   inverter_model: "average-value, phase-voltage limit V_dc/sqrt(3), 1-sample delay"
+  # ASSUMPTION — not from paper: the FLL is initialised at omega' = p*omega_h (a
+  # nonzero design constant), never at the true instantaneous frequency.
+  handover_fll_initial: "omega' = p * omega_h (design constant; omega' = 0 is a dead fixed point)"
+  # ASSUMPTION — not from paper: the lock criterion reads only chain-internal
+  # signals (omega_hat, omega'); the encoder start-up is the labelled truth path.
+  handover_criterion: "omega_hat >= omega_h and |omega_hat - omega'| < tol for t_lock (no ground truth)"

@@ -202,3 +202,18 @@ the estimator loop (Phase 06b).
 Controller PI gains are DERIVED from `α_c/α_ω` (`Kp_c = α_c Ld`, `Ki_c = α_c Rs`,
 `Kp_w = 2ζα_ω J/Kt`, `Ki_w = α_ω² J/Kt`, `Kt = ½·3 p ψ_f`); the paper prints none.
 `I_rated = 9.678 A` is derived (D-037). No tuning toward the paper's numbers.
+
+## Sensorless handover status (Phase 06b, `configs/drive_assumptions.yaml`)
+
+| Parameter | Symbol | Value | Unit | Source | Status |
+| --- | --- | --- | --- | --- | --- |
+| handover speed threshold / FLL initial `ω'` | `ω_h` | 500 | rpm | `drive_assumptions.yaml` | **assumed** |
+| handover speed tolerance | `tol` | 2 | rpm | `drive_assumptions.yaml` | **assumed** |
+| lock dwell time | `t_lock` | 0.05 | s | `drive_assumptions.yaml` | **assumed** |
+| angle advance | — | 1.5 | samples | `drive_assumptions.yaml` | **assumed** |
+| start-up strategy | — | encoder-driven, then handover | - | Section IV-E/V-E (qualitative only) | **assumed** (paper prints no rule) |
+
+**GATE 2 (synchronism) FAILED** at the frozen 06a `α_ω = 50 Hz`: the estimated speed in
+the speed loop destabilises the loop (D-054). The class-B scenario grid is therefore not
+reported. `arctan` on the raw sign `E_hat` remains unusable and no conventional-SMO
+baseline exists (D-050).

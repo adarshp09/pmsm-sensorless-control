@@ -84,11 +84,17 @@ Every angle/speed row in this document is **pointwise**: the same
 `_angle_metrics`/`_speed_metrics` helpers (mean/std/RMS/max of the wrapped error over a
 window mask) are used for the constant-speed rows (last 8 cycles) and the ramp rows
 (settled window [0.75, 1.5] s). No row is a windowed fit, so the constant-speed and
-ramp rows **do share one basis**. The ~20× gap in speed max (2.8–9.4 rpm at constant
-speed vs 0.15 rpm on the ramp) is therefore **physical, not a metric artefact**: the
-constant-speed QPLL speed estimate carries a few-rpm ripple driven by the
-filtered-signal ripple, whereas the ramp estimate tracks smoothly. (This corrects the
-Phase 06a Step 0b premise that the two could not share a basis.)
+ramp rows **do share one basis** — but the **window placement** differs in effect.
+
+**Corrected (Phase 06b Step 0b):** the ~20× gap in speed max (2.8–9.4 rpm at constant
+speed vs 0.15 rpm on the ramp) is a **transient-in-window artefact, not physical**. The
+constant-speed runs are only `max(0.25 s, 12 cycles)` long, so the "steady" window
+(starts at 0.13 s at 1000 rpm) still sits inside the decaying FLL/QPLL settling
+envelope (window-start error −1.9 rpm, decaying through the window; the max, 3.4 rpm,
+occurs 5 ms into the window). Re-running 1000 rpm for 2 s and using a window placed
+after the transient gives 0.147 rpm — the **same** as the ramp's 0.1475 rpm.
+(`experiments/06b_step0_analysis.py`.) The Phase 06a Step 0b text ("physical ripple")
+is superseded.
 
 The ramp rows recomputed pointwise by `experiments/06a_step0_analysis.py` (which
 reproduces `estimator_eval.json` exactly, `reproduces_json = True`):

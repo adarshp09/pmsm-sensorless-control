@@ -157,7 +157,7 @@ invariants.
 | 05b | Position/speed estimator (Eq.(8) + Q-PLL) + open-loop evaluation | completed |
 | 05 | Integration: full sensorless estimator (position/speed) | in progress (05a–05b done; estimator in loop next) |
 | 06a | Closed-loop FOC drive with encoder (true-angle) feedback | completed |
-| 06b | Estimator inside the control loop (sensorless) | not started |
+| 06b | Estimator inside the control loop (sensorless) | partial: chain + Gate 1 OK; Gate 2 failed (D-054) |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
 

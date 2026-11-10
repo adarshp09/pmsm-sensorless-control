@@ -202,3 +202,23 @@ choice is named PROVISIONAL and cross-referenced to
   output is inside the limit) with the integrator and output clamped at the limit.
 - **Status:** all drive gains, `V_dc`, delay and anti-windup are ASSUMPTION (D-047/D-048);
   the loop frequencies, switching frequency, dead time and `i_d* = 0` are printed.
+
+## 13. Phase 06b sensorless-loop conventions (2026-10-30)
+
+- **Chain:** `E_hat = k g(S)` (SMO) → DSOGI-FLL in-phase output `v'` (Eq.(12)) →
+  Q-PLL → `(θ̂, ω̂)`. Composed only in `experiments/chain.py`; the drive imports no
+  observer/filter/estimation module and the chain imports no plant (D-052).
+- **Voltage alignment:** the SMO consumes the voltage **actually applied over the
+  interval that produced the current sample** — the drive's `DriveSample.u` (last
+  command, i.e. the previous command under the 1-sample delay) with `i` at the same
+  instant. This is the Phase 04c/05b open-loop alignment (Gate 1; D-052).
+- **Angle advance (ASSUMPTION):** the commanded voltage's inverse Park uses
+  `θ_src + 1.5·ω̂·Ts` when enabled (one control-period computation delay + ½ ZOH). The
+  applied-voltage vector angle error is `ω Ts·(delay) − advance`; the closed current loop
+  otherwise compensates a constant frame offset, so the effect is a frame contract, not a
+  steady voltage-angle offset (D-053).
+- **Start-up / handover (ASSUMPTION):** the encoder drives until the chain-internal lock
+  criterion holds (`ω̂_m ≥ ω_h`, `|ω̂_m − ω'_m| < tol` for `t_lock`; mechanical rpm; no
+  ground truth); the FLL is initialised at `ω' = p·ω_h` (nonzero design constant). Then
+  the source returns `(θ̂, ω̂)` and the drive closes on the estimates (D-053).
+- **Status:** all handover/advance values are ASSUMPTION — not from paper.

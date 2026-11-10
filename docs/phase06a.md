@@ -21,10 +21,15 @@ formulas, frozen before any scenario is run.
 (`_angle_metrics`/`_speed_metrics`: mean/std/RMS/max over a window mask), constant-speed
 over the last 8 cycles and ramp over the settled window [0.75, 1.5] s. The rows
 therefore **share one basis**; the earlier premise that the ramp rows were windowed is
-**corrected**. The ~20× gap in *speed* max (2.8–9.4 rpm const vs 0.15 rpm ramp) is
-physical (constant-speed QPLL speed ripple vs a smooth ramp track), not a metric
-artefact. The ramp rows recomputed pointwise (`06a_step0_analysis.py`, which reproduces
-`estimator_eval.json` exactly, `reproduces_json = True`):
+**corrected**.
+
+**Superseded by Phase 06b Step 0b:** the ~20× gap in *speed* max (2.8–9.4 rpm const vs
+0.15 rpm ramp) is a **transient-in-window artefact**, not physical — the short
+constant-speed runs put the "steady" window inside the decaying FLL/QPLL envelope.
+Re-running 1000 rpm for 2 s with a post-transient window gives 0.147 rpm, matching the
+ramp. See `docs/phase05b.md` §Step 0b and `docs/phase06b.md`. The ramp rows recomputed
+pointwise (`06a_step0_analysis.py`, reproducing `estimator_eval.json`, `reproduces_json
+= True`) were:
 
 | input | angle mean / RMS / max (deg) | speed mean / RMS / max (rpm) |
 | --- | --- | --- |

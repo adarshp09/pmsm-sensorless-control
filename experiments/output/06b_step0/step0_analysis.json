@@ -1,0 +1,25 @@
+{
+  "step0b": {
+    "rule_constant": "last 8 electrical cycles of a run of length max(0.25s, 12 cycles)",
+    "rule_ramp": "settled window [0.75, 1.5] s (after the estimator transient)",
+    "constant_1000_05b_window": [
+      0.13,
+      0.25
+    ],
+    "constant_1000_05b_speed_max_rpm": 3.4049390986675965,
+    "constant_1000_05b_time_of_max_s": 0.135,
+    "constant_1000_05b_time_of_max_after_window_start_s": 0.0050000000000000044,
+    "constant_1000_05b_error_at_window_start_rpm": -1.9131622062588531,
+    "constant_1000_late_window_speed_max_rpm": 0.1469819570073816,
+    "constant_1000_settled_rule_speed_max_rpm": 0.14698663225679776,
+    "constant_1000_settled_rule_angle_max_deg": 0.7253685692563744,
+    "verdict": "transient-in-window artefact: the 05b constant window starts at 0.13 s, still inside the decaying FLL/QPLL settling envelope (window-start error -1.91 rpm, decaying through the window). A window placed after the transient (>=0.75 s) gives the same ~0.15 rpm as the ramp."
+  },
+  "step0c": {
+    "speed_derivative_applies": "B * omega_e (electrical state)",
+    "domega_e_from_code": 5191.740522875817,
+    "domega_e_mechanical_equivalent": 5191.740522875817,
+    "identical": true,
+    "verdict": "consistent: inside d(omega_e)/dt the term B*omega_e is p*(B*omega_m), so the code is exactly the documented mechanical J d(w_m)/dt = T_e - T_L - B w_m (equations_and_conventions sec.12 writes it as B w_e / p = B w_m). No fix needed."
+  }
+}
