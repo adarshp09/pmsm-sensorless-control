@@ -94,6 +94,11 @@ SMO+LPF, STASMO+CVGI (see `configs/experiments.yaml`).
 ## UNPRINTED summary (→ `null` in `parameter_extraction.md`)
 
 - Q-PLL: error algebra, `kp`/`ki`, normalization, VCO/VCO gain.
+  **NOTE (Phase 06e/06f) — the Q-PLL `normalize=True` option is a KNOWN DEFECT —
+  non-paper, do not use:** open-loop it does not lock at 0° (from a +90° start it settles
+  ≈−39°, oscillating; a small residual bias from 0°), and in the closed loop it fails to
+  hand over (steady 84–91°). The nominal chain always runs `normalize=False`. Reported, not
+  fixed (D-076).
 - Speed equation and electrical↔mechanical conversion.
 - Angle wrapping convention.
 - Controller PI gains (speed and current), DC-bus voltage, PWM/dead-time model.
@@ -102,6 +107,29 @@ SMO+LPF, STASMO+CVGI (see `configs/experiments.yaml`).
 
 **No estimator or controller code is written from this spec until Phase 05b/06 is
 approved.**
+
+## Phase 06 unprinted-parameter register
+
+The following values were required to make the closed-loop experiments
+reproducible. They are local assumptions or empirical design choices, not
+additional values extracted from the paper.
+
+| Parameter | Configured value | Classification | Why it matters |
+| --- | --- | --- | --- |
+| DSOGI center frequency `f_n` | 20 Hz nominal; sweep 20/40/80/160 Hz | **UNPRINTED / ASSUMPTION** | Sets the Q-PLL design bandwidth; V0 follows the expected inverse trend, while nominal V2 is FLL-limited |
+| FLL adaptation gain `Gamma` | 50 | **PRINTED** (paper p.5) | Fixed gain produces amplitude-dependent lag; 500 and 5000 are diagnostic guard-fail values, not adopted |
+| Speed-loop bandwidth at 500 rpm | `alpha_omega,500 = 2.5 Hz` | **ASSUMPTION / empirical tuning** | Required for low-speed stability margin; loaded transients can still lose synchronism |
+| Speed-loop bandwidth at 1000 rpm | `alpha_omega,1000 = 10 Hz` | **ASSUMPTION / empirical tuning** | Paper-shaped S2/S3 operating point; higher values can cross the observer-dependent stability limit |
+| FLL minimum-frequency clamp | `min_omega = 100 rpm` mechanical (`41.9 rad/s` electrical) | **ASSUMPTION** | Prevents `omega' < 0` collapse; it does not solve low-speed loaded transients |
+| Handover threshold | `omega_h = 400 rpm` mechanical | **ASSUMPTION** | Allows the critically damped 500 rpm loop to hand over; the paper does not print a threshold |
+| Q-PLL damping | `zeta = 0.707` | **ASSUMPTION** | Used by the design-formula Q-PLL |
+| Q-PLL normalization | OFF (`normalize=False`) | **UNPRINTED / known defect** | The normalized option is a non-paper implementation defect and must not be used |
+| Q-PLL filter constants | `kp`, `ki` from the local `f_n`/`zeta` design; no paper values | **UNPRINTED** | The paper prints only a PI block, not numeric gains or its error algebra |
+| Fixed-time handover for comparison | `t_h = 0.30 s` | **ASSUMPTION** | Makes chain comparisons independent of handover-criterion artifacts |
+
+The active values are also recorded in
+[closed_loop_assumptions.md](closed_loop_assumptions.md) and the YAML templates
+under `configs/`. The nominal chain always uses the unnormalized Q-PLL.**
 
 ---
 

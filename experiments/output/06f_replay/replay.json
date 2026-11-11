@@ -1,0 +1,505 @@
+{
+  "note": "Phase 06f Steps 2-3: replay decomposition on the recorded (u,i); dead time OFF; same initial conditions as the chain. Model values frozen from 06e.",
+  "model_frozen_rpm": {
+    "S2_aw4p4": {
+      "20": 100,
+      "40": 46,
+      "80": 22,
+      "160": 11
+    },
+    "S3_aw10": {
+      "20": 37,
+      "40": 18,
+      "80": 9,
+      "160": 4
+    }
+  },
+  "paper_error_rpm": {
+    "S2_aw4p4": 23.0,
+    "S3_aw10": 10.0
+  },
+  "variants": {
+    "S2_aw4p4|V0|fn20": {
+      "first_peak_rpm": 87.03873702166871,
+      "first_peak_time_s": 0.5428000000000001,
+      "window_max_rpm": 87.03873702166871,
+      "peak_theta_deg": 30.62220924541344,
+      "model_rpm_at_peak": -100.6336058182944,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -0.86490726744729
+    },
+    "S2_aw4p4|V0|fn40": {
+      "first_peak_rpm": 42.12808304119294,
+      "first_peak_time_s": 0.5047,
+      "window_max_rpm": 42.12808304119294,
+      "peak_theta_deg": 9.567946713427,
+      "model_rpm_at_peak": -44.20162726310539,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -0.9530889618707948
+    },
+    "S2_aw4p4|V0|fn80": {
+      "first_peak_rpm": 20.423634635183795,
+      "first_peak_time_s": 0.5021,
+      "window_max_rpm": 20.423634635183795,
+      "peak_theta_deg": 2.48166671888988,
+      "model_rpm_at_peak": -21.442477520356324,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -0.9524848337042539
+    },
+    "S2_aw4p4|V0|fn160": {
+      "first_peak_rpm": 9.815859005057952,
+      "first_peak_time_s": 0.501,
+      "window_max_rpm": 9.815859005057952,
+      "peak_theta_deg": 0.5932002631197275,
+      "model_rpm_at_peak": -10.58447308476298,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -0.9273828679472484
+    },
+    "S2_aw4p4|V1|fn20": {
+      "first_peak_rpm": 90.14497474353684,
+      "first_peak_time_s": 0.5429,
+      "window_max_rpm": 90.14497474353684,
+      "peak_theta_deg": 31.1287877151016,
+      "model_rpm_at_peak": -100.57937354256259,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -0.8962570710921143
+    },
+    "S2_aw4p4|V1|fn40": {
+      "first_peak_rpm": 43.60441699447822,
+      "first_peak_time_s": 0.5051,
+      "window_max_rpm": 43.60441699447822,
+      "peak_theta_deg": 9.4478273910805,
+      "model_rpm_at_peak": -44.40972726441451,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -0.9818663540728029
+    },
+    "S2_aw4p4|V1|fn80": {
+      "first_peak_rpm": 22.74199314193819,
+      "first_peak_time_s": 0.5021,
+      "window_max_rpm": 22.74199314193819,
+      "peak_theta_deg": 2.0875768473413485,
+      "model_rpm_at_peak": -21.442477520356324,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -1.0606047328415376
+    },
+    "S2_aw4p4|V1|fn160": {
+      "first_peak_rpm": 12.133769000961724,
+      "first_peak_time_s": 0.5014000000000001,
+      "window_max_rpm": 12.133769000961724,
+      "peak_theta_deg": 0.639574068412007,
+      "model_rpm_at_peak": -10.634240055200037,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -1.1410095068362156
+    },
+    "S2_aw4p4|V2|fn20": {
+      "first_peak_rpm": 135.25841967642782,
+      "first_peak_time_s": 0.5414,
+      "window_max_rpm": 135.25841967642782,
+      "peak_theta_deg": 26.477828867136296,
+      "fll_lag_peak_rpm": 84.99156546196532,
+      "model_rpm_at_peak": -101.41359260462696,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -1.3337306785269798
+    },
+    "S2_aw4p4|V2|fn40": {
+      "first_peak_rpm": 130.60242524462012,
+      "first_peak_time_s": 0.5399,
+      "window_max_rpm": 130.60242524462012,
+      "peak_theta_deg": 16.234773173390025,
+      "fll_lag_peak_rpm": 84.99156546196532,
+      "model_rpm_at_peak": -51.12231956510615,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -2.5547046056525886
+    },
+    "S2_aw4p4|V2|fn80": {
+      "first_peak_rpm": 129.94037763541064,
+      "first_peak_time_s": 0.5375,
+      "window_max_rpm": 129.94037763541064,
+      "peak_theta_deg": 15.17212390158893,
+      "fll_lag_peak_rpm": 84.99156546196532,
+      "model_rpm_at_peak": -25.843094572705358,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -5.028050230975414
+    },
+    "S2_aw4p4|V2|fn160": {
+      "first_peak_rpm": 107.55175371593913,
+      "first_peak_time_s": 0.537,
+      "window_max_rpm": 107.55175371593913,
+      "peak_theta_deg": 12.636596759267055,
+      "fll_lag_peak_rpm": 84.99156546196532,
+      "model_rpm_at_peak": -12.94405386957008,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -8.308969879118042
+    },
+    "S2_aw4p4|V3|fn20": {
+      "first_peak_rpm": 140.51597720736262,
+      "first_peak_time_s": 0.5406000000000001,
+      "window_max_rpm": 140.51597720736262,
+      "peak_theta_deg": 26.120391901484332,
+      "fll_lag_peak_rpm": 99.87124948622856,
+      "model_rpm_at_peak": -101.86261507843722,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -1.3794656371148648
+    },
+    "S2_aw4p4|V3|fn40": {
+      "first_peak_rpm": 145.39229230346442,
+      "first_peak_time_s": 0.5391,
+      "window_max_rpm": 145.39229230346442,
+      "peak_theta_deg": 17.555897106759605,
+      "fll_lag_peak_rpm": 99.87124948622856,
+      "model_rpm_at_peak": -51.33061852262225,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -2.832467180176051
+    },
+    "S2_aw4p4|V3|fn80": {
+      "first_peak_rpm": 149.21234741545797,
+      "first_peak_time_s": 0.5473,
+      "window_max_rpm": 149.21234741545797,
+      "peak_theta_deg": 16.872001387111943,
+      "fll_lag_peak_rpm": 99.87124948622856,
+      "model_rpm_at_peak": -24.677253205458683,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -6.046554135224894
+    },
+    "S2_aw4p4|V3|fn160": {
+      "first_peak_rpm": 129.731231410707,
+      "first_peak_time_s": 0.5458000000000001,
+      "window_max_rpm": 129.731231410707,
+      "peak_theta_deg": 14.267982801681542,
+      "fll_lag_peak_rpm": 99.87124948622856,
+      "model_rpm_at_peak": -12.402620157426272,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -10.459985854926655
+    },
+    "S2_aw4p4|V4|fn20": {
+      "first_peak_rpm": 82.39883076089473,
+      "first_peak_time_s": 0.5432,
+      "window_max_rpm": 82.39883076089473,
+      "peak_theta_deg": 26.768959459962858,
+      "fll_lag_peak_rpm": 0.0,
+      "model_rpm_at_peak": -100.41797975215022,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -0.8205585390611321
+    },
+    "S2_aw4p4|V4|fn40": {
+      "first_peak_rpm": 57.65046710669511,
+      "first_peak_time_s": 0.5038,
+      "window_max_rpm": 57.65046710669511,
+      "peak_theta_deg": 8.350100674918998,
+      "fll_lag_peak_rpm": 0.0,
+      "model_rpm_at_peak": -43.73968732843168,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -1.3180356474386854
+    },
+    "S2_aw4p4|V4|fn80": {
+      "first_peak_rpm": 44.57257503101774,
+      "first_peak_time_s": 0.5028,
+      "window_max_rpm": 44.57257503101774,
+      "peak_theta_deg": 3.5660509441835453,
+      "fll_lag_peak_rpm": 0.0,
+      "model_rpm_at_peak": -21.61724901315684,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -2.0618985794117313
+    },
+    "S2_aw4p4|V4|fn160": {
+      "first_peak_rpm": 36.08225340478642,
+      "first_peak_time_s": 0.5023,
+      "window_max_rpm": 36.08225340478642,
+      "peak_theta_deg": 2.0360690113889084,
+      "fll_lag_peak_rpm": 0.0,
+      "model_rpm_at_peak": -10.746145770089717,
+      "recorded_a0_rpm_s": -23057.770088700556,
+      "first_peak_over_model": -3.3576925324441396
+    },
+    "S3_aw10|V0|fn20": {
+      "first_peak_rpm": 33.069745528741905,
+      "first_peak_time_s": 0.5225000000000001,
+      "window_max_rpm": 33.069745528741905,
+      "peak_theta_deg": 6.818407588933865,
+      "model_rpm_at_peak": -34.18068709877464,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -0.9674979743144905
+    },
+    "S3_aw10|V0|fn40": {
+      "first_peak_rpm": 19.079104702681136,
+      "first_peak_time_s": 0.5178,
+      "window_max_rpm": 19.079104702681136,
+      "peak_theta_deg": 2.7435587721913044,
+      "model_rpm_at_peak": -17.286523495431112,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -1.103698190542697
+    },
+    "S3_aw10|V0|fn80": {
+      "first_peak_rpm": 7.950605829348231,
+      "first_peak_time_s": 0.502,
+      "window_max_rpm": 7.950605829348231,
+      "peak_theta_deg": 0.8438602113558171,
+      "model_rpm_at_peak": -8.437978579391805,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -0.9422405798429151
+    },
+    "S3_aw10|V0|fn160": {
+      "first_peak_rpm": 3.8633914028256773,
+      "first_peak_time_s": 0.501,
+      "window_max_rpm": 3.8633914028256773,
+      "peak_theta_deg": 0.2221451754534871,
+      "model_rpm_at_peak": -4.199750122352814,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -0.919909825649651
+    },
+    "S3_aw10|V1|fn20": {
+      "first_peak_rpm": 33.879447411298415,
+      "first_peak_time_s": 0.5229,
+      "window_max_rpm": 33.879447411298415,
+      "peak_theta_deg": 6.42883849157622,
+      "model_rpm_at_peak": -34.15289485485054,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -0.9919934329223256
+    },
+    "S3_aw10|V1|fn40": {
+      "first_peak_rpm": 19.74251967955318,
+      "first_peak_time_s": 0.5186000000000001,
+      "window_max_rpm": 19.74251967955318,
+      "peak_theta_deg": 2.338152606062636,
+      "model_rpm_at_peak": -17.251407386177707,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -1.1444005255693759
+    },
+    "S3_aw10|V1|fn80": {
+      "first_peak_rpm": 8.936768718029674,
+      "first_peak_time_s": 0.5016,
+      "window_max_rpm": 8.936768718029674,
+      "peak_theta_deg": 1.0510663509034504,
+      "model_rpm_at_peak": -8.422681106810558,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -1.0610361005836284
+    },
+    "S3_aw10|V1|fn160": {
+      "first_peak_rpm": 6.958210465172937,
+      "first_peak_time_s": 0.5009,
+      "window_max_rpm": 6.958210465172937,
+      "peak_theta_deg": 0.702539660370117,
+      "model_rpm_at_peak": -4.197801086318042,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -1.6575846072964107
+    },
+    "S3_aw10|V2|fn20": {
+      "first_peak_rpm": 40.415424792201755,
+      "first_peak_time_s": 0.5065000000000001,
+      "window_max_rpm": 40.415424792201755,
+      "peak_theta_deg": 7.497487597728083,
+      "fll_lag_peak_rpm": 24.05582918239119,
+      "model_rpm_at_peak": -34.404361921020836,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -1.1747180454902784
+    },
+    "S3_aw10|V2|fn40": {
+      "first_peak_rpm": 41.891090411935814,
+      "first_peak_time_s": 0.5157,
+      "window_max_rpm": 41.891090411935814,
+      "peak_theta_deg": 4.376422316930118,
+      "fll_lag_peak_rpm": 24.05582918239119,
+      "model_rpm_at_peak": -17.3696133933147,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -2.41174569999693
+    },
+    "S3_aw10|V2|fn80": {
+      "first_peak_rpm": 36.200555764391545,
+      "first_peak_time_s": 0.5131,
+      "window_max_rpm": 36.200555764391545,
+      "peak_theta_deg": 2.914711268311236,
+      "fll_lag_peak_rpm": 24.05582918239119,
+      "model_rpm_at_peak": -8.71273423748143,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -4.154901868653343
+    },
+    "S3_aw10|V2|fn160": {
+      "first_peak_rpm": 29.239326490991314,
+      "first_peak_time_s": 0.512,
+      "window_max_rpm": 29.239326490991314,
+      "peak_theta_deg": 2.3870665306054293,
+      "fll_lag_peak_rpm": 24.05582918239119,
+      "model_rpm_at_peak": -4.35619056024406,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -6.712132099508786
+    },
+    "S3_aw10|V3|fn20": {
+      "first_peak_rpm": 39.66629527852576,
+      "first_peak_time_s": 0.5064000000000001,
+      "window_max_rpm": 39.66629527852576,
+      "peak_theta_deg": 7.798281724698158,
+      "fll_lag_peak_rpm": 23.198556239360375,
+      "model_rpm_at_peak": -34.39146280344068,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -1.1533762173837327
+    },
+    "S3_aw10|V3|fn40": {
+      "first_peak_rpm": 40.78159106284791,
+      "first_peak_time_s": 0.5151,
+      "window_max_rpm": 40.78159106284791,
+      "peak_theta_deg": 4.7813195718241985,
+      "fll_lag_peak_rpm": 23.198556239360375,
+      "model_rpm_at_peak": -17.38877345369307,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -2.34528278670435
+    },
+    "S3_aw10|V3|fn80": {
+      "first_peak_rpm": 36.974804648191636,
+      "first_peak_time_s": 0.513,
+      "window_max_rpm": 36.974804648191636,
+      "peak_theta_deg": 3.1678306479354763,
+      "fll_lag_peak_rpm": 23.198556239360375,
+      "model_rpm_at_peak": -8.712850435810775,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -4.243709325735825
+    },
+    "S3_aw10|V3|fn160": {
+      "first_peak_rpm": 29.69973144794969,
+      "first_peak_time_s": 0.512,
+      "window_max_rpm": 29.69973144794969,
+      "peak_theta_deg": 2.4182206476233605,
+      "fll_lag_peak_rpm": 23.198556239360375,
+      "model_rpm_at_peak": -4.35619056024406,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -6.817821910501026
+    },
+    "S3_aw10|V4|fn20": {
+      "first_peak_rpm": 32.61754427634752,
+      "first_peak_time_s": 0.5222,
+      "window_max_rpm": 32.61754427634752,
+      "peak_theta_deg": 6.249428425853851,
+      "fll_lag_peak_rpm": 0.0,
+      "model_rpm_at_peak": -34.20217428675237,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -0.9536687347091082
+    },
+    "S3_aw10|V4|fn40": {
+      "first_peak_rpm": 22.248001842494126,
+      "first_peak_time_s": 0.5037,
+      "window_max_rpm": 22.248001842494126,
+      "peak_theta_deg": 2.5809056200688376,
+      "fll_lag_peak_rpm": 0.0,
+      "model_rpm_at_peak": -17.00384083258417,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -1.3084103798396336
+    },
+    "S3_aw10|V4|fn80": {
+      "first_peak_rpm": 17.319754458026,
+      "first_peak_time_s": 0.5026,
+      "window_max_rpm": 17.319754458026,
+      "peak_theta_deg": 1.632428855470264,
+      "fll_lag_peak_rpm": 0.0,
+      "model_rpm_at_peak": -8.460732297927372,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -2.047075105102761
+    },
+    "S3_aw10|V4|fn160": {
+      "first_peak_rpm": 14.558445612724727,
+      "first_peak_time_s": 0.502,
+      "window_max_rpm": 14.558445612724727,
+      "peak_theta_deg": 1.2917378112929307,
+      "fll_lag_peak_rpm": 0.0,
+      "model_rpm_at_peak": -4.2189892896959025,
+      "recorded_a0_rpm_s": -9215.144523213556,
+      "first_peak_over_model": -3.4506950866836816
+    }
+  },
+  "gamma_diag": {
+    "S2_aw4p4|V2|fn20|gamma50": {
+      "first_peak_rpm": 135.25847803743886,
+      "first_peak_time_s": 0.5414,
+      "window_max_rpm": 135.25847803743886,
+      "peak_theta_deg": 26.47782750836807,
+      "fll_lag_peak_rpm": 84.99166937736616,
+      "fll_status": "ok"
+    },
+    "S2_aw4p4|V2|fn20|gamma500": {
+      "first_peak_rpm": 90.14497474353684,
+      "first_peak_time_s": 0.5429,
+      "window_max_rpm": 90.14497474353684,
+      "peak_theta_deg": 31.1287877151016,
+      "fll_lag_peak_rpm": 1013.854850149361,
+      "fll_status": "guard-fail"
+    },
+    "S2_aw4p4|V2|fn20|gamma5000": {
+      "first_peak_rpm": 90.14497474353684,
+      "first_peak_time_s": 0.5429,
+      "window_max_rpm": 90.14497474353684,
+      "peak_theta_deg": 31.1287877151016,
+      "fll_lag_peak_rpm": 1023.7365017026256,
+      "fll_status": "guard-fail"
+    },
+    "S2_aw4p4|V2|fn80|gamma50": {
+      "first_peak_rpm": 129.94050342566882,
+      "first_peak_time_s": 0.5375,
+      "window_max_rpm": 129.94050342566882,
+      "peak_theta_deg": 15.172139183586967,
+      "fll_lag_peak_rpm": 84.99166937736616,
+      "fll_status": "ok"
+    },
+    "S2_aw4p4|V2|fn80|gamma500": {
+      "first_peak_rpm": 22.74199314193819,
+      "first_peak_time_s": 0.5021,
+      "window_max_rpm": 22.74199314193819,
+      "peak_theta_deg": 2.0875768473413485,
+      "fll_lag_peak_rpm": 1013.854850149361,
+      "fll_status": "guard-fail"
+    },
+    "S2_aw4p4|V2|fn80|gamma5000": {
+      "first_peak_rpm": 22.74199314193819,
+      "first_peak_time_s": 0.5021,
+      "window_max_rpm": 22.74199314193819,
+      "peak_theta_deg": 2.0875768473413485,
+      "fll_lag_peak_rpm": 1023.7365017026256,
+      "fll_status": "guard-fail"
+    },
+    "S3_aw10|V2|fn20|gamma50": {
+      "first_peak_rpm": 40.415413253968616,
+      "first_peak_time_s": 0.5065000000000001,
+      "window_max_rpm": 40.415413253968616,
+      "peak_theta_deg": 7.4975013239936485,
+      "fll_lag_peak_rpm": 24.055979247297746,
+      "fll_status": "ok"
+    },
+    "S3_aw10|V2|fn20|gamma500": {
+      "first_peak_rpm": 33.879447411298415,
+      "first_peak_time_s": 0.5229,
+      "window_max_rpm": 33.879447411298415,
+      "peak_theta_deg": 6.42883849157622,
+      "fll_lag_peak_rpm": 1006.7577932956268,
+      "fll_status": "guard-fail"
+    },
+    "S3_aw10|V2|fn20|gamma5000": {
+      "first_peak_rpm": 33.879447411298415,
+      "first_peak_time_s": 0.5229,
+      "window_max_rpm": 33.879447411298415,
+      "peak_theta_deg": 6.42883849157622,
+      "fll_lag_peak_rpm": 1002.9504329899913,
+      "fll_status": "guard-fail"
+    },
+    "S3_aw10|V2|fn80|gamma50": {
+      "first_peak_rpm": 36.20081729298911,
+      "first_peak_time_s": 0.5131,
+      "window_max_rpm": 36.20081729298911,
+      "peak_theta_deg": 2.9147452724758613,
+      "fll_lag_peak_rpm": 24.055979247297746,
+      "fll_status": "ok"
+    },
+    "S3_aw10|V2|fn80|gamma500": {
+      "first_peak_rpm": 8.936768718029674,
+      "first_peak_time_s": 0.5016,
+      "window_max_rpm": 8.936768718029674,
+      "peak_theta_deg": 1.0510663509034504,
+      "fll_lag_peak_rpm": 1006.7577932956268,
+      "fll_status": "guard-fail"
+    },
+    "S3_aw10|V2|fn80|gamma5000": {
+      "first_peak_rpm": 8.936768718029674,
+      "first_peak_time_s": 0.5016,
+      "window_max_rpm": 8.936768718029674,
+      "peak_theta_deg": 1.0510663509034504,
+      "fll_lag_peak_rpm": 1002.9504329899913,
+      "fll_status": "guard-fail"
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "note": "Phase 06f Step 4 closed-loop cross-checks; matched cell, advance off, t_h=0.30 s, dead time OFF (S4 also ON+comp).",
+  "a_alpha_w_low": {
+    "aw2|fn20": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.3838588945633337,
+      "fll_status": "ok",
+      "stable": true,
+      "first_peak_rpm": 398.9628252024988,
+      "peak_theta_deg": 62.416474466593975,
+      "max_theta_deg_200ms": 179.9697265819133
+    },
+    "aw2|fn80": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.5596038957333286,
+      "fll_status": "ok",
+      "stable": true,
+      "first_peak_rpm": 343.1654350500851,
+      "peak_theta_deg": 86.68988468811254,
+      "max_theta_deg_200ms": 179.91422792480168
+    },
+    "aw2|fn160": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6161287406935736,
+      "fll_status": "ok",
+      "stable": true,
+      "first_peak_rpm": 324.60792335992045,
+      "peak_theta_deg": 88.37435234718366,
+      "max_theta_deg_200ms": 179.35628013134436
+    },
+    "aw3|fn20": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.5106438252964272,
+      "fll_status": "ok",
+      "stable": true,
+      "first_peak_rpm": 378.5648083638616,
+      "peak_theta_deg": 43.165244336897366,
+      "max_theta_deg_200ms": 149.82439491077872
+    },
+    "aw3|fn80": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.5435561429459151,
+      "fll_status": "ok",
+      "stable": true,
+      "first_peak_rpm": 266.89003787035654,
+      "peak_theta_deg": 39.80694564223503,
+      "max_theta_deg_200ms": 57.41383984568481
+    },
+    "aw3|fn160": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.579697195108875,
+      "fll_status": "ok",
+      "stable": true,
+      "first_peak_rpm": 254.43015867981126,
+      "peak_theta_deg": 28.640880608077342,
+      "max_theta_deg_200ms": 35.59441095038379
+    }
+  },
+  "b_channel_isolation": {
+    "fn20|theta_enc_omega_chain": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6200164818179787,
+      "fll_status": "ok",
+      "first_peak_rpm": 110.6613164000412,
+      "peak_theta_deg": 20.87399549752994,
+      "max_theta_deg_200ms": 20.87399549752994
+    },
+    "fn20|theta_chain_omega_enc": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6200164818179787,
+      "fll_status": "ok",
+      "first_peak_rpm": 74.55470299695294,
+      "peak_theta_deg": 13.600217369318083,
+      "max_theta_deg_200ms": 13.600217369318083
+    },
+    "fn20|chain_chain": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6200164818179787,
+      "fll_status": "ok",
+      "first_peak_rpm": 111.73946856138522,
+      "peak_theta_deg": 21.69942117514368,
+      "max_theta_deg_200ms": 21.69942117514368
+    },
+    "fn80|theta_enc_omega_chain": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6369245899670274,
+      "fll_status": "ok",
+      "first_peak_rpm": 667.2921772405,
+      "peak_theta_deg": 60.8006295235073,
+      "max_theta_deg_200ms": 179.849744179142
+    },
+    "fn80|theta_chain_omega_enc": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6369245899670274,
+      "fll_status": "ok",
+      "first_peak_rpm": 71.78013200524997,
+      "peak_theta_deg": 5.6748948213110895,
+      "max_theta_deg_200ms": 5.6748948213110895
+    },
+    "fn80|chain_chain": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6369245899670274,
+      "fll_status": "ok",
+      "first_peak_rpm": 844.4852844237599,
+      "peak_theta_deg": 179.78325890790651,
+      "max_theta_deg_200ms": 179.78325890790651
+    }
+  },
+  "c_high_fn_cost": {
+    "fn20|off": {
+      "steady_mean_deg": 0.6104347116596267,
+      "steady_rms_deg": 0.6104365549639207,
+      "theta_ripple_rms_deg": 0.0015001457422827121,
+      "fll_status": "ok",
+      "lock_valid": true
+    },
+    "fn20|on_comp": {
+      "steady_mean_deg": 0.5693864423851419,
+      "steady_rms_deg": 0.6450137612729533,
+      "theta_ripple_rms_deg": 0.6263135563656811,
+      "fll_status": "ok",
+      "lock_valid": true
+    },
+    "fn40|off": {
+      "steady_mean_deg": 0.610301671053692,
+      "steady_rms_deg": 0.610308916084783,
+      "theta_ripple_rms_deg": 0.0029737790189963234,
+      "fll_status": "ok",
+      "lock_valid": true
+    },
+    "fn40|on_comp": {
+      "steady_mean_deg": 0.9182001051761759,
+      "steady_rms_deg": 1.0424985859523843,
+      "theta_ripple_rms_deg": 1.0109966745237655,
+      "fll_status": "ok",
+      "lock_valid": true
+    },
+    "fn80|off": {
+      "steady_mean_deg": 0.6102703936479518,
+      "steady_rms_deg": 0.610301629045188,
+      "theta_ripple_rms_deg": 0.006174548727176778,
+      "fll_status": "ok",
+      "lock_valid": true
+    },
+    "fn80|on_comp": {
+      "steady_mean_deg": 1.3775673815003269,
+      "steady_rms_deg": 1.5701459977451961,
+      "theta_ripple_rms_deg": 1.5180250004424316,
+      "fll_status": "ok",
+      "lock_valid": true
+    },
+    "fn160|off": {
+      "steady_mean_deg": 0.6102541281581216,
+      "steady_rms_deg": 0.6103881653415774,
+      "theta_ripple_rms_deg": 0.012791069346532593,
+      "fll_status": "ok",
+      "lock_valid": true
+    },
+    "fn160|on_comp": {
+      "steady_mean_deg": 0.5964224462979112,
+      "steady_rms_deg": 0.6892879658148617,
+      "theta_ripple_rms_deg": 0.6821117827787707,
+      "fll_status": "ok",
+      "lock_valid": true
+    }
+  },
+  "step2_v2_reference_rpm": {
+    "fn20": 135,
+    "fn80": 130,
+    "fn160": 108
+  }
+}

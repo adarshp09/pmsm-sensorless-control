@@ -167,8 +167,9 @@ invariants.
 | 06c | Paper-fidelity items + headline comparison | dead-time model (default OFF, Gate D explained); conventional baseline cannot lock; matched/FLC headline only (D-069/D-070) |
 | 06c-2 | Handover-independent comparison; matched dips; closed-loop dead time | fixed-time t_h survey; bandwidth does not close the gap; improved beats conventional; DSOGI hurts a clean observer; Gate D′ confirms dead time, compensation restores (D-071–D-074) |
 | 06e | PLL bandwidth at the matched dips + ablation ladder (no src change) | f_n sweep: gap is **not** a PLL-bandwidth artefact; normalized Q-PLL lock-point confirmed broken (option); ladder R1–R6 (D-075–D-078) |
-| 06 | Simulation experiments vs. baselines | not started |
-| 07 | Evaluation, plots, comparison with reported results | not started |
+| 06f | Replay decomposition of the dynamic error (no src change) | Gate R exact; **DSOGI-FLL** is the element (observer 3–5 %, FLL 1.5–9×); omega_hat path carries the instability; 06e verdict corrected; no further bandwidth work (D-079–D-082) |
+| **06** | Simulation experiments vs. baselines and release documentation | **COMPLETE** — comparison, parameter register, limitations, regeneration audit, and `phase-06-complete` release tag |
+| 07 | Evaluation, plots, comparison with reported results | not started (next phase) |
 
 ## Current phase and known unresolved specifications
 

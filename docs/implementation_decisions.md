@@ -1087,3 +1087,46 @@ inputs by default
   error and ripple**, not on the best compensated cell's dynamic error (8.2° ≈ 7.5°). All
   conditional on the assumed LPF cutoff, FLC scaling and f_n.
 - **Type:** experimental result (conventional/diagnostic = our construction).
+
+---
+
+## Phase 06f — Replay decomposition of the dynamic estimation error (2026-10-30)
+
+## D-079 — Gate R: replay fidelity
+
+- **Result:** a fresh instance of the identical chain driven by the recorded `(u,i)` from
+  t=0 reproduces `θ̂, ω̂` with max difference **0.0** (tolerance 1e-9). The chain output is a
+  pure function of `(u,i)` — no hidden dependence on the controller or ground truth.
+- **Type:** verification (protocol enabler).
+
+## D-080 — 06e verdict downgraded to "not established"
+
+- **Decision:** `phase06e.md`'s "gap NOT explained by PLL bandwidth" is **not established** —
+  the metric was a *window max*, the cells sat **1.0–3.4× of the f_n stability limit**
+  (S2 α_ω=4.4 = the f_n=80 limit), and S3's α_ω (10 Hz) was **not** held at the matched
+  value. The S4 "176.9° at f_n=80" is **loop instability at α_ω=10**, not a PLL steady cost
+  (at α_ω=3 the S4 steady error is 0.61° at every f_n). Ladder claims re-based on the **best
+  compensated** conventional cell; "LPF lag dominant" restated as an uncompensated-cell
+  artefact; R5 (tuned) vs R4 (untuned) noted.
+- **Type:** reporting correction.
+
+## D-081 — Replay decomposition: the DSOGI-FLL is the element
+
+- **Result:** V0 (ideal E) follows the frozen 06e model **within 20 % at every f_n** (S2
+  87/42/20/10 vs 101/44/21/11; S3 33/19/8/4 vs 37/18/9/4) — the model is **validated**.
+  V0→V1 (observer) adds **3–5 %**. V1→V2 (**SOGI+FLL**) adds **1.5× (f_n=20) to 9× (f_n=160)**
+  and **breaks ∝1/f_n** (FLL lag ≈85 rpm, f_n-independent). V3≈V2 and V4 (oracle ω′)≈V0
+  localise it to the **FLL**, not the SOGI band-pass or the observer. Only V0/V4 approach
+  within 2× of the paper's errors; the nominal V2 never does.
+- **Closed loop:** the instability is carried by the **ω̂ path** (ω from the encoder → stable
+  at f_n=80, 5.7°; ω from the chain → 180°). At a **stable** α_ω = 2–3 Hz the error **falls**
+  with f_n — the 06e "flat" row was a stability-limit artefact.
+- **Type:** experimental result (decomposition).
+
+## D-082 — Γ diagnostic; no further bandwidth experiments
+
+- **Result:** Γ ∈ {500, 5000} **guard-fail** the un-normalized FLL (error quadratic in
+  amplitude; Γ=50 already near the edge). No usable Γ > 50; **not adopted**.
+- **Decision:** **no further bandwidth experiments** in this project unless a **printed**
+  parameter is found to differ from ours.
+- **Type:** diagnostic + scope decision.

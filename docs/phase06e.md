@@ -47,32 +47,39 @@ evidence about the nominal chain.
 ## Step 2 — PLL bandwidth sweep (chain B: v′ → unnormalized Q-PLL, ζ=0.707, t_h=0.30 s)
 
 **Predictions (frozen before the runs):** S2 f_n {20,40,80,160} → {100, 46, 22, 11} rpm;
-S3 → {37, 18, 9, 4} rpm. Measured dynamic max |ω̂−ω| at α_ω = 4.4 Hz (S2-matched dip):
+S3 → {37, 18, 9, 4} rpm. **Metric:** `max |ω̂−ω|` over the scenario *dynamic window*
+(S2 (0.5, 1.0) s), i.e. a **window max**, not the first peak. **Cell:** α_ω = 4.4 Hz (S2) /
+10 Hz (S3). `stable` = peak |θ̂−θ| < 30° **and** no post-transient saturation **and**
+lock-valid — none of these exclude being *near* the stability limit.
 
-| f_n | predicted (S2) | measured (S2) | S3 measured |
-| --- | --- | --- | --- |
-| 20 | 100 | 135 | 42 |
-| 40 | 46 | 159 | 32 |
-| 80 | 22 | 289 | 47 |
-| 160 | 11 | 208 | 59 |
+| f_n | predicted (S2) | measured (S2) | stable (S2) | α_ω/limit | S3 measured | stable (S3) |
+| --- | --- | --- | --- | --- | --- | --- |
+| 20 | 100 | 135 | yes | 4.4/15 | 42 | yes |
+| 40 | 46 | 159 | yes | 4.4/10 | 32 | yes |
+| 80 | 22 | 289 | **yes** (1.0× limit) | 4.4/**4.4** | 47 | **yes** (1.0× limit) |
+| 160 | 11 | 208 | yes | 4.4/7 | 59 | yes |
 
-**Verdicts:**
+**The cells sit within 1.0–3.4× of the f_n-dependent stability limit** (S2 α_ω=4.4 is
+*exactly* the f_n=80 limit), so the window max includes loop ringing near the limit; **S3's
+α_ω (10 Hz) is above its own limit at f_n ≥ 40** — the sweep's α_ω was **not held at the
+matched value** for S3. These caveats are why the 06e verdict is **not established**;
+Phase 06f re-measures with a first-peak metric at a fixed stable α_ω.
+
+**Verdicts (as measured, 06e):**
 - **(i)** At the α_ω matched to the paper's dip (S2 **4.4 Hz**; S3 **beyond the stable
-  range** — the 46 rpm dip needs >15 Hz), **no f_n brings the estimation error within 2× of
-  23 rpm — "not reached"** (best S2: 135 rpm at f_n=20, 5.9× the paper's).
-- **(ii)** Max stable α_ω per f_n (S2): **15 (f_n=20), 10 (40), 4.4 (80), 7 (160)** — high
-  f_n **shrinks** the stable range.
-- **(iii)** **Measured error does NOT ∝ 1/f_n** — it is flat-to-worse (135→208 as f_n rises
-  20→160). The model is roughly right only at f_n=20 (135 vs 100).
-- **(iv)** Cost of high f_n: at S4 (dead time OFF) the **matched scatter's steady error blows
-  up at f_n=80 (176.9°)** — unusable; dead ON+comp is then also unstable (180°). High f_n is
-  not viable in our loop. E_hat is clean in these cells, so **no measurement-noise test — a
-  stated limitation**.
+  range**), no f_n brings the error within 2× of 23 rpm at this metric.
+- **(ii)** Max stable α_ω per f_n (S2): 15/10/4.4/7 — **falls with f_n** (unexplained; see
+  below).
+- **(iii)** Measured error does not ∝ 1/f_n at this metric/cell.
+- **(iv)** The S4 "**176.9° at f_n=80**" is **loop instability at α_ω = 10 Hz** (that
+  cell's limit is 4.4 Hz), **not** a PLL steady cost: at a stable α_ω = 3 Hz the S4 steady
+  error is 0.61° at every f_n (Phase 06f Step 4c). E_hat is clean → no noise test (stated
+  limitation).
 
-**Verdict: the gap is NOT explained by PLL bandwidth.** The model's f_n scaling fails,
-raising f_n does not reduce (and generally increases) the error, and it destabilizes the
-speed loop. The f_n=20 level is ~35 % above the model — the bandwidth route is closed, the
-gap is elsewhere (estimator/loop interaction, or a different paper setup).
+**Verdict (06e wording): the gap is NOT explained by PLL bandwidth — superceded by
+"not established"** (Phase 06f): the window-max metric, the near-limit cells and the
+unstated S3 α_ω leave the claim unproven; 06f's first-peak replay decomposition attributes
+the factor to the **DSOGI-FLL** instead.
 
 ## Step 3 — ablation ladder (fixed t_h; dead time OFF unless stated)
 
@@ -96,29 +103,39 @@ R2 S3/S4 collapse (180°, sat), R5 S4 177° — confirming high f_n is unusable.
 
 **What each step changes:**
 - **R1 → R2** (LPF **replaced** by the DSOGI-FLL, observer unchanged): steady **35–40° → 2.5–4.9°**,
-  ripple 1.3 → 0.3–0.9 A — the LPF **lag** (33.7°) was the dominant steady error; the
-  DSOGI-FLL removes it. (Best R1 = the *compensated* fc100 cell at 1.8–7.9° steady, but its
-  ripple stays ~1.3 A.)
+  ripple 1.3 → 0.3–0.9 A — but this improvement is dominated by removing the **uncompensated**
+  cell's lag; the *best compensated* R1 cell (fc100 comp) is already at 1.8–7.9° steady
+  (Step 3 below), so "the LPF lag was the dominant steady error" is an **artefact of the
+  uncompensated cell**.
 - **R2 → R3** (sign → fixed sigmoid): **unstable** (179.9°, saturation) — the fixed sigmoid's
   limit cycle at 100 µs.
-- **R3 → R4** (add **FLC**): **stable** (1.96°) — the FLC fixes the fixed-sigmoid instability.
-- **R4 vs R5** (FLC vs matched sigmoid): 1.96° vs 0.61° — the matched sigmoid is better
-  (~1.3° less steady error); the FLC's value over R3 is *stabilising the observer*, not
-  beating a matched sigmoid.
+- **R3 → R4** (add **FLC**): **stable** (1.96°) — the FLC fixes the fixed-sigmoid instability
+  (R4 is **untuned**, assumed scalings).
+- **R4 vs R5** (FLC vs matched sigmoid): 1.96° vs 0.61° — **R5 (kF=1, aF=0.4) was selected
+  on these scenarios (tuned)**, while R4 is untuned, so the 1.35° gap is not a fair
+  like-for-like FLC penalty.
 - **R6** (matched, raw E_hat → Q-PLL, DIAGNOSTIC): 0.59–0.61°, comparable to R5; the FLL adds
   nothing for a clean matched observer (echoes 06c-2).
 - **S4 dead ON+comp** (R5): steady 1.12° (vs 0.61° OFF) — compensation restores.
 
-**Claim support:** the paper's "conventional LPF vs improved" is supported **on steady error
-and current ripple** (R1 raw/comp vs R5: 1.8–40° and 1.3 A vs 0.61° and 0.0025 A), **not**
-on dynamic error for the best compensated cell (R1 fc100 comp S3 8.2° ≈ R5 7.5°). The FLC's
-benefit is **conditional**: it stabilises a *fixed* sigmoid (R3 unstable), while a matched
-sigmoid is better still (R5). All claims assume the unprinted LPF cutoff / FLC scaling and
-f_n.
+**Claim support (improved R5 vs the *best compensated* conventional R1 fc100 comp):**
+| metric | improved (R5) | best conv (R1 fc100 comp) | winner |
+| --- | --- | --- | --- |
+| current ripple | 0.0025 A | 1.29 A | **improved (515×)** |
+| S4 steady | 0.61° | 7.90° | **improved** |
+| S3 steady | 0.59° | 4.09° | **improved** |
+| S1 (2.5 Hz) steady | 0.61° | 1.77° | conventional (2.9×) |
+| S3 dynamic | 7.5° | 8.2° | improved (~9 %) |
+
+So the improved chain wins clearly on **current ripple** and **steady error (S3/S4)**, loses
+on **S1 steady**, and its **dynamic gain is only ~15–20 %**. All conditional on the assumed
+LPF cutoff, FLC scaling and f_n. **Unexplained observation:** max stable α_ω **falls** with
+f_n (15/10/4.4/7 for 20/40/80/160) — see Phase 06f (the ω̂ path).
 
 ## Bug
-**Normalized Q-PLL option** (Step 1): does not lock at 0° from a +90° start (settles ≈−39°,
-oscillating) and has a small residual bias from 0°. Reported, **not fixed** (no src change).
+**Normalized Q-PLL option** (Step 1): **KNOWN DEFECT — non-paper, do not use.** It does not
+lock at 0° from a +90° start (settles ≈−39°, oscillating) and has a small residual bias from
+0°. Reported, **not fixed** (no src change).
 
 ## Limitations
 - f_n is an unprinted ASSUMPTION; the conventional chain and its LPF cutoff are our
