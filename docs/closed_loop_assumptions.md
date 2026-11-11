@@ -30,6 +30,8 @@ printed values or a stated local rule), **ASSUMPTION** (local choice).
 | Dead-time model | OFF by default; when ON `ΔV=-V_dc t_d f_sw sat(i_x/i_th)`, `i_th=0.1 A` | ASSUMPTION (i_th); dead time/f_sw PRINTED | D-069 | plant voltage distortion |
 | Conventional baseline (DIAG) | sign SMO → LPF (cutoff unprinted; grid 100–400 Hz) → Q-PLL | ASSUMPTION | D-070 | comparison only |
 | Generic handover criterion | `ω̂≥ω_h` and `|Δe|/|Ê|<sin5°`; default OFF | ASSUMPTION | D-070 | chains without an FLL |
+| Fixed-time handover | `t_h = 0.30 s`; default OFF | ASSUMPTION | D-071 | comparison protocol |
+| Dead-time compensation | OFF by default; `+V_dc t_d f_sw sat(i_meas/i_th)` added to plant voltage | ASSUMPTION | D-074 | plant voltage |
 
 **Handover / `f_n` interaction (Phase 06d):** the lock criterion (`|ω̂−ω′|<2 rpm` for 50 ms)
 is satisfied later as the Q-PLL slows — at `f_n = 10 Hz` handover is at 0.70 s, after a

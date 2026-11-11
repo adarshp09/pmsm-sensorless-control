@@ -44,10 +44,11 @@ error** (effective φ ≈ 31° at ≈17 Hz).
 ## Step 1 — Q-PLL normalisation ablation (normalization ON)
 
 `experiments/06c_comparison.py` (`normalization_ablation`): α_ω ∈ {5,10,20} × f_n ∈
-{20,40} × advance {off,on} × {S2,S3,500-20}. **0/36 cells hand over** — the normalized
-Q-PLL does **not** meet the 06b-6 FLL-consistency lock criterion (`|ω̂ − ω′/p| < 2 rpm`)
-in any tested cell, so the ablation yields no usable closed-loop comparison. Not adopted;
-the normalization algebra is an ASSUMPTION (Fig. 5 prints only a labelled block).
+{20,40} × advance {off,on} × {S2,S3,500-20}. **0/36 cells hand over** — a
+**HANDOVER-CRITERION ARTEFACT**: the normalized Q-PLL does not meet the 06b-6
+FLL-consistency lock criterion (`|ω̂ − ω′/p| < 2 rpm`); this is not a stability result.
+Not adopted; the normalization algebra is an ASSUMPTION (Fig. 5 prints only a labelled
+block). Re-examined under fixed-time handover in Phase 06c-2 (Step 5).
 
 ## Step 2 — dead time (drive.py flags, default OFF) — GATE D
 
@@ -66,13 +67,14 @@ Unit tests (6, `tests/test_dead_time.py`): `|ΔV| = 6.22 V`, sign opposes curren
 | 1000 rpm, 20 % | 55.5 V | −0.9 % | 14.3 % | −0.67° | ~0 | ~0 |
 
 The **ΔV itself matches** (measured α-β vector fundamental **7.76 V** vs 7.92 predicted).
-The measured E_hat error is **≈0.6× the prediction** — a >30 % difference, explained:
-(a) the SMO transmits only ≈0.6 of the disturbance to its E_hat fundamental
-(E_hat 27.07→31.89 V, i.e. +4.83 V, when dead time is added); (b) the residual is a
-**quadrature** component (the +4° phase shift), so the *in-phase* amplitude change is
-smaller than |ΔV|; (c) at 20 % load the current is small and near the `i_th` crossing, so
-the distortion is erratic/negligible (the paper's "erratic at no load"). Gate D is
-informational (no STOP), the difference is explained.
+**The "amp err" in the table is vs true `E`, not vs the dead-time-free `E_hat`** — the
+earlier "SMO transmits ~0.6 of ΔV" explanation is **unsupported and retracted**. In the
+open-loop FOC scenario the dead-time `ΔV` also **drives the plant current** by
+`≈|ΔV|/|Rs+jωLd| ≈ 13 A at 500 rpm` (|Rs+jωLd| = 0.59 Ω at ω = 209 rad/s) and `≈9.7 A at
+1000 rpm` (0.80 Ω at 419 rad/s), which changes the current the observer sees. Gate D thus
+**mixed drive and observer effects**; it is **superseded by Step 4 / Gate D′** (below),
+where the encoder-fed loop keeps the observer's current clean. Gate D is informational
+(no STOP).
 
 **Dead time OFF → ON (headline, matched/FLC, advance off):** with dead time ON the
 estimator degrades severely — matched S2 collapses (peak 180°), S1 35°, S3 39°; S4 steady
@@ -84,10 +86,11 @@ similar. So dead time is a first-order error source in this model.
 Fixed-sign SMO (`k0`) → first-order LPF (cutoff UNPRINTED → ASSUMPTION grid
 f_c ∈ {100,200,400} Hz × phase compensation {off,on}) → Q-PLL (f_n=20); plus arctan on the
 filtered E. Handover with the generic 5° criterion. **All 8 conventional chains fail to
-hand over** in every scenario: the Q-PLL *does* reach ≈1020 rpm, but the LPF-filtered
-bang-bang `E_hat` keeps `|Δe|/|Ê|` at ≈0.06–0.09 — i.e. **at/above sin 5°** — so the 50 ms
-dwell is never met. This is a genuine limitation of the fixed-sign SMO's ripple on the
-filtered E (not a bug); a looser lock or a different LPF would be a separate step.
+hand over** in every scenario — this is a **HANDOVER-CRITERION ARTEFACT**, not a stability
+result: the Q-PLL reaches ≈1020 rpm, but the filtered bang-bang `E_hat` keeps
+`|Δe|/|Ê|` at ≈0.06–0.09 (6–9 % ripple ≈ sin 5°), so the 50 ms dwell is never met. Phase
+06c-2 replaces this criterion with a fixed-time handover (Step 1) and re-runs the
+comparison.
 
 ## Step 4 — headline comparison
 

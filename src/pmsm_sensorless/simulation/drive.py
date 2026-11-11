@@ -109,6 +109,20 @@ def dead_time_delta_alpha_beta(i_alpha: float, i_beta: float, *, v_dc: float,
     return dv_alpha, dv_beta
 
 
+def dead_time_compensation_alpha_beta(i_alpha: float, i_beta: float, *, v_dc: float,
+                                      dead_time_s: float, switching_hz: float,
+                                      current_threshold_a: float) -> tuple[float, float]:
+    """Dead-time compensation ``+V_dc t_d f_sw sat(i_x/i_th)`` in ``alpha-beta``.
+
+    Added to the voltage applied by the plant (Phase 06c-2, default OFF), cancelling the
+    per-phase ``-V_dc t_d f_sw sat(i_x/i_th)`` distortion when ``i_meas ~ i``.
+    """
+    dv_alpha, dv_beta = dead_time_delta_alpha_beta(
+        i_alpha, i_beta, v_dc=v_dc, dead_time_s=dead_time_s, switching_hz=switching_hz,
+        current_threshold_a=current_threshold_a)
+    return -dv_alpha, -dv_beta
+
+
 @dataclass(frozen=True)
 class DriveSample:
     """One sampled instant handed to an :class:`AngleSpeedSource`.
@@ -487,6 +501,7 @@ def run_drive(
     dead_time_s: float = 0.0,
     dead_time_current_threshold_a: float = 0.1,
     dead_time_switching_hz: float = 10000.0,
+    dead_time_compensation: bool = False,
 ) -> DriveResult:
     """Run the closed-loop drive for ``duration`` seconds.
 
@@ -515,6 +530,9 @@ def run_drive(
             Optional average-value inverter dead-time model (Phase 06c, default OFF):
             a per-phase voltage error ``-V_dc t_d f_sw sat(i_x/i_th)`` distorts the
             plant; the observer still receives the **commanded** voltage.
+        dead_time_compensation: If ``True`` (Phase 06c-2, default OFF), add
+            ``+V_dc t_d f_sw sat(i_meas/i_th)`` (using the previous current sample) to the
+            voltage applied by the plant to cancel the distortion.
 
     Raises:
         ValueError: On an inconsistent mode/plant combination.
@@ -560,6 +578,7 @@ def run_drive(
     saturated = np.zeros(steps, dtype=bool)
 
     u_applied = np.zeros(2)
+    i_prev = np.array([state.i_alpha, state.i_beta])
     i_q_cmd = 0.0
     for k in range(steps):
         t = k * dt
@@ -608,10 +627,17 @@ def run_drive(
                     switching_hz=dead_time_switching_hz,
                     current_threshold_a=dead_time_current_threshold_a)
                 u_plant = u_applied + np.array([dv_alpha, dv_beta])
+                if dead_time_compensation:
+                    co_alpha, co_beta = dead_time_compensation_alpha_beta(
+                        float(i_prev[0]), float(i_prev[1]), v_dc=p.v_dc,
+                        dead_time_s=dead_time_s, switching_hz=dead_time_switching_hz,
+                        current_threshold_a=dead_time_current_threshold_a)
+                    u_plant = u_plant + np.array([co_alpha, co_beta])
             state = plant.step(
                 state, float(u_plant[0]), float(u_plant[1]), dt_sub,
                 load_torque=load_torque(t + sub * dt_sub),
             )
+        i_prev = np.array([state.i_alpha, state.i_beta])
         u_applied = np.array(u_cmd)
 
     return DriveResult(t=np.arange(steps) * dt, saturated=saturated, v_limit=p.v_limit, **out)

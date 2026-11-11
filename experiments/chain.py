@@ -230,11 +230,13 @@ class HandoverSource:
     name = "handover"
 
     def __init__(self, chain: EstimatorSource, *, pole_pairs: int, assumptions: HandoverAssumptions,
-                 initial_theta: float = 0.0, initial_omega: float = 0.0, generic: bool = False) -> None:
+                 initial_theta: float = 0.0, initial_omega: float = 0.0, generic: bool = False,
+                 fixed_time_s: float | None = None) -> None:
         self.chain = chain
         self.pole_pairs = pole_pairs
         self.assumptions = assumptions
         self.generic = generic
+        self.fixed_time_s = fixed_time_s
         self.mode = "encoder"
         self.lock_accumulator = 0.0
         self.switch_time_s: float | None = None
@@ -251,24 +253,31 @@ class HandoverSource:
     def __call__(self, sample, truth) -> tuple[float, float]:
         theta_hat, omega_hat = self.chain(sample, truth)
         if self.mode == "encoder":
-            omega_rpm = self._to_rpm(omega_hat)
-            if self.generic:
-                # Generic criterion for chains without an FLL: no ground truth — Q-PLL
-                # phase error |Delta e|/|E_hat| < sin(5 deg) (Phase 06c, default OFF).
-                mag = max(getattr(self.chain, "last_e_mag", 0.0), 1e-9)
-                sin_phi = abs(getattr(self.chain, "last_qpll_error", 0.0)) / mag
-                locked = (omega_rpm >= self.assumptions.omega_h_rpm
-                          and sin_phi < math.sin(math.radians(5.0)))
+            if self.fixed_time_s is not None:
+                # Fixed-time handover (Phase 06c-2, default OFF): identical for all
+                # chains, chain runs in the background from the encoder start-up.
+                if sample.t >= self.fixed_time_s:
+                    self.mode = "estimator"
+                    self.switch_time_s = sample.t
             else:
-                omega_prime_rpm = self._to_rpm(self.chain.omega_prime_rad_s)
-                locked = (
-                    omega_rpm >= self.assumptions.omega_h_rpm
-                    and abs(omega_rpm - omega_prime_rpm) < self.assumptions.speed_tolerance_rpm
-                )
-            self.lock_accumulator = self.lock_accumulator + sample.dt if locked else 0.0
-            if self.lock_accumulator >= self.assumptions.lock_time_s:
-                self.mode = "estimator"
-                self.switch_time_s = sample.t
+                omega_rpm = self._to_rpm(omega_hat)
+                if self.generic:
+                    # Generic criterion for chains without an FLL: no ground truth — Q-PLL
+                    # phase error |Delta e|/|E_hat| < sin(5 deg) (Phase 06c, default OFF).
+                    mag = max(getattr(self.chain, "last_e_mag", 0.0), 1e-9)
+                    sin_phi = abs(getattr(self.chain, "last_qpll_error", 0.0)) / mag
+                    locked = (omega_rpm >= self.assumptions.omega_h_rpm
+                              and sin_phi < math.sin(math.radians(5.0)))
+                else:
+                    omega_prime_rpm = self._to_rpm(self.chain.omega_prime_rad_s)
+                    locked = (
+                        omega_rpm >= self.assumptions.omega_h_rpm
+                        and abs(omega_rpm - omega_prime_rpm) < self.assumptions.speed_tolerance_rpm
+                    )
+                self.lock_accumulator = self.lock_accumulator + sample.dt if locked else 0.0
+                if self.lock_accumulator >= self.assumptions.lock_time_s:
+                    self.mode = "estimator"
+                    self.switch_time_s = sample.t
             self.theta_out, self.omega_out = truth.theta_e, truth.omega_e
         else:
             self.theta_out, self.omega_out = theta_hat, omega_hat

@@ -165,6 +165,7 @@ invariants.
 | 06b-6 | Re-scope to paper scenarios; sensorless suite | **Gate P PASS** on S1–S4; suite run; low-speed/high-load steps documented limitation (D-063/D-064) |
 | 06d | Estimation-bandwidth diagnosis (no src change) | FLL limits the loop (oracle 2× α_ω); normalisation ASSUMPTION/narrows; f_n×0.5 row corrected (D-066–D-068) |
 | 06c | Paper-fidelity items + headline comparison | dead-time model (default OFF, Gate D explained); conventional baseline cannot lock; matched/FLC headline only (D-069/D-070) |
+| 06c-2 | Handover-independent comparison; matched dips; closed-loop dead time | fixed-time t_h survey; bandwidth does not close the gap; improved beats conventional; DSOGI hurts a clean observer; Gate D′ confirms dead time, compensation restores (D-071–D-074) |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
 

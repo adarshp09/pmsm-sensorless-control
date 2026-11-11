@@ -1,0 +1,252 @@
+{
+  "note": "Phase 06c-2 Step 4: dead time OFF/ON/ON+comp; observer sees the commanded voltage. Gate D' prediction dE1=7.92 V. Fixed-time handover t_h=0.30 s.",
+  "prediction": {
+    "dE1_v": 7.919549968252712,
+    "formula": "4/pi Vdc td fsw"
+  },
+  "gate_d_prime": {
+    "rpm500_iq100|off": {
+      "abs_E_v": 27.77167905773377,
+      "fundamental_gain": 0.9744608840504868,
+      "amplitude_pct": -2.553911594951319,
+      "phase_deg": -0.18333068451060686,
+      "h6_deg": 2.649661534190111e-11,
+      "pred_amp_pct": 28.51664082603353
+    },
+    "rpm500_iq100|on": {
+      "abs_E_v": 27.77167905773377,
+      "fundamental_gain": 1.2518984370933162,
+      "amplitude_pct": 25.189843709331615,
+      "phase_deg": -0.04524802416591115,
+      "h6_deg": 4.192481775062863,
+      "pred_amp_pct": 28.51664082603353
+    },
+    "rpm500_iq100|on_comp": {
+      "abs_E_v": 27.77167905773377,
+      "fundamental_gain": 0.9745403543997198,
+      "amplitude_pct": -2.5459645600280245,
+      "phase_deg": 0.03489576106007143,
+      "h6_deg": 0.43369151483351226,
+      "pred_amp_pct": 28.51664082603353
+    },
+    "rpm500_iq20|off": {
+      "abs_E_v": 27.77167905773377,
+      "fundamental_gain": 0.9744591915145288,
+      "amplitude_pct": -2.5540808485471245,
+      "phase_deg": -0.2682919568988527,
+      "h6_deg": 2.2275904777923778e-11,
+      "pred_amp_pct": 28.51664082603353
+    },
+    "rpm500_iq20|on": {
+      "abs_E_v": 27.77167905773377,
+      "fundamental_gain": 1.2488159820149178,
+      "amplitude_pct": 24.881598201491784,
+      "phase_deg": -0.29661042232345614,
+      "h6_deg": 2.737453181468647,
+      "pred_amp_pct": 28.51664082603353
+    },
+    "rpm500_iq20|on_comp": {
+      "abs_E_v": 27.77167905773377,
+      "fundamental_gain": 0.9747399213981054,
+      "amplitude_pct": -2.526007860189461,
+      "phase_deg": 0.01012682804680154,
+      "h6_deg": 0.5285078368950057,
+      "pred_amp_pct": 28.51664082603353
+    },
+    "rpm1000_iq100|off": {
+      "abs_E_v": 55.54335811546754,
+      "fundamental_gain": 0.974077263457491,
+      "amplitude_pct": -2.5922736542508984,
+      "phase_deg": -0.5040521568539984,
+      "h6_deg": 8.439604088794906e-10,
+      "pred_amp_pct": 14.258320413016765
+    },
+    "rpm1000_iq100|on": {
+      "abs_E_v": 55.54335811546754,
+      "fundamental_gain": 1.1125038767894324,
+      "amplitude_pct": 11.250387678943241,
+      "phase_deg": -0.17151000579501988,
+      "h6_deg": 2.391062800241297,
+      "pred_amp_pct": 14.258320413016765
+    },
+    "rpm1000_iq100|on_comp": {
+      "abs_E_v": 55.54335811546754,
+      "fundamental_gain": 0.9741280229768305,
+      "amplitude_pct": -2.5871977023169457,
+      "phase_deg": -0.35500838597844053,
+      "h6_deg": 0.2964075896522764,
+      "pred_amp_pct": 14.258320413016765
+    },
+    "rpm1000_iq20|off": {
+      "abs_E_v": 55.54335811546754,
+      "fundamental_gain": 0.9740754870059869,
+      "amplitude_pct": -2.5924512994013105,
+      "phase_deg": -0.5890225969862015,
+      "h6_deg": 8.653488773173064e-10,
+      "pred_amp_pct": 14.258320413016765
+    },
+    "rpm1000_iq20|on": {
+      "abs_E_v": 55.54335811546754,
+      "fundamental_gain": 1.1108741979782275,
+      "amplitude_pct": 11.08741979782275,
+      "phase_deg": -0.23245810835774453,
+      "h6_deg": 1.5293470810519814,
+      "pred_amp_pct": 14.258320413016765
+    },
+    "rpm1000_iq20|on_comp": {
+      "abs_E_v": 55.54335811546754,
+      "fundamental_gain": 0.9746021143249362,
+      "amplitude_pct": -2.5397885675063847,
+      "phase_deg": -0.2061716177584943,
+      "h6_deg": 0.6816288893305927,
+      "pred_amp_pct": 14.258320413016765
+    }
+  },
+  "sensorless": {
+    "S1|off": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.4287332751541889,
+      "steady_theta_max_deg": 0.6122392064256689,
+      "dynamic_theta_max_deg": 179.95511469987395,
+      "dynamic_omega_max_rpm": 846.8288913112493,
+      "dip_rpm": -1297.8206547524633,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.010685589961925146
+    },
+    "S1|on": {
+      "lock_valid": true,
+      "lock_peak_deg": 1.372139157479492,
+      "steady_theta_max_deg": 176.4390552003619,
+      "dynamic_theta_max_deg": 176.4389965827986,
+      "dynamic_omega_max_rpm": 199.43026346610716,
+      "dip_rpm": -4588.811833403435,
+      "saturation": 1.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 3.0794424423543387
+    },
+    "S1|on_comp": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.3600428056643127,
+      "steady_theta_max_deg": 1.112780669568725,
+      "dynamic_theta_max_deg": 4.16753765607589,
+      "dynamic_omega_max_rpm": 15.671317080656271,
+      "dip_rpm": -11.444492273729072,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.01942168653652132
+    },
+    "S3|off": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6200164818179787,
+      "steady_theta_max_deg": 0.5909989446565369,
+      "dynamic_theta_max_deg": 7.497487597728083,
+      "dynamic_omega_max_rpm": 40.415424792201755,
+      "dip_rpm": -79.56075051031802,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.010314877460068317
+    },
+    "S3|on": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.39270860042627975,
+      "steady_theta_max_deg": 27.757969340613784,
+      "dynamic_theta_max_deg": 36.62015705493645,
+      "dynamic_omega_max_rpm": 247.5932590934129,
+      "dip_rpm": -223.4464882009868,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.4844679586613499
+    },
+    "S3|on_comp": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.3292783136521046,
+      "steady_theta_max_deg": 0.22490916186764648,
+      "dynamic_theta_max_deg": 7.917292872103459,
+      "dynamic_omega_max_rpm": 50.72520371414574,
+      "dip_rpm": -80.28325396665983,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.00392540539249131
+    },
+    "S4|off": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.6200164818179787,
+      "steady_theta_max_deg": 0.6122392076327275,
+      "dynamic_theta_max_deg": 0.6122392076327275,
+      "dynamic_omega_max_rpm": 0.1385367334671932,
+      "dip_rpm": null,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.010685589982992294
+    },
+    "S4|on": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.39270860042627975,
+      "steady_theta_max_deg": 25.580343181744396,
+      "dynamic_theta_max_deg": 25.580343181744396,
+      "dynamic_omega_max_rpm": 218.76014087490165,
+      "dip_rpm": null,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.44646121231152197
+    },
+    "S4|on_comp": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.3292783136521046,
+      "steady_theta_max_deg": 1.1179560782579456,
+      "dynamic_theta_max_deg": 1.1179560782579456,
+      "dynamic_omega_max_rpm": 14.754770140282169,
+      "dip_rpm": null,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.019512014458284543
+    },
+    "S2_matched|off": {
+      "lock_valid": true,
+      "lock_peak_deg": 0.5106438252964272,
+      "steady_theta_max_deg": 0.559221642485037,
+      "dynamic_theta_max_deg": 149.82439491077872,
+      "dynamic_omega_max_rpm": 464.6028363576787,
+      "dip_rpm": -1526.8609212806807,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.009760258909774501
+    },
+    "S2_matched|on": {
+      "lock_valid": true,
+      "lock_peak_deg": 1.669493670150279,
+      "steady_theta_max_deg": 2.7460798590922706,
+      "dynamic_theta_max_deg": 179.71969490233474,
+      "dynamic_omega_max_rpm": 1103.88863863895,
+      "dip_rpm": -2198.5808757116247,
+      "saturation": 0.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 0.047928135063862065
+    },
+    "S2_matched|on_comp": {
+      "lock_valid": true,
+      "lock_peak_deg": 1.0876995003696146,
+      "steady_theta_max_deg": 178.1607330078634,
+      "dynamic_theta_max_deg": 179.9424843821513,
+      "dynamic_omega_max_rpm": 995.9635348153217,
+      "dip_rpm": -4573.112685642723,
+      "saturation": 1.0,
+      "fll_status": "ok",
+      "handed_over": true,
+      "steady_theta_rad": 3.109491388753757
+    }
+  },
+  "s2_matched_alpha_w": 3.0
+}

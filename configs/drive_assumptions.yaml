@@ -79,6 +79,8 @@ parameters:
   "inverter.dead_time_current_threshold_a": {value: 0.1, unit: "A", source: "ASSUMPTION — not from paper"}
   # ASSUMPTION — not from paper: dead-time model enabled flag (0 = OFF).
   "inverter.dead_time_model_enabled":       {value: 0,   unit: "-", source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: dead-time compensation flag (0 = OFF; Phase 06c-2).
+  "inverter.dead_time_compensation_enabled": {value: 0,  unit: "-", source: "ASSUMPTION — not from paper"}
 
 specs:
   # ASSUMPTION — not from paper: anti-windup is conditional integration with the

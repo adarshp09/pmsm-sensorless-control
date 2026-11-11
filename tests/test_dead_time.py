@@ -86,6 +86,31 @@ def test_alpha_beta_fundamental_matches_4_over_pi() -> None:
     assert zb[1] == pytest.approx(4.0 / math.pi * amp, rel=0.02)
 
 
+def test_dead_time_compensation_cancels_distortion() -> None:
+    """With ideal parameters the residual plant-side voltage error is < 5 % of dV,
+    except where any phase current is below i_th (linear sat region)."""
+    from pmsm_sensorless.simulation.drive import dead_time_compensation_alpha_beta
+
+    amp = dead_time_phase_error(V_DC, T_D, F_SW)
+    theta = np.linspace(0.0, 2.0 * math.pi, 4096, endpoint=False)
+    ia = 5.0 * np.cos(theta)
+    ib = 5.0 * np.cos(theta - 2.0 * math.pi / 3.0)
+    ic = 5.0 * np.cos(theta + 2.0 * math.pi / 3.0)
+    i_alpha = ia
+    i_beta = (ib - ic) / math.sqrt(3.0)
+    d = np.array([dead_time_delta_alpha_beta(i_alpha[k], i_beta[k], v_dc=V_DC, dead_time_s=T_D,
+                                             switching_hz=F_SW, current_threshold_a=I_TH)
+                  for k in range(len(theta))])
+    ip = np.roll(i_alpha, 1)
+    jp = np.roll(i_beta, 1)
+    c = np.array([dead_time_compensation_alpha_beta(ip[k], jp[k], v_dc=V_DC, dead_time_s=T_D,
+                                                    switching_hz=F_SW, current_threshold_a=I_TH)
+                  for k in range(len(theta))])
+    net = np.hypot(*(d + c).T)
+    away = np.min(np.vstack([np.abs(ia), np.abs(ib), np.abs(ic)]), axis=0) >= I_TH
+    assert np.max(net[away]) < 0.05 * amp
+
+
 def test_defaults_are_bit_identical_regression(config_dir) -> None:
     """dead_time_s = 0 (default) reproduces the dead-time-OFF run exactly."""
     params = DriveParameters.from_configs(

@@ -43,12 +43,28 @@ accordingly (and its `dyn |ω̂−ω|` peak angle error is *not* the PLL ramp of
 04b/04c steady ripple of the FLC-adapted observer; its similarity to the paper's ≈5 rpm is
 **not** a reproduction signal.
 
-**0g — paper-implied bandwidth (estimate).** Our estimation-error/dip ratios are
-S2 111.7/210.0 = **0.532**, S3 40.4/79.6 = **0.508**. The paper's errors (23, ~10 rpm)
-imply dips 23/0.532 = **43.2 rpm** and 10/0.508 = **19.7 rpm**. With dip ∝ 1/α_ω and the
-06a encoder dips at 50 Hz (S2 37.2, S3 14.9 rpm): α_ω ≈ 50·37.2/43.2 = **43 Hz** and
-50·14.9/19.7 = **38 Hz**. So the paper implies a speed loop ≈ **38–43 Hz** — 4× faster
-than our best stable loop. Labelled an **estimate** (the ratio is ours, not the paper's).
+**0g — paper-implied bandwidth (estimate) — SUPERSEDED by Phase 06c-2 Step 0b.** The
+38–43 Hz figure transferred our *error/dip ratio* to the paper's 23/10 rpm, which is
+wrong: those are *estimation errors*, while the paper's **actual dips** are ≈350 rpm
+(Fig. 13, sim S2) and 45–48 rpm (Fig. 19, hardware S3) — **two scenarios, two implied
+bandwidths**. Using our own sensorless dips (S2 −210 rpm at 10 Hz, −310 at 5 Hz; S3
+−79.6 at 10 Hz) with dip ∝ 1/α_ω: S2 350 rpm → α_ω ≈ 210·10/350 = **6 Hz** (from the
+10 Hz point) to **4.4 Hz** (from the 5 Hz point), i.e. **≈4–6 Hz**; S3 46 rpm →
+α_ω ≈ 10·79.6/46 = **17 Hz**, which is **beyond our stable range** (≈10 Hz). The paper's
+S3 point may be a different motor/inertia. So **no single paper-implied α_ω exists**;
+38–43 Hz is **retracted**.
+
+**0e (06c-2) — unnormalized Q-PLL effective ω_n/ζ.** The Q-PLL gains are designed at
+`A_d = |E|(1000 rpm) = 55.54 V`; at another amplitude both scale as `√(A/A_d) = √(|E|/55.54)`:
+
+| rpm | |E| | ω_eff | ζ_eff |
+| --- | --- | --- | --- |
+| 250 | 13.89 V | 10.0 Hz (62.8 rad/s) | 0.354 |
+| 500 | 27.77 V | 14.1 Hz (88.9 rad/s) | 0.500 |
+| 1000 | 55.54 V | 20.0 Hz (125.7 rad/s) | 0.707 |
+
+Measured at 500 rpm (initial +20° angle error): damped period 81.6 ms → **ω_d = 77.0
+rad/s**, exactly the analytic `ω_eff√(1−ζ²) = 88.9·0.866 = 77.0` — verified.
 
 ## Step 1 — open-loop T_est (06b-2 modulation, ε = 0.5 %, 250/500/1000 rpm)
 

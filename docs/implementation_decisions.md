@@ -990,3 +990,55 @@ inputs by default
   (0.06–0.09 s, peaks 1.6–52°); the 06d "0/20 unstable" was a **handover artefact**
   (FLL-based criterion with no FLL). Corrected.
 - **Type:** experimental result / documented limitation.
+
+---
+
+## Phase 06c-2 — handover-independent comparison (2026-10-30)
+
+## D-071 — Fixed-time handover protocol; artefact relabels
+
+- **Decision:** add a fixed-time handover `t_h = 0.30 s` (ASSUMPTION, default OFF) to
+  `experiments/chain.py` (the chain runs in the background from the encoder start-up). A
+  chain is **lock-valid** if `max |θ̂−θ|` over `[t_h−50 ms, t_h] < 30°` — evaluation layer
+  only, never used by the controller. Non-valid chains get a row, not dropped.
+- **Regression:** for the same scenario/α_ω, matched/FLC under `t_h` match the
+  criterion-based handover (<0.1° difference).
+- **Relabels:** the 06b-6 f_n columns, 06d arm 1, and the 06c conventional 0/8 are
+  **handover-criterion artefacts** — under `t_h` the conventional chain and arm 1 lock. The
+  **normalized Q-PLL** is **genuinely unstable** under `t_h` (Step 5), so its 0/36 is not a
+  criterion artefact.
+- **Type:** protocol (assumed) + reporting correction.
+
+## D-072 — Paper-matched dips: bandwidth does not explain the gap
+
+- **Result:** S2's 350 rpm dip is reached at α_ω ≈ 4.4 Hz (ratio 0.38 → ≈133 rpm error);
+  S3's 46 rpm dip needs α_ω ≈ 17 Hz, **beyond our stable range** (closest 15 Hz → 0.86 →
+  ≈40 rpm). The paper's 23/~10 rpm are still 4–6× lower. **Loop bandwidth alone does not
+  explain the gap; a residual estimator-quality gap remains** (the paper's estimator is
+  better per unit dip). The 38–43 Hz paper-implied α_ω (D-066/06d §0g) is **retracted** —
+  the paper's dips imply ≈4–6 Hz (S2) and ≈17 Hz (S3), two scenarios.
+- **Type:** experimental result.
+
+## D-073 — Conventional vs improved; the DSOGI-FLL hurts a clean observer
+
+- **Improved vs conventional** (fixed t_h): matched steady 0.6° vs conventional 35–40°,
+  dynamic 2.2°/7.5° vs 36°/43°, current ripple 0.0025 vs 1.3 A; several conventional cells
+  are not lock-valid. **The improved chain wins on all three** (steady, dynamic, ripple).
+- **DSOGI-FLL vs raw→QPLL (arm 1) with a clean matched observer:** arm 1 is **better**
+  (S3 5.8° vs 7.5°, S1 1.9° vs 2.2°), so the DSOGI-FLL **hurts** for a clean observer; its
+  value is filtering a chattering observer.
+- **Type:** experimental result (conventional = our construction).
+
+## D-074 — Dead-time compensation; Gate D′ confirms the model
+
+- **Decision:** add `dead_time_compensation` (default OFF) to `drive.py`: add
+  `+V_dc t_d f_sw sat(i_meas/i_th)` (previous current sample) to the plant voltage; the
+  observer sees the pre-compensation command. Test: residual < 5 % of ΔV away from
+  `|i| < i_th`; defaults bit-identical.
+- **Gate D′ (encoder-fed, chain in background):** dead time ON → amp **+25.2 % / +11.3 %**
+  (pred 28.5 / 14.3 %, within 30 %), near-zero phase, h6 ripple **4.19° / 2.39°**
+  (pred 5.6 / 2.8°); ON+comp → −2.5 %/−2.6 % (dead-free value), h6 <0.7°. Gate D′
+  **confirms the model**; Gate D's factor was drive/observer mixing (D-069 corrected).
+- **Sensorless:** dead time ON degrades (steady 25–28°); **compensation restores** (S4
+  0.61→1.12°). S4 steady 0.011–0.020 rad < paper 0.08 rad (no reproduction claim).
+- **Type:** implementation (assumed flag) + verification.

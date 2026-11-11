@@ -281,6 +281,7 @@ def test_run_drive_signature_has_no_ground_truth_estimator() -> None:
         "plant", "parameters", "ts", "duration", "load_torque", "source",
         "speed_ref_rpm", "i_q_ref", "omega_e_fixed", "initial_state", "angle_advance",
         "dead_time_s", "dead_time_current_threshold_a", "dead_time_switching_hz",
+        "dead_time_compensation",
     }
 
 
