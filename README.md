@@ -166,6 +166,7 @@ invariants.
 | 06d | Estimation-bandwidth diagnosis (no src change) | FLL limits the loop (oracle 2× α_ω); normalisation ASSUMPTION/narrows; f_n×0.5 row corrected (D-066–D-068) |
 | 06c | Paper-fidelity items + headline comparison | dead-time model (default OFF, Gate D explained); conventional baseline cannot lock; matched/FLC headline only (D-069/D-070) |
 | 06c-2 | Handover-independent comparison; matched dips; closed-loop dead time | fixed-time t_h survey; bandwidth does not close the gap; improved beats conventional; DSOGI hurts a clean observer; Gate D′ confirms dead time, compensation restores (D-071–D-074) |
+| 06e | PLL bandwidth at the matched dips + ablation ladder (no src change) | f_n sweep: gap is **not** a PLL-bandwidth artefact; normalized Q-PLL lock-point confirmed broken (option); ladder R1–R6 (D-075–D-078) |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
 

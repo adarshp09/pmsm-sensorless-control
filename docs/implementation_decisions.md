@@ -1042,3 +1042,48 @@ inputs by default
 - **Sensorless:** dead time ON degrades (steady 25–28°); **compensation restores** (S4
   0.61→1.12°). S4 steady 0.011–0.020 rad < paper 0.08 rad (no reproduction claim).
 - **Type:** implementation (assumed flag) + verification.
+
+---
+
+## Phase 06e — PLL bandwidth at the matched dips + ablation ladder (2026-10-30)
+
+## D-075 — Acceleration-step model of the Q-PLL dip; paper-implied f_n
+
+- **Decision:** replace the failed `2 sin(φ/2) ∝ α_ω` prediction with the Q-PLL
+  **acceleration-step response**: peak frequency error `≈0.456·a0/ω_n` at `t ≈ 1.1/ω_n`,
+  **independent of α_ω**, `a0 = ΔT/J` (S2 24 027 rpm/s, S3 9611 rpm/s),
+  `ω_n = 2π·f_n·√(ω/ω_1000)`. Predicted vs measured: S2 f_n=20 100–110 vs 121–149 rpm; S3
+  36 vs 40 (model ~20 % low).
+- **Paper-implied f_n** (23 rpm S2 → ≈76 Hz; ~10 rpm S3 → ≈70 Hz) labelled **HYPOTHESIS**.
+- **Type:** model + hypothesis (documented).
+
+## D-076 — Normalized Q-PLL lock-point check
+
+- **Result (open loop):** normalization OFF locks cleanly (−0.19°/−0.52°), including from
+  +90°. **ON does not** — from θ0=0 a −1…−1.8° bias with ripple; **from +90° it fails to
+  converge** (settles ≈−39°, oscillating). An **implementation/convention issue in the
+  option** (reported, **not fixed**). The closed-loop 84–91° is an option artefact, not
+  evidence about the nominal chain.
+- **Type:** bug report (option only; no src change).
+
+## D-077 — The gap is NOT explained by PLL bandwidth
+
+- **Result:** at the S2-matched α_ω = 4.4 Hz the measured dynamic |ω̂−ω| is
+  **135/159/289/208 rpm** for f_n = 20/40/80/160 — **not ∝ 1/f_n** (predicted 100/46/22/11).
+  No f_n brings the error within 2× of the paper's 23 rpm ("not reached"). Max stable α_ω
+  (S2) **shrinks** with f_n (15/10/4.4/7); at f_n=80 the S4 steady error blows up (177°) —
+  unusable. **Verdict: the gap is not a PLL-bandwidth artefact**; the f_n=20 level is ~35 %
+  above the model. E_hat is clean → no noise test (stated limitation).
+- **Type:** experimental result (negative).
+
+## D-078 — Ablation ladder
+
+- **R1→R2** (LPF → DSOGI-FLL, observer unchanged): steady 35–40° → 2.5–4.9°, ripple 1.3 →
+  0.3–0.9 A; the uncompensated LPF lag (33.7°) was the dominant steady error. **R2→R3**
+  (sign → fixed sigmoid): unstable (limit cycle). **R3→R4** (+FLC): stable (1.96°), so the
+  FLC *stabilises* the sigmoid observer. **R4 vs R5** (FLC vs matched sigmoid): 1.96° vs
+  0.61° — the matched sigmoid is better; the FLC's value is stabilisation, not accuracy.
+  **R6** (DIAG) ≈ R5. Conventional "improved beats conventional" is supported on **steady
+  error and ripple**, not on the best compensated cell's dynamic error (8.2° ≈ 7.5°). All
+  conditional on the assumed LPF cutoff, FLC scaling and f_n.
+- **Type:** experimental result (conventional/diagnostic = our construction).

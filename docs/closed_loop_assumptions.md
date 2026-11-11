@@ -32,6 +32,7 @@ printed values or a stated local rule), **ASSUMPTION** (local choice).
 | Generic handover criterion | `ω̂≥ω_h` and `|Δe|/|Ê|<sin5°`; default OFF | ASSUMPTION | D-070 | chains without an FLL |
 | Fixed-time handover | `t_h = 0.30 s`; default OFF | ASSUMPTION | D-071 | comparison protocol |
 | Dead-time compensation | OFF by default; `+V_dc t_d f_sw sat(i_meas/i_th)` added to plant voltage | ASSUMPTION | D-074 | plant voltage |
+| Q-PLL bandwidth f_n (06e) | 20 Hz (frozen); sweep {20,40,80,160} at the matched dips | ASSUMPTION (unprinted) | D-077 | loop design |
 
 **Handover / `f_n` interaction (Phase 06d):** the lock criterion (`|ω̂−ω′|<2 rpm` for 50 ms)
 is satisfied later as the Q-PLL slows — at `f_n = 10 Hz` handover is at 0.70 s, after a

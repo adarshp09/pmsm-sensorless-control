@@ -71,10 +71,19 @@ pre-step window (≈0.2–0.3 s); the differences are <0.1°.
 unstable α_ω=20 endpoints, so the grid is authoritative), where the ratio ≈0.38 →
 **estimation error ≈133 rpm**, ~6× the paper's 23. S3's 46 rpm dip needs **α_ω ≈ 17 Hz**,
 **beyond the stable range**; the closest stable point (15 Hz) gives ratio 0.86 → ≈40 rpm.
-The predicted `2 sin(φ/2)` (≈0.27 at 5 Hz → 80–95 rpm) is close to the measured 133 rpm at
-the S2-matched dip, but **even so the error is 4–6× the paper's**. So **loop bandwidth alone
-does not explain the gap; a residual estimator-quality gap remains** (the paper's estimator
-is better per unit dip). The S3 matched point is infeasible in our stable range.
+The predicted `2 sin(φ/2)` scaling **failed**: it gives 0.27 at 5 Hz but the measured ratio is
+0.39, and the ratio is **flat ≈0.38 for α_ω ≤ 5 Hz** — not ∝ α_ω. A better model is the
+**acceleration-step response of the Q-PLL**: after a load step the frequency error peaks at
+`≈0.456·a0/ω_n` at `t ≈ 1.1/ω_n`, **independent of α_ω**, with `a0 = ΔT/J` (S2
+0.5·7.7/0.00153 = 2516 rad/s² = **24 027 rpm/s**, S3 20 % → **9611 rpm/s**) and
+`ω_n = 2π·f_n·√(ω/ω_1000)` at the speed reached at the peak (unnormalized loop). Predicted
+vs measured: S2 f_n=20 **≈100–110 rpm** vs 121–149 measured at 5–4 Hz; S3 **≈36 rpm** vs 40
+at 10 Hz (model ~20 % low, right order, α_ω-independent). Paper-implied ω_n from the same
+model: **23 rpm (S2) → ≈76 Hz; ≈10 rpm (S3) → ≈70 Hz** — **HYPOTHESIS** (assumes the
+printed J/rated torque apply to both scenarios and an instantaneous step; the hardware
+scenario may differ). **The gap is therefore not attributed to "estimator quality": the PLL
+bandwidth f_n (unprinted ASSUMPTION, 20 Hz) had not been varied at the matched dips —
+done in Phase 06e.** S3's matched α_ω remains infeasible in our stable range.
 
 ## Step 3 — conventional vs improved (fixed t_h, dead time OFF)
 
@@ -87,16 +96,20 @@ Representative cells (full table in `suite.json`); steady/dynamic |θ̂−θ|, c
 | arm 1 raw→QPLL (DIAG) | 0.61° / 1.9° | 0.59° / 5.8° | 0.61° | 0.005 | yes |
 | conv fc100 raw | 35.6° / 36.5° | 37.0° / 42.8° | 40.3° | 1.32 | S1 yes, S3/S4 **no** |
 | conv fc100 comp | **180°** | — | — | 19.4 | unstable |
-| qpll normalized | 89.5° | 83.8° | 91.4° | 0.26 | **no** (genuine) |
+| qpll normalized | 89.5° | 83.8° | 91.4° | 0.26 | **no** (option issue, Step 5) |
 
 **Claims the data supports:**
-- **Improved vs conventional** — on **steady error** (0.6° vs 35–40°), **dynamic error**
-  (2.2°/7.5° vs 36°/43°) and **current ripple** (0.0025 vs 1.3 A) the matched (improved)
-  chain is **much better**; several conventional cells are not even lock-valid.
-- **DSOGI-FLL when the observer is clean (arm 1 vs nominal)** — the raw→Q-PLL arm is
-  **better** on S1 (1.9° vs 2.2°), S3 (5.8° vs 7.5°) and S2, so the DSOGI-FLL **hurts**
-  rather than helps for a clean matched observer (its lag dominates); its value is in
-  filtering the *chattering* observer, not a clean one.
+- **Improved vs conventional** — on **steady error** the claim is **restricted**: the
+  conventional `fc100 raw` 35.6° equals the **uncompensated LPF lag**
+  `atan(ω_e/ω_c) = 33.7°` at 1000 rpm plus ≈1.6° observer lag, and the S3 "not lock-valid
+  (37°)" is the 30° threshold meeting that *deterministic lag*, not a failure to track. Only
+  the best *compensated* conventional cell is a fair comparison (Phase 06e Step 3). On
+  **dynamic error** (2.2°/7.5° vs 36°/43°) and **current ripple** (0.0025 vs 1.3 A) the
+  improved chain is clearly better.
+- **DSOGI-FLL when the observer is clean (arm 1 vs nominal)** — *scope: matched cell, S1/S3
+  only*: the raw→Q-PLL arm is better on S1 (1.9° vs 2.2°) and S3 (5.8° vs 7.5°), so the
+  DSOGI-FLL **hurts** for a clean matched observer (its lag dominates); its value is
+  filtering a chattering observer.
 - **Normalized Q-PLL** — genuinely unstable under fixed-time handover (not a criterion
   artefact); not adopted.
 
@@ -111,10 +124,10 @@ Representative cells (full table in `suite.json`); steady/dynamic |θ̂−θ|, c
 | 1000, I_rated | −2.6 % / −0.50° / 0.0° | **+11.3 % / −0.17° / 2.39°** | −2.6 % / −0.36° / 0.30° |
 | 1000, 20 % | −2.6 % / −0.59° / 0.0° | +11.1 % / −0.23° / 1.53° | −2.5 % / −0.21° / 0.68° |
 
-The predictions hold within 30 %: OFF amp +25.2 % (pred 28.5 %) at 500 and +11.3 %
-(pred 14.3 %) at 1000, **near-zero phase**, h6 4.19°/2.39° (pred 5.6°/2.8°); **ON+comp
-returns to the dead-free value** (−2.5 %) and h6 <0.7°. So Gate D′ **confirms the model**;
-Gate D's factor was drive/observer mixing (Step 0c).
+The predictions hold within 12–25 %, **all on the low side** (25.2 vs 28.5, 11.3 vs 14.3;
+h6 4.19 vs 5.6, 2.39 vs 2.8). The residual is **unexplained**; the E_hat baseline gain
+(−2.5 %) accounts for only part. **ON+comp returns to the dead-free value** (−2.5 %) and h6
+<0.7°. So Gate D′ **confirms the model**; Gate D's factor was drive/observer mixing (Step 0c).
 
 **Sensorless (matched, t_h):**
 
@@ -133,8 +146,11 @@ reproduction claim).
 ## Step 5 — normalization spot check
 
 Normalized Q-PLL (α_ω = 10, f_n ∈ {20,40}, S3 and 500/20, t_h): **lock-valid = False** in
-every cell (lock-peak ≈180°, steady 84–91°) — a **genuine instability**, not a handover
-artefact. Unnormalized nominal: steady 0.59°, dyn |ω̂−ω| 40 rpm. Not adopted.
+every cell (lock-peak ≈180°, steady 84–91°) — **marked "unverified"** until Phase 06e
+Step 1, which shows the normalized Q-PLL **option does not lock at 0°** (from a +90° start
+it settles ≈−39° oscillating; near 0° a −1…−1.8° bias with residual ripple). This is an
+**option/convention issue** (reported, not fixed), **not** evidence about the nominal chain.
+Unnormalized nominal: steady 0.59°, dyn |ω̂−ω| 40 rpm. Not adopted.
 
 ## Limitations
 - Fixed-time handover `t_h = 0.30 s` is an ASSUMPTION; it is only valid for scenarios whose

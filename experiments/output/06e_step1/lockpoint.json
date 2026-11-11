@@ -1,0 +1,53 @@
+{
+  "note": "Phase 06e Step 1: Q-PLL normalization lock-point, open-loop nominal drive, matched cell, v' input, f_n=20.",
+  "runs": {
+    "rpm500|normoff|theta0=0": {
+      "steady_mean_deg": -0.185486488967798,
+      "steady_std_deg": 0.021414203745673946,
+      "final_deg": -0.18828065207976988,
+      "lock_in_deg": 0.24403117265475244
+    },
+    "rpm500|normoff|theta0=+90": {
+      "steady_mean_deg": -0.18548768327307413,
+      "steady_std_deg": 0.021413737155859765,
+      "final_deg": -0.18828065218121684,
+      "lock_in_deg": 0.24404298290077026
+    },
+    "rpm500|normon|theta0=0": {
+      "steady_mean_deg": -1.0088117264446526,
+      "steady_std_deg": 0.9875715894826723,
+      "final_deg": 0.10070022760111726,
+      "lock_in_deg": 2.149255330461666
+    },
+    "rpm500|normon|theta0=+90": {
+      "steady_mean_deg": 12.4196724790547,
+      "steady_std_deg": 33.21670210582604,
+      "final_deg": -38.30300965702268,
+      "lock_in_deg": 51.14900147153776
+    },
+    "rpm1000|normoff|theta0=0": {
+      "steady_mean_deg": -0.5166518266819691,
+      "steady_std_deg": 0.0014906699101946228,
+      "final_deg": -0.518757024285636,
+      "lock_in_deg": 0.5188229075265895
+    },
+    "rpm1000|normoff|theta0=+90": {
+      "steady_mean_deg": -0.516651826681959,
+      "steady_std_deg": 0.0014906699101978173,
+      "final_deg": -0.518757024285636,
+      "lock_in_deg": 0.5188229075265895
+    },
+    "rpm1000|normon|theta0=0": {
+      "steady_mean_deg": -1.7763906477264026,
+      "steady_std_deg": 0.35682705557203354,
+      "final_deg": -0.8892449158606777,
+      "lock_in_deg": 2.119562314262434
+    },
+    "rpm1000|normon|theta0=+90": {
+      "steady_mean_deg": -17.711522425030143,
+      "steady_std_deg": 18.40672590643678,
+      "final_deg": -39.18094506489787,
+      "lock_in_deg": 39.191046750479124
+    }
+  }
+}
