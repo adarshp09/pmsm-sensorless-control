@@ -27,6 +27,9 @@ printed values or a stated local rule), **ASSUMPTION** (local choice).
 | Angle-advance flag | OFF by default; `1.5·ω̂·Ts` when ON | ASSUMPTION | D-053 | commanded-voltage frame |
 | FLC scaling `Ke`/`Kec`/`Ku` | 0.13472 1/A, 1.3472e-5 s/A, 1.0 | ASSUMPTION | D-031 | FLC cell only (FLC nominal) |
 | `I_rated` | 9.678 A = T_rated/1.5pψ_f | DERIVED | D-037 | operating point |
+| Dead-time model | OFF by default; when ON `ΔV=-V_dc t_d f_sw sat(i_x/i_th)`, `i_th=0.1 A` | ASSUMPTION (i_th); dead time/f_sw PRINTED | D-069 | plant voltage distortion |
+| Conventional baseline (DIAG) | sign SMO → LPF (cutoff unprinted; grid 100–400 Hz) → Q-PLL | ASSUMPTION | D-070 | comparison only |
+| Generic handover criterion | `ω̂≥ω_h` and `|Δe|/|Ê|<sin5°`; default OFF | ASSUMPTION | D-070 | chains without an FLL |
 
 **Handover / `f_n` interaction (Phase 06d):** the lock criterion (`|ω̂−ω′|<2 rpm` for 50 ms)
 is satisfied later as the Q-PLL slows — at `f_n = 10 Hz` handover is at 0.70 s, after a

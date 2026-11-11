@@ -52,16 +52,31 @@ than our best stable loop. Labelled an **estimate** (the ratio is ours, not the 
 
 ## Step 1 — open-loop T_est (06b-2 modulation, ε = 0.5 %, 250/500/1000 rpm)
 
-| arm | 250 rpm −3 dB / ph50 | 500 rpm −3 dB / ph50 | 1000 rpm −3 dB / ph50 |
-| --- | --- | --- | --- |
-| **0 nominal B** | 26.4 Hz / −190° | 41.5 Hz / −253° | **83.8 Hz / −84.5°** |
-| 1 raw A (DIAG) | 16.8 Hz / −110° | 26.2 Hz / −90° | 41.8 Hz / −73.7° |
-| 2 oracle ω′ (DIAG) | 26.5 Hz / −259° | 44.4 Hz / −134° | 69.0 Hz / −73.8° |
-| 3 normalised FLL (DIAG) | 14.8 Hz / −307° | 23.7 Hz / −165° | 36.6 Hz / −120° |
+Primary columns are the **phase at 25/50 Hz**; peak gain (dB) and −3 dB are secondary.
 
-Phase @25 Hz (1000 rpm): 0 −50°, 1 −48°, 2 −45°, 3 −78°. **All locked.** The nominal
-chain is the **widest**; the raw-`E_hat` chain and the normalised FLL are **narrower**, and
-the amplitude dependence is strong (250 rpm is ~3× narrower than 1000 rpm).
+| arm | 250 rpm ph25 / ph50 (peak) | 500 rpm ph25 / ph50 (peak) | 1000 rpm ph25 / ph50 (peak) | −3 dB (250/500/1000) |
+| --- | --- | --- | --- | --- |
+| **0 nominal B** | −239° / −190° (9.8 dB) | −95° / −253° (4.6 dB) | **−50° / −85° (2.7 dB)** | 26/42/84 Hz |
+| 1 raw A (DIAG) | −103° / −110° (4.8) | −79° / −90° (3.1) | −48° / −74° (2.1) | 17/26/42 Hz |
+| 2 oracle ω′ (DIAG) | −152° / −259° (5.9) | −81° / −134° (3.5) | −45° / −74° (2.2) | 27/44/69 Hz |
+| 3 normalised (DIAG) | −197° / −307° (6.2) | −130° / −165° (4.3) | −78° / −120° (2.7) | 15/24/37 Hz |
+
+All locked. Amplitude dependence is strong (250 rpm ~3× narrower and more peaked than
+1000 rpm).
+
+**Why the nominal (84 Hz) is *wider* than the Q-PLL alone (raw `E_hat`, 42 Hz)** — not
+peaking (2.7 vs 2.1 dB is similar): the DSOGI's in-phase `v'` is a clean fundamental,
+whereas the Q-PLL on the raw bang-bang `E_hat` sees strong switching harmonics that
+perturb its phase detector, degrading and narrowing the measured ω̂ response. The SOGI
+therefore *helps* the Q-PLL.
+
+**Why the oracle (69 Hz) is *narrower* than the nominal (84 Hz)** — the −3 dB is a shaping
+difference, not peaking (2.7 vs 2.2 dB). The nominal's **adaptive FLL** lets `ω'` follow
+the frequency modulation, which retunes the SOGI within the cycle and keeps its gain up
+into the 50–80 Hz band (nominal gain at 80 Hz 0.77 vs oracle lower); the oracle pins `ω'`
+to the true value and gets no such anticipation. Note the nominal's *phase* at 50 Hz is
+actually slightly worse (−85° vs −74°), so the higher −3 dB is a gain-shaping effect, not
+a better phase.
 
 ## Step 2 — closed-loop map (S2/S3; α_ω × f_n; matched cell, advance off)
 

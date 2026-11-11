@@ -84,6 +84,31 @@ def _inv_park(v_d: float, v_q: float, theta_e: float) -> tuple[float, float]:
     return v_d * c - v_q * s, v_d * s + v_q * c
 
 
+_SQRT3_2 = math.sqrt(3.0) / 2.0
+
+
+def dead_time_phase_error(v_dc: float, dead_time_s: float, switching_hz: float) -> float:
+    """Average-value per-phase dead-time voltage error magnitude ``V_dc t_d f_sw`` [V]."""
+    return v_dc * dead_time_s * switching_hz
+
+
+def dead_time_delta_alpha_beta(i_alpha: float, i_beta: float, *, v_dc: float,
+                               dead_time_s: float, switching_hz: float,
+                               current_threshold_a: float) -> tuple[float, float]:
+    """Average-value dead-time voltage error in ``alpha-beta`` (Phase 06c).
+
+    Per phase (abc): ``dv_x = -V_dc t_d f_sw * sat(i_x / i_th)`` (saturating at ``+-1``),
+    with ``sat(i_x/i_th) = sign(i_x)`` for ``|i_x| >= i_th`` and 0 at ``i_x = 0``. The
+    amplitude-invariant Clarke back-transform returns the ``alpha-beta`` distortion.
+    """
+    amplitude = dead_time_phase_error(v_dc, dead_time_s, switching_hz)
+    i_abc = (i_alpha, -0.5 * i_alpha + _SQRT3_2 * i_beta, -0.5 * i_alpha - _SQRT3_2 * i_beta)
+    dv = [-amplitude * max(-1.0, min(1.0, x / current_threshold_a)) for x in i_abc]
+    dv_alpha = (2.0 / 3.0) * (dv[0] - 0.5 * dv[1] - 0.5 * dv[2])
+    dv_beta = (1.0 / math.sqrt(3.0)) * (dv[1] - dv[2])
+    return dv_alpha, dv_beta
+
+
 @dataclass(frozen=True)
 class DriveSample:
     """One sampled instant handed to an :class:`AngleSpeedSource`.
@@ -459,6 +484,9 @@ def run_drive(
     omega_e_fixed: float | None = None,
     initial_state: PMSMState | None = None,
     angle_advance: bool = False,
+    dead_time_s: float = 0.0,
+    dead_time_current_threshold_a: float = 0.1,
+    dead_time_switching_hz: float = 10000.0,
 ) -> DriveResult:
     """Run the closed-loop drive for ``duration`` seconds.
 
@@ -483,6 +511,10 @@ def run_drive(
             ``theta_src + 1.5 * omega_src * dt`` to compensate the 1-sample
             computation delay plus the half-sample zero-order hold (Phase 06b).
             Default ``False`` (bit-identical to Phase 06a).
+        dead_time_s, dead_time_current_threshold_a, dead_time_switching_hz:
+            Optional average-value inverter dead-time model (Phase 06c, default OFF):
+            a per-phase voltage error ``-V_dc t_d f_sw sat(i_x/i_th)`` distorts the
+            plant; the observer still receives the **commanded** voltage.
 
     Raises:
         ValueError: On an inconsistent mode/plant combination.
@@ -569,8 +601,15 @@ def run_drive(
         saturated[k] = sat
 
         for sub in range(n_sub):
+            u_plant = u_applied
+            if dead_time_s > 0.0:
+                dv_alpha, dv_beta = dead_time_delta_alpha_beta(
+                    state.i_alpha, state.i_beta, v_dc=p.v_dc, dead_time_s=dead_time_s,
+                    switching_hz=dead_time_switching_hz,
+                    current_threshold_a=dead_time_current_threshold_a)
+                u_plant = u_applied + np.array([dv_alpha, dv_beta])
             state = plant.step(
-                state, float(u_applied[0]), float(u_applied[1]), dt_sub,
+                state, float(u_plant[0]), float(u_plant[1]), dt_sub,
                 load_torque=load_torque(t + sub * dt_sub),
             )
         u_applied = np.array(u_cmd)

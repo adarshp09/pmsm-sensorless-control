@@ -954,3 +954,39 @@ inputs by default
   not a loop-margin limit. At each arm's best valid cell the 1000 rpm rated step passes
   (peak 0.6°); the 500 rpm steps still fail.
 - **Type:** diagnostic result / documented limitation (extends D-064).
+
+---
+
+## Phase 06c — paper-fidelity items and headline comparisons (2026-10-30)
+
+## D-069 — Average-value dead-time model (default OFF); Gate D explained
+
+- **Decision:** add optional dead-time flags to `run_drive` (default OFF):
+  per phase `ΔV = −V_dc t_d f_sw sat(i_x/i_th)`, `V_dc=311 V`, `t_d=2 µs`, `f_sw=10 kHz`
+  (printed), `i_th=0.1 A` (ASSUMPTION, `configs/drive_assumptions.yaml`); the observer
+  receives the **commanded** voltage. Six unit tests (`tests/test_dead_time.py`) and a
+  bit-identical default regression.
+- **Gate D:** ΔV magnitude matches (α-β vector fundamental **7.76 V** vs 7.92 predicted),
+  but the E_hat fundamental error is **≈0.6×** the prediction (+14.8 % vs 28.5 % at
+  500 rpm/I_rated; +6.5 % vs 14.3 % at 1000 rpm). Explained: the SMO transmits ≈0.6 of
+  the disturbance to its E_hat fundamental, the residual is partly **quadrature** (+4°),
+  and at 20 % load the distortion is erratic near `i_th`. **Dead time degrades the loop
+  severely** when ON (S2 collapses, S4 steady error 16.5° at no load).
+- **Type:** implementation (assumed threshold) + verification.
+
+## D-070 — Conventional baseline cannot lock; normalization ablation not lockable
+
+- **Conventional chain ("our construction"):** fixed-sign SMO → LPF (cutoff UNPRINTED;
+  grid 100/200/400 Hz × phase comp off/on) → Q-PLL (f_n=20), arctan variant. **All 8 chains
+  fail the generic 5° handover criterion** in every scenario: the Q-PLL reaches ≈1020 rpm
+  but the filtered bang-bang `E_hat` keeps `|Δe|/|Ê|` at ≈0.06–0.09 ≈ sin 5°, so the dwell
+  is never met — a genuine ripple limitation, not a bug.
+- **Normalization ablation:** Q-PLL normalization ON → **0/36** cells meet the 06b-6
+  FLL-consistency lock criterion; no usable comparison. Not adopted (algebra ASSUMPTION).
+- **Headline:** only the matched and FLC nominal chains hand over; steadier errors ~0.6° /
+  ~1.9°; dynamic transients 111.7 / 40.4 rpm vs the paper's 23 / 10 — **no reproduction
+  claim**.
+- **Arm 1 (raw `E_hat` → Q-PLL):** with the generic criterion it *does* hand over
+  (0.06–0.09 s, peaks 1.6–52°); the 06d "0/20 unstable" was a **handover artefact**
+  (FLL-based criterion with no FLL). Corrected.
+- **Type:** experimental result / documented limitation.

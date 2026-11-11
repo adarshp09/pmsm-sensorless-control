@@ -72,6 +72,14 @@ parameters:
   # low-speed load transients; far below 500 rpm normal operation, so no effect there.
   "fll.min_omega_rpm":                  {value: 100.0, unit: "rpm", source: "ASSUMPTION — not from paper"}
 
+  # --- Phase 06c: average-value inverter dead-time model (default OFF) ---
+  # ASSUMPTION — not from paper: saturation current threshold for the per-phase
+  # dead-time sign (i_th); the dead time (2 us) and switching frequency (10 kHz) are
+  # PRINTED (drive.yaml). The model is disabled by default.
+  "inverter.dead_time_current_threshold_a": {value: 0.1, unit: "A", source: "ASSUMPTION — not from paper"}
+  # ASSUMPTION — not from paper: dead-time model enabled flag (0 = OFF).
+  "inverter.dead_time_model_enabled":       {value: 0,   unit: "-", source: "ASSUMPTION — not from paper"}
+
 specs:
   # ASSUMPTION — not from paper: anti-windup is conditional integration with the
   # integrator and the output clamped at the voltage limit.

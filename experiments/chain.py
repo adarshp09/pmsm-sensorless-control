@@ -163,6 +163,8 @@ class EstimatorSource:
         self.s_beta = 0.0
         self.status = "ok"
         self.first_guard_fail_s: float | None = None
+        self.last_e_mag = 0.0
+        self.last_qpll_error = 0.0
 
     @property
     def omega_prime_rad_s(self) -> float:
@@ -190,6 +192,8 @@ class EstimatorSource:
         q = self.qpll.step(v_alpha_prime, v_beta_prime, sample.dt)
         self.theta_hat, self.omega_hat = q.theta_hat, q.omega_hat
         self.s_alpha, self.s_beta = s.s_alpha, s.s_beta
+        self.last_e_mag = math.hypot(v_alpha_prime, v_beta_prime)
+        self.last_qpll_error = float(getattr(self.qpll, "last_error", 0.0))
         return q.theta_hat, q.omega_hat
 
 
@@ -226,10 +230,11 @@ class HandoverSource:
     name = "handover"
 
     def __init__(self, chain: EstimatorSource, *, pole_pairs: int, assumptions: HandoverAssumptions,
-                 initial_theta: float = 0.0, initial_omega: float = 0.0) -> None:
+                 initial_theta: float = 0.0, initial_omega: float = 0.0, generic: bool = False) -> None:
         self.chain = chain
         self.pole_pairs = pole_pairs
         self.assumptions = assumptions
+        self.generic = generic
         self.mode = "encoder"
         self.lock_accumulator = 0.0
         self.switch_time_s: float | None = None
@@ -247,11 +252,19 @@ class HandoverSource:
         theta_hat, omega_hat = self.chain(sample, truth)
         if self.mode == "encoder":
             omega_rpm = self._to_rpm(omega_hat)
-            omega_prime_rpm = self._to_rpm(self.chain.omega_prime_rad_s)
-            locked = (
-                omega_rpm >= self.assumptions.omega_h_rpm
-                and abs(omega_rpm - omega_prime_rpm) < self.assumptions.speed_tolerance_rpm
-            )
+            if self.generic:
+                # Generic criterion for chains without an FLL: no ground truth — Q-PLL
+                # phase error |Delta e|/|E_hat| < sin(5 deg) (Phase 06c, default OFF).
+                mag = max(getattr(self.chain, "last_e_mag", 0.0), 1e-9)
+                sin_phi = abs(getattr(self.chain, "last_qpll_error", 0.0)) / mag
+                locked = (omega_rpm >= self.assumptions.omega_h_rpm
+                          and sin_phi < math.sin(math.radians(5.0)))
+            else:
+                omega_prime_rpm = self._to_rpm(self.chain.omega_prime_rad_s)
+                locked = (
+                    omega_rpm >= self.assumptions.omega_h_rpm
+                    and abs(omega_rpm - omega_prime_rpm) < self.assumptions.speed_tolerance_rpm
+                )
             self.lock_accumulator = self.lock_accumulator + sample.dt if locked else 0.0
             if self.lock_accumulator >= self.assumptions.lock_time_s:
                 self.mode = "estimator"

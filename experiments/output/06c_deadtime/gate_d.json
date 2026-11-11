@@ -1,0 +1,53 @@
+{
+  "note": "Phase 06c GATE D: average-value dead time (V_dc=311 V, t_d=2 us, f_sw=10 kHz, i_th=0.1 A ASSUMPTION); observer sees the commanded voltage.",
+  "prediction": {
+    "dE_v": 7.919549968252712,
+    "formula": "4/pi * V_dc * t_d * f_sw"
+  },
+  "rows": {
+    "rpm500_iq100pct": {
+      "i_q_a": 9.678230266465562,
+      "abs_E_v": 27.77167905773377,
+      "fundamental_gain": 1.1484534360865768,
+      "amplitude_error_pct": 14.845343608657679,
+      "phase_error_deg": 4.16200409289199,
+      "h5_rel": 0.0003821204502153541,
+      "h7_rel": 0.00014010740861088955,
+      "predicted_dE_v": 7.919549968252712,
+      "predicted_pct_of_E": 28.51664082603353
+    },
+    "rpm500_iq20pct": {
+      "i_q_a": 1.9356460532931123,
+      "abs_E_v": 27.77167905773377,
+      "fundamental_gain": 1.0083046775283009,
+      "amplitude_error_pct": 0.8304677528300886,
+      "phase_error_deg": 0.23203716391816476,
+      "h5_rel": 0.0007752919038107022,
+      "h7_rel": 0.0006724252635421994,
+      "predicted_dE_v": 7.919549968252712,
+      "predicted_pct_of_E": 28.51664082603353
+    },
+    "rpm1000_iq100pct": {
+      "i_q_a": 9.678230266465562,
+      "abs_E_v": 55.54335811546754,
+      "fundamental_gain": 1.0648031847638815,
+      "amplitude_error_pct": 6.480318476388147,
+      "phase_error_deg": 3.6390133375077003,
+      "h5_rel": 0.0006619174868919854,
+      "h7_rel": 0.000438933088801537,
+      "predicted_dE_v": 7.919549968252712,
+      "predicted_pct_of_E": 14.258320413016765
+    },
+    "rpm1000_iq20pct": {
+      "i_q_a": 1.9356460532931123,
+      "abs_E_v": 55.54335811546754,
+      "fundamental_gain": 0.9911233069570738,
+      "amplitude_error_pct": -0.8876693042926154,
+      "phase_error_deg": -0.6740925081422778,
+      "h5_rel": 0.0008271982166308116,
+      "h7_rel": 0.0007677413597729225,
+      "predicted_dE_v": 7.919549968252712,
+      "predicted_pct_of_E": 14.258320413016765
+    }
+  }
+}
