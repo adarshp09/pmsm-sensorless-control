@@ -163,6 +163,7 @@ invariants.
 | 06b-4 | Softened low-speed bandwidth (2.5 Hz) | partial: 500 rpm steady + all 1000 rpm pass; 500 rpm load transient trips the FLL (D-061) |
 | 06b-5 | DSOGI-FLL min-frequency clamp | partial: guard trip gone, start-up-under-load fixed, all 1000 rpm pass; 500 rpm loaded step still fails (D-062) |
 | 06b-6 | Re-scope to paper scenarios; sensorless suite | **Gate P PASS** on S1–S4; suite run; low-speed/high-load steps documented limitation (D-063/D-064) |
+| 06d | Estimation-bandwidth diagnosis (no src change) | FLL limits the loop (oracle 2× α_ω); normalisation ASSUMPTION/narrows; f_n×0.5 row corrected (D-066–D-068) |
 | 06 | Simulation experiments vs. baselines | not started |
 | 07 | Evaluation, plots, comparison with reported results | not started |
 

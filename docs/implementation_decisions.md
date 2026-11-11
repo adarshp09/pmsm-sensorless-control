@@ -911,3 +911,46 @@ inputs by default
   — those were **gate sub-cases**, not the paper's scenario suite, which had not run. The
   suite runs in 06b-6 (D-063). Corrected in `estimator_spec.md`, `phase06b.md`, and D-062.
 - **Type:** reporting correction.
+
+---
+
+## Phase 06d — estimation-bandwidth diagnosis (2026-10-30)
+
+## D-066 — The DSOGI-FLL limits the closed-loop bandwidth (oracle vs nominal)
+
+- **Method:** experiment-local arms — 0 nominal (v′→Q-PLL), 1 raw `E_hat` (DIAGNOSTIC),
+  2 oracle `ω′` (DSOGI with prescribed true `ω′`, FLL bypassed; DIAGNOSTIC), 3 normalised
+  FLL (DIAGNOSTIC; ASSUMPTION form). Open-loop T_est at 250/500/1000 rpm and a closed-loop
+  `α_ω × f_n` grid on S2/S3. No src change.
+- **T_est −3 dB (250/500/1000):** arm0 26/42/84 Hz; arm1 17/26/42; arm2 27/44/69;
+  arm3 15/24/37. The nominal chain is the widest; amplitude dependence is strong.
+- **Grid (valid f_n ≥ 20):** max stable `α_ω` = **10 Hz (arm0)** vs **20 Hz (oracle arm2)**;
+  best valid dynamic `|ω̂−ω|` = **112/40 rpm (arm0)** vs **56/22 rpm (oracle)**. Raw-`E_hat`
+  arm is unstable everywhere; the normalised FLL narrows the loop (9/20 stable cells).
+- **Verdict:** the **DSOGI-FLL** is the limiting element (oracle doubles the stable `α_ω`
+  and halves the transient error), then the Q-PLL (`f_n=20`) and the sample delay. The
+  normalisation is **ASSUMPTION** (Fig.5 prints only a labelled block) and as implemented
+  narrows the loop — not adopted.
+- **Paper-implied `α_ω` ≈ 38–43 Hz** (estimate from our error/dip ratios 0.53/0.51 × the
+  06a encoder dips), out of reach of the current chain at any valid cell.
+- **Type:** diagnostic result; recommendation only (a stronger FLL is a separate step).
+
+## D-067 — f_n × 0.5 sensitivity row invalid (handover after the step); cost corrected
+
+- **Finding:** at Q-PLL `f_n = 10 Hz` the lock criterion is satisfied later (handover
+  0.70 s), after the 0.5 s load step, so the step is encoder-driven (recorded errors exactly
+  0; the 0.6° peak is the steady error). `f_n = 5 Hz` never hands over. Only `f_n ≥ 20 Hz`
+  (handover ≈ 0.20 s) measures a sensorless transient. The `phase06b.md` sensitivity row is
+  corrected; the grid's `f_n ∈ {5,10}` columns are flagged invalid.
+- **Sensorless cost** corrected from "≈0" to two numbers: at equal `α_ω=10` Hz the dip cost
+  is −69.6/−23.4 rpm (S2/S3); at each config's own design `α_ω` it is −172.8/−64.7 rpm.
+- **Type:** reporting correction (+ methodological caveat).
+
+## D-068 — Stress failures are speed dips into the weak-FLL region
+
+- **Finding:** the failing 1000 rpm rated step and 500 rpm loaded steps reach negative
+  minimum speeds (−1444 / −3474 rpm; −400…−650 rpm), i.e. the true speed collapses through
+  zero into the weak-FLL region before synchronism is lost — a control/estimator collapse,
+  not a loop-margin limit. At each arm's best valid cell the 1000 rpm rated step passes
+  (peak 0.6°); the 500 rpm steps still fail.
+- **Type:** diagnostic result / documented limitation (extends D-064).

@@ -28,6 +28,12 @@ printed values or a stated local rule), **ASSUMPTION** (local choice).
 | FLC scaling `Ke`/`Kec`/`Ku` | 0.13472 1/A, 1.3472e-5 s/A, 1.0 | ASSUMPTION | D-031 | FLC cell only (FLC nominal) |
 | `I_rated` | 9.678 A = T_rated/1.5pψ_f | DERIVED | D-037 | operating point |
 
+**Handover / `f_n` interaction (Phase 06d):** the lock criterion (`|ω̂−ω′|<2 rpm` for 50 ms)
+is satisfied later as the Q-PLL slows — at `f_n = 10 Hz` handover is at 0.70 s, after a
+0.5 s load step (so the step is encoder-driven), and at `f_n = 5 Hz` it never hands over.
+Only `f_n ≥ 20 Hz` gives handover ≈ 0.20 s. Diagnostic arms (raw `E_hat`, oracle `ω′`,
+normalised FLL) are **DIAGNOSTIC — not paper** and never replace the nominal cell.
+
 **What 06b-2/3/4 changed and concluded (≤10 lines):**
 - **06b-2** measured `T_est(jω)`; H1 (DSOGI envelope caps `T_est`, speed-dependent) **supported**; H2 (raw-E_hat chain wider) **refuted**. No global `α_ω` met PM≥45° / GM≥6 dB at both speeds → `α_ω* = None` (D-057/D-058).
 - **06b-3** introduced operating-point decoupling (5 Hz @500 / 10 Hz @1000) + low-speed PM relaxation (≥10°). 500 rpm @5 Hz PM 10.8°. Gate 2a all pass; 2b@1000, 2c pass; **2b@500 fails** (lightly damped) (D-059/D-060).

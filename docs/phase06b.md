@@ -57,9 +57,10 @@ quoted numbers are **estimation errors**).
 four (the floor never engages) — so the clamp is not needed for the paper scenarios, only
 for start-up-under-load.
 
-S1 uses `α_ω = 2.5 Hz` (the 500 rpm value): a fixed bandwidth for a 500→1000 ramp must be
-safe at the low end; at 10 Hz the 500 rpm entry is marginal (PM 14.6°) and diverges with
-advance off.
+S1 bandwidth: the row above uses `α_ω = 2.5 Hz` — a **scenario-specific bandwidth chosen
+after a failure**. At the nominal `α_ω* = 10 Hz` S1 gives peak **180° (advance OFF) / 18.5°
+(advance ON)**: advance-off fails, because a fixed bandwidth for a 500→1000 ramp must be
+safe at the low-speed end (10 Hz is marginal at 500 rpm, PM 14.6°). *(Phase 06d, Step 0c.)*
 
 ### Scenario suite (`experiments/06b6_scenarios.py`)
 
@@ -75,10 +76,15 @@ error** (Step 0d).
 | S3 exp 20 % | FLC nominal | 1.96° | 4.86 rpm | 6.8° | 42.6 rpm | −80.6 rpm | (as above) |
 | S4 steady | matched | 0.61° | 0.14 rpm | 0.61° | 0.1 rpm | — | 0.08 rad, 10 rpm (Table IV) |
 
-**Sensorless cost vs the encoder baseline at the same `α_ω`:** ≈0 dip/recovery change
-(the control dip is set by `α_ω`, e.g. S2 dip −210 rpm is the same mechanism as the 06a
-encoder baseline at 10 Hz); the estimator adds a transient estimation error, not a control
-penalty.
+**Sensorless cost** (two bases, corrected in Phase 06d Step 0d):
+- *equal `α_ω` (10 Hz):* encoder baseline dips −140.3 / −56.1 rpm (S2/S3) vs sensorless
+  −210.0 / −79.6 → cost **−69.6 / −23.4 rpm** (the estimated-speed feedback deepens the
+  dip; recovery time is nearly the same).
+- *each config's own design `α_ω`:* encoder at 50 Hz −37.2 / −14.9 rpm (06a) vs sensorless
+  at 10 Hz −210 / −79.6 → cost −172.8 / −64.7 rpm.
+
+So the earlier "≈0" was wrong: the sensorless loop pays a real dip penalty at equal
+bandwidth, and a much larger one at its stable bandwidth.
 
 **No reproduction claim.** Our *steady* estimation errors are far below the paper's
 (0.6° vs 4°; 0.14 vs 5 rpm), but our *dynamic* transient estimation errors during the load
@@ -109,11 +115,16 @@ At the 50 % step (S2): `α_ω × {0.5, 1, 2} × advance {off, on}` and `f_n × {
 | α_ω 0.5× (5 Hz), adv off / on | 25.7° / 25.4° | −309.6 / −309.0 | PASS |
 | α_ω 1× (10 Hz), adv off / on | 21.7° / 21.4° | −210.0 / −207.6 | PASS |
 | α_ω 2× (20 Hz), adv off / on | **180° / 180°** | −4568 / −4892 | **FAIL** (unstable) |
-| f_n 0.5× (10 Hz), adv off | 0.6° | −140.3 | PASS |
+| f_n 0.5× (10 Hz), adv off | **invalid** | — | handover at 0.70 s is *after* the 0.5 s step → the step was encoder-driven, not a sensorless transient |
 | f_n 2× (40 Hz), adv off | 17.0° | −172.2 | PASS |
 
-`α_ω` 2× is unstable (confirms the measured-margin picture); lowering `f_n` to 10 Hz gives
-the smallest transient *estimation* error.
+*Correction (Phase 06d Step 0e):* the f_n×0.5 row's 0.6° is the **steady** error — the slow
+PLL delays the lock criterion, so handover (0.70 s) falls after the load step (0.50 s) and
+the transient was encoder-driven. f_n = 5 Hz never hands over at all. Only f_n ≥ 20 Hz
+(handover ≈ 0.20 s) measures a sensorless transient.
+
+`α_ω` 2× is unstable (confirms the measured-margin picture); the f_n×0.5 "improvement" is
+the handover artefact above, not a real one.
 
 ## Limitations
 
