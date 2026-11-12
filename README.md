@@ -1,15 +1,44 @@
 # PMSM Sensorless Control — Fuzzy Logic + DSOGI-FLL SMO
 
-> **Status: Phases 00–05 complete (including verification sub-phases 03b–03f, 04b and
-> the 05a filter prelude). Phase 06a (closed-loop encoder baseline) complete.**
+> **Status: v1.0 — Phases 00–06g-2 complete.** The PMSM plant (Eqs. 1–2), the Clarke
+> transform, the conventional (sign) / sigmoid / fuzzy-adaptive SMOs (Eqs. 3–7), the
+> DSOGI-FLL back-EMF filter (Eqs. 9–19), the position/speed estimators (Eq. 8 + Q-PLL), a
+> closed-loop FOC drive, and the full **sensorless** loop (SMO → DSOGI-FLL → Q-PLL) are
+> implemented and tested (**255 tests**). Results are **not** a reproduction of the paper's
+> reported accuracy — see [`docs/claims_register.md`](docs/claims_register.md) for the
+> status of every claim.
 >
-> The PMSM plant (Eqs.1–2), the Clarke transform, the conventional (sign) /
-> sigmoid / fuzzy-adaptive sliding-mode observers (Eqs.3–7), the DSOGI-FLL
-> back-EMF filter (Eqs.9–19), the position/speed estimators (Eq.(8) + Q-PLL) and a
-> closed-loop FOC drive with **true-angle** feedback (encoder baseline) are
-> implemented and tested. The estimator is **not yet inside the control loop**
-> (Phase 06b), and there is no integrated sensorless simulation yet. Results are
-> **not** a reproduction of the paper's reported accuracy.
+> `phase-06f-complete` and `phase-06-complete` are **SUPERSEDED** by the final release tag
+> `v1.0-final` (Phase 06g/06g-2 corrected the attribution and re-read the figures).
+
+## Quick start
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+python -m pytest -q                 # 255 tests
+python scripts/reproduce.py --audit # 39/39 committed outputs byte-identical
+python scripts/reproduce.py --fast  # tests + the four headline reports (~10 min)
+```
+
+## Results summary (scoped — see [`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md))
+
+- **Gate P PASS on S1–S4** (paper-shaped scenarios; nominal chain; `Ts = 100 µs`; dead time
+  OFF) — `experiments/output/06b6_gatep/gatep.json`.
+- **Steady** estimation errors are **below** the paper's; **dynamic** errors are **4–5×
+  above** (S2 111.7 vs 23 rpm; S3 40.4 vs 10 rpm), **consistent with a gentler paper
+  load-transition** (HYPOTHESIS; D-086/D-087).
+- The **observer adds only 3–5 %** of the dynamic error (`f_n ≤ 40 Hz`); the **SOGI+FLL**
+  contributes the rest (`f_n ≥ 80`) — `06f_replay/replay.json`; D-083.
+- **Stress limits:** 500 rpm loaded steps and the 1000 rpm rated step lose synchronism.
+- **Known defects:** the normalized Q-PLL option (`normalize=True`) — non-paper, do not use
+  (D-076); the FLL `ω′ ≥ 0` guard trips on divergence (D-082).
+- Every value is labelled PRINTED / DERIVED / ASSUMPTION; the unprinted register is
+  [`docs/estimator_spec.md`](docs/estimator_spec.md) §"Phase 06 unprinted-parameter register".
+
+See [`docs/claims_register.md`](docs/claims_register.md),
+[`docs/FINAL_REPORT.md`](docs/FINAL_REPORT.md) and
+[`docs/future_work.md`](docs/future_work.md) (Phase 07, not started).
 
 ## Objective
 
