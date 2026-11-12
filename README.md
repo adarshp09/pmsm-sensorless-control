@@ -166,10 +166,16 @@ invariants.
 | 06d | Estimation-bandwidth diagnosis (no src change) | FLL limits the loop (oracle 2× α_ω); normalisation ASSUMPTION/narrows; f_n×0.5 row corrected (D-066–D-068) |
 | 06c | Paper-fidelity items + headline comparison | dead-time model (default OFF, Gate D explained); conventional baseline cannot lock; matched/FLC headline only (D-069/D-070) |
 | 06c-2 | Handover-independent comparison; matched dips; closed-loop dead time | fixed-time t_h survey; bandwidth does not close the gap; improved beats conventional; DSOGI hurts a clean observer; Gate D′ confirms dead time, compensation restores (D-071–D-074) |
-| 06e | PLL bandwidth at the matched dips + ablation ladder (no src change) | f_n sweep: gap is **not** a PLL-bandwidth artefact; normalized Q-PLL lock-point confirmed broken (option); ladder R1–R6 (D-075–D-078) |
+| 06e | PLL bandwidth at the matched dips + ablation ladder (no src change) | f_n sweep: gap is **not** a PLL-bandwidth artefact; **KNOWN DEFECT — non-paper, do not use:** the normalized Q-PLL option (`normalize=True`) does not lock from a +90° start; ladder R1–R6 (D-075–D-078) |
 | 06f | Replay decomposition of the dynamic error (no src change) | Gate R exact; **DSOGI-FLL** is the element (observer 3–5 %, FLL 1.5–9×); omega_hat path carries the instability; 06e verdict corrected; no further bandwidth work (D-079–D-082) |
-| **06** | Simulation experiments vs. baselines and release documentation | **COMPLETE** — comparison, parameter register, limitations, regeneration audit, and `phase-06-complete` release tag |
+| **06** | Simulation experiments vs. baselines and release documentation | **COMPLETE (PROVISIONAL)** — comparison, parameter register, limitations, regeneration audit, and `phase-06-complete` release tag |
+| 06g-2 | Paper-implied transient + transient-profile test | **COMPLETE (PROVISIONAL)** — prescribed-profile generator regression exact; gentler-transition hypothesis supported; closed-loop ramp confirmation run; no `src` changes (D-085–D-087) |
 | 07 | Evaluation, plots, comparison with reported results | not started (next phase) |
+
+> **Tag status (Phase 06g Step 0e).** `phase-06f-complete` and `phase-06-complete` are
+> **PROVISIONAL**: they were cut before the Phase 06g figure re-read and the attribution
+> correction, and the Phase 06g STOP means **no new final tag is created**. Do not cite the
+> Phase 06 comparison numbers as final while these tags are provisional.
 
 ## Current phase and known unresolved specifications
 

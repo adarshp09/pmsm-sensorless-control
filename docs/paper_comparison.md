@@ -12,8 +12,8 @@ exact reproduction claim.
 | Scenario | Paper result | Encoder baseline (ours) | Sensorless (ours) | Assessment |
 | --- | --- | --- | --- | --- |
 | S1: no-load 500 -> 1000 rpm ramp | max speed error ~5 rpm; steady position ~0.07 rad; dynamic position ~0.2 rad | steady `|theta_err|` 0.61 deg; dynamic 2.2 deg; true dip -12.4 rpm | steady 0.61 deg / 0.15 rpm; dynamic 2.24 deg / 2.2 rpm; `alpha_w = 2.5 Hz` | **Matches directionally**; ours is lower on the reported position-error scale, but setup differs |
-| S2: simulated 50% load step at 1000 rpm | dynamic speed error 23 rpm; steady 5 rpm; dynamic position 0.22 rad (12.6 deg); steady 0.08-0.1 rad | at the design encoder cell (`alpha_w = 50 Hz`): true dip -37.2 rpm; at equal `alpha_w = 10 Hz`: -140.3 rpm | steady 0.56 deg / 0.14 rpm; dynamic 21.7 deg / 111.7 rpm; true dip -210 rpm; `alpha_w = 10 Hz` | **Steady exceeds** paper; **dynamic diverges** (4.9x speed error, 1.7x position error) |
-| S3: experimental 20% load step at 1000 rpm | ~10 rpm; position 0.152 rad (8.7 deg) | at `alpha_w = 50 Hz`: true dip -14.9 rpm; at equal `alpha_w = 10 Hz`: -56.1 rpm | steady 0.59 deg / 0.14 rpm; dynamic 7.5 deg / 40.4 rpm; true dip -79.6 rpm; `alpha_w = 10 Hz` | **Steady exceeds** paper; **dynamic diverges** (4.0x speed error, 0.86x position error) |
+| S2: simulated 50% load step at 1000 rpm | dynamic speed error 23 rpm; steady 5 rpm; dynamic position 0.22 rad (12.6 deg); steady 0.08-0.1 rad | at the design encoder cell (`alpha_w = 50 Hz`): true dip -37.2 rpm; at equal `alpha_w = 10 Hz`: -140.3 rpm | instantaneous-step chain: steady 0.56 deg / 0.14 rpm; dynamic 21.7 deg / 111.7 rpm; profile chain at inferred `a0=5000`: 25.3 rpm / 0.127 rad | **Profile test supports a gentler-transition hypothesis**; the instantaneous-step comparison still diverges |
+| S3: experimental 20% load step at 1000 rpm | ~10 rpm; position 0.152 rad (8.7 deg) | at `alpha_w = 50 Hz`: true dip -14.9 rpm; at equal `alpha_w = 10 Hz`: -56.1 rpm | instantaneous-step chain: steady 0.59 deg / 0.14 rpm; dynamic 7.5 deg / 40.4 rpm; profile chain at inferred `a0=1400`: 8.4 rpm / 0.023 rad | **Profile test supports a gentler-transition hypothesis**; hardware non-idealities and profile remain untested |
 | S4: steady 1000 rpm | Table IV: 10 rpm; 0.08 rad (4.6 deg) | steady position 0.61 deg; speed 0.14 rpm | steady position 0.61 deg; speed 0.1 rpm | **Exceeds** paper on steady error |
 
 The encoder values are a control baseline, not a paper baseline: the encoder
@@ -34,10 +34,16 @@ load step.
 | S3, `f_n = 20/40/80/160 Hz` | 10 rpm | 33/19/8/4 rpm | 34/20/9/7 rpm | 40/42/36/29 rpm | 33/22/17/15 rpm |
 
 V0 follows the frozen acceleration-step model within 20% at every tested
-`f_n`. The observer adds only about 3-5% in S2. V2 is approximately flat with
-`f_n`, while V4 restores the decreasing trend; V3 (`E_true -> SOGI+FLL`) agrees
-with V2. Therefore the discrepancy is attributed to the fixed-gain,
-amplitude-dependent FLL, not to the observer or the Q-PLL.
+`f_n`. The observer adds only about 3-5% for `f_n <= 40 Hz` (+23% S2 / +79% S3 at
+`f_n = 160`, about 2-3 rpm absolute). **Both** the SOGI band-pass and the FLL
+contribute at `f_n >= 80`: V4/V1 (SOGI alone, oracle `omega'`) rises 0.91 -> 2.97
+and V2/V4 (FLL) rises 1.64 -> 2.98, so **V4 does not restore V0's scaling** (V4/V0
+= 0.95/1.37/2.18/3.68 for S2). V2 is approximately flat with `f_n`, while V4 is
+partly restored; V3 (`E_true -> SOGI+FLL`) agrees with V2. Therefore the
+discrepancy is attributed to the **SOGI band-pass plus the fixed-gain,
+amplitude-dependent FLL** ("SOGI+FLL", V2/V1 = 1.5x at `f_n = 20` to 8.9x at
+`f_n = 160`), not to the observer or the Q-PLL. (Re-attributed in Phase 06g Step
+0b; the earlier "the FLL alone" wording is superseded.)
 
 ## Interpretation and scope
 
@@ -50,6 +56,9 @@ amplitude-dependent FLL, not to the observer or the Q-PLL.
   speed-loop stability limits, not steady Q-PLL costs.
 - The normalized Q-PLL is excluded from all headline results: it is a known
   non-paper defect and does not reliably lock.
+- Phase 06g-2 is a profile hypothesis test, not a reproduction: the paper's
+  transition shape is unprinted and Fig. 13 supports drops of 190, 235, or
+  350 rpm depending on the reading.
 
 Source reports: [phase06b.md](phase06b.md), [phase06c2.md](phase06c2.md),
 [phase06e.md](phase06e.md), [phase06f.md](phase06f.md), and JSON outputs under

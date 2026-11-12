@@ -35,6 +35,8 @@ printed values or a stated local rule), **ASSUMPTION** (local choice).
 | Q-PLL bandwidth f_n (06e) | 20 Hz (frozen); sweep {20,40,80,160} at the matched dips | ASSUMPTION (unprinted) | D-077 | loop design |
 | FLL gain Γ (06f) | 50 (PRINTED); 500/5000 diagnostic only (guard-fail) | PRINTED (Γ); rest ASSUMPTION | D-082 | FLL loop |
 | Normalized Q-PLL option | **KNOWN DEFECT — non-paper, do not use**; does not lock at 0° from +90° | non-paper | D-076 | — |
+| Load-transition profile | **UNPRINTED** — modelled as an instantaneous torque step; the paper's actual descent (Fig. 13: ~0.15 s, dip 190–350 rpm; Fig. 19: ΔN = 48 rpm) is gentler | UNPRINTED / UNTESTED | D-084 | dynamic-error comparison |
+| Figure reading uncertainty | Fig. 13 dip unresolved: 350 / 190 / 235 rpm across three reads (truncated axis) | measurement | D-083 | matched-α_ω analyses |
 
 **Handover / `f_n` interaction (Phase 06d):** the lock criterion (`|ω̂−ω′|<2 rpm` for 50 ms)
 is satisfied later as the Q-PLL slows — at `f_n = 10 Hz` handover is at 0.70 s, after a

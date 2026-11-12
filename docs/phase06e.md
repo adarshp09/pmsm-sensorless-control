@@ -16,8 +16,10 @@ Q-PLL lock point, and runs the ablation ladder. **No src changes**; experiments/
   `a0 = ΔT/J` (S2 24 027 rpm/s, S3 9611 rpm/s) and `ω_n = 2π·f_n·√(ω/ω_1000)` at the peak
   speed. Predicted vs measured: S2 f_n=20 **100–110 rpm** vs 121–149 at 5–4 Hz; S3 **36** vs
   40 at 10 Hz (model ~20 % low).
-- **Paper-implied f_n**: 23 rpm (S2) → **≈76 Hz**; ~10 rpm (S3) → **≈70 Hz** — **HYPOTHESIS**
-  (printed J/rated torque apply to both scenarios, instantaneous step).
+- **Paper-implied f_n**: the earlier 23 rpm (S2) → **≈76 Hz** and ~10 rpm (S3) →
+  **≈70 Hz** inference is **RETRACTED**. Phase 06g-2 instead estimates the
+  paper-implied acceleration from the printed speed/position errors, subject to
+  electrical-angle and sustained-deceleration assumptions.
 - "residual estimator-quality gap" → **"estimator bandwidth f_n (unprinted ASSUMPTION, 20 Hz)
   not yet varied"** (done here).
 - Conventional `fc100 raw` steady 35.6° = uncompensated LPF lag `atan(ω_e/ω_c) = 33.7°` at

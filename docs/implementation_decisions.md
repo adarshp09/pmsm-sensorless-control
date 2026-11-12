@@ -1054,7 +1054,9 @@ inputs by default
   **independent of α_ω**, `a0 = ΔT/J` (S2 24 027 rpm/s, S3 9611 rpm/s),
   `ω_n = 2π·f_n·√(ω/ω_1000)`. Predicted vs measured: S2 f_n=20 100–110 vs 121–149 rpm; S3
   36 vs 40 (model ~20 % low).
-- **Paper-implied f_n** (23 rpm S2 → ≈76 Hz; ~10 rpm S3 → ≈70 Hz) labelled **HYPOTHESIS**.
+- **Paper-implied f_n** (23 rpm S2 → ≈76 Hz; ~10 rpm S3 → ≈70 Hz) is **RETRACTED**.
+  Phase 06g-2 estimates acceleration instead, because the paper's position-angle
+  convention and transient profile are not printed.
 - **Type:** model + hypothesis (documented).
 
 ## D-076 — Normalized Q-PLL lock-point check
@@ -1130,3 +1132,68 @@ inputs by default
 - **Decision:** **no further bandwidth experiments** in this project unless a **printed**
   parameter is found to differ from ours.
 - **Type:** diagnostic + scope decision.
+
+---
+
+## Phase 06g — Figure re-read, transient-profile test, wrap-up corrections (2026-10-30)
+
+## D-083 — Attribution re-attributed; figures re-read; tags provisional
+
+- **Decision:** replace the Phase 06f "the FLL alone is the element" attribution (carried in
+  `phase06f.md`, `phase06.md`, `paper_comparison.md`) with the per-stage ratios from
+  `06f_replay.json`: **observer V1/V0** +3–5 % for f_n ≤ 40 Hz (+23 % S2 / +79 % S3 at 160,
+  ≈2–3 rpm absolute); **SOGI V4/V1** 0.91→2.97; **FLL V2/V4** 1.64→2.98; **SOGI+FLL V2/V1**
+  1.50→8.86 (S3 1.19→4.20). `V4` does **not** restore `V0`'s scaling (V4/V0 = 0.95→3.68).
+  The "1.5×–9×" figure is relabelled **"SOGI+FLL (V2/V1)"**. The FLL-lag limitation row is
+  corrected to **85 rpm = S2 at 1000 rpm** (S3: 24 rpm).
+- **Figures:** rendered at 300 dpi (`docs/figures/`). Fig. 13's dip is **unresolved** —
+  ~350 (06c), ~190 (06f), ~235 rpm (this 300 dpi read) → **carry D ∈ {190, 235, 350}**.
+  Fig. 19's printed **ΔN = 48 rpm** confirmed.
+- **Tags:** `phase-06f-complete` and `phase-06-complete` marked **PROVISIONAL** in the README.
+- **Type:** reporting correction + measurement.
+
+## D-084 — STOP: `nominal_drive.py` cannot take a prescribed ω(t)
+
+- **Finding:** `nominal_drive_rollout` accepts only `rpm_start/rpm_end/ramp_time` and builds a
+  **piecewise-linear** `_SpeedProfile`; there is **no ω(t) callable/array** parameter. The
+  Step 1 profile `ω0 − D·x·exp(1−x)` cannot be prescribed.
+- **Action:** per the phase rule, **STOP before Step 1**. Steps 2–3 do not run. A
+  prescribed-profile entry point would be a **separate approved src extension**.
+- **Analytic check performed instead:** `τ = k_s·ω′/(2ΓA²)` = 1.92–3.84 ms over 1000→500 rpm;
+  `a0·τ` = 46–92 rpm (S2) / 18–37 rpm (S3), matching the measured 85 / 24 rpm; small-signal
+  open-loop step gives τ_meas ≈ 2× the analytic (3.82 ms at 1000 rpm). 03d cross-referenced
+  (`phase03.md:298-308`). Gentle-transient hypothesis remains **inconclusive (untested)**.
+- **Type:** gate stop (documented).
+
+---
+
+## Phase 06g-2 — Prescribed transient profile test (2026-11-12)
+
+## D-085 — Experiment-side prescribed profile
+
+- **Result:** `PMSMPlant.step` already accepts caller-prescribed `state.omega_e` in
+  prescribed-kinematics mode. A standalone `experiments/profile_drive.py` generator
+  was used; no `src/` API change was needed.
+- **Regression:** the linear profile reproduces `nominal_drive_rollout` exactly
+  (maximum absolute difference `0.0` across voltage, current, angle and speed arrays).
+- **Type:** implementation/generator verification.
+
+## D-086 — Gentler paper-transient hypothesis
+
+- **Result:** with predictions frozen before execution, V2 jointly matches the printed
+  S2 speed/position targets within 2x through `a0=10,000 rpm/s` for the 235-rpm
+  reading, and S3 through `a0=2,800 rpm/s`. The Step 0d estimate grid points are
+  S2 `5,000` and S3 `1,400 rpm/s`, about 4.8x and 6.9x below printed `DeltaT/J`.
+- **Decision:** support, as a hypothesis only, that the paper transition is gentler
+  than an instantaneous printed-J torque step. The profile is unprinted and S3
+  hardware non-idealities remain unexplained.
+- **Type:** experimental result/hypothesis.
+
+## D-087 — Closed-loop ramp confirmation
+
+- **Result:** callable 50%-load ramps at 1000 rpm (`T_r=0.1/0.2 s`) remain stable:
+  true dips `-60.4/-30.5 rpm`, peak decelerations `-2000/-1001 rpm/s`, and
+  peak speed errors `9.05/4.15 rpm`.
+- **Scope:** nominal chain, `alpha_omega=10 Hz`, `t_h=0.30 s`, dead time OFF;
+  these ramps are gentler than the open-loop inferred S2 transient.
+- **Type:** closed-loop confirmation.

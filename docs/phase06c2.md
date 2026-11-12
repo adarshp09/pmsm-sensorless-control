@@ -78,12 +78,12 @@ The predicted `2 sin(φ/2)` scaling **failed**: it gives 0.27 at 5 Hz but the me
 0.5·7.7/0.00153 = 2516 rad/s² = **24 027 rpm/s**, S3 20 % → **9611 rpm/s**) and
 `ω_n = 2π·f_n·√(ω/ω_1000)` at the speed reached at the peak (unnormalized loop). Predicted
 vs measured: S2 f_n=20 **≈100–110 rpm** vs 121–149 measured at 5–4 Hz; S3 **≈36 rpm** vs 40
-at 10 Hz (model ~20 % low, right order, α_ω-independent). Paper-implied ω_n from the same
-model: **23 rpm (S2) → ≈76 Hz; ≈10 rpm (S3) → ≈70 Hz** — **HYPOTHESIS** (assumes the
-printed J/rated torque apply to both scenarios and an instantaneous step; the hardware
-scenario may differ). **The gap is therefore not attributed to "estimator quality": the PLL
-bandwidth f_n (unprinted ASSUMPTION, 20 Hz) had not been varied at the matched dips —
-done in Phase 06e.** S3's matched α_ω remains infeasible in our stable range.
+at 10 Hz (model ~20 % low, right order, α_ω-independent). The earlier paper-implied
+`f_n ≈ 70–76 Hz` inference is **retracted**. Phase 06g-2 instead estimates the
+paper-implied acceleration from the printed position and speed errors, subject to the
+electrical/mechanical-angle ambiguity and sustained-deceleration assumptions. **The gap
+was not attributed to estimator quality at this stage:** the profile was unprinted and
+had not yet been tested. S3's matched α_ω remains infeasible in our stable range.
 
 ## Step 3 — conventional vs improved (fixed t_h, dead time OFF)
 

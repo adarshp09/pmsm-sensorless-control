@@ -4,11 +4,13 @@
 recorded `(u_αβ, i_αβ)` is replayed offline (Gate R: bit-exact). With an **ideal** back-EMF
 (V0), the Q-PLL follows the frozen 06e acceleration-step model **within 20 % at every f_n**
 (S2 87/42/20/10 vs 101/44/21/11; S3 33/19/8/4 vs 37/18/9/4) — the model is **validated**. The
-**observer** (V0→V1) adds only 3–5 % — **not** the limit. The **DSOGI-FLL** (V1→V2) accounts
-for the **whole factor, 1.5× at f_n=20 rising to 9× at f_n=160**, and it **breaks the
-∝1/f_n scaling** (its bandwidth Γ=50 is fixed and amplitude-dependent; its ≈85 rpm lag is
-f_n-independent). V4 (oracle ω′) restores V0's scaling, and V3 (`E_true → SOGI+FLL`) equals
-V2 — so the **FLL alone** is responsible, not the SOGI band-pass and not the observer. In the
+**observer** (V0→V1) adds only 3–5 % for f_n ≤ 40 Hz (+23 % S2 / +79 % S3 at f_n = 160,
+≈2–3 rpm absolute) — **not** the limit. **Both the SOGI band-pass and the FLL contribute**
+for f_n ≥ 80: V4/V1 (SOGI alone, oracle ω′) 0.91→2.97 and V2/V4 (FLL) 1.64→2.98, so **V4
+does not restore V0's scaling** (V4/V0 = 0.95/1.37/2.18/3.68). The combined factor
+(**SOGI+FLL, V2/V1**) is **1.5× at f_n=20 rising to 8.9× at f_n=160** (S3: 1.19→4.20), and it
+**breaks the ∝1/f_n scaling** (Γ=50 fixed and amplitude-dependent; the ≈85 rpm lag is S2 at
+1000 rpm — S3: 24 rpm — and f_n-independent). V3 (`E_true → SOGI+FLL`) equals V2. In the
 closed loop the instability is carried by the **ω̂ path** (channel isolation: with ω from the
 encoder the loop stays stable at f_n=80, peak 5.7°; with ω from the chain it reaches 180°).
 The 06e "flat/no-1/f_n" verdict is therefore a **stability-limit artefact** — at a stable
@@ -25,7 +27,11 @@ experiments** unless a **printed** parameter is found to differ from ours.
 uncompensated-cell artefact; R5 (tuned) vs R4 (untuned) noted; max-stable-α_ω-falls-with-f_n
 recorded as unexplained.
 **0c** — the normalized Q-PLL option is marked **"KNOWN DEFECT — non-paper, do not use"** in
-`estimator_spec.md` and `README.md` (no src fix).
+`estimator_spec.md` (§"Phase 06 unprinted-parameter register" and the UNPRINTED summary),
+`closed_loop_assumptions.md` and the README phase table (no src fix). *(Phase 06g Step 0a
+correction: the original Phase 06f claim that the verbatim label was in `README.md` was
+wrong — the README row said only "lock-point confirmed broken (option)"; the label is now
+present there.)*
 
 ## Step 1 — record + GATE R
 Nominal chain (matched → DSOGI-FLL v′ → unnormalized Q-PLL f_n=20, t_h=0.30 s, advance off),
@@ -53,16 +59,20 @@ lag = peak `ω_e − ω′` over 200 ms.
 **S3 (paper 10; model {37,18,9,4}):** V0 33/19/8/4 (✓ within 20 %); V1 34/20/9/7; V2
 40/42/36/29 (lag 24); V3 40/41/37/30; V4 33/22/17/15.
 
-**Attribution (S2, f_n = 20 → 160):** V0→V1 (**observer**) 87→90 / 10→12 (**×1.03–1.2**);
-V1→V2 (**SOGI+FLL**) 90→135 / 12→108 (**×1.5–9**). V3≈V2 and V4≈V0 fix the attribution: the
-**FLL** is the element. **Model check: V0 follows it within 20 % at every f_n ✓.**
+**Attribution (S2, f_n = 20 → 160):** V1/V0 (**observer**, V0→V1) 1.036 → 1.236; V4/V1
+(**SOGI band-pass alone**, FLL replaced by an oracle) 0.914 → 2.974; V2/V4 (**FLL**) 1.642 →
+2.981; V2/V1 (**SOGI+FLL**) **1.500 → 8.864** (S3: 1.193 → 4.202). *(Phase 06g Step 0b
+re-attribution: the factor is **not** the FLL alone — the SOGI band-pass contributes from
+f_n ≥ 40 and the FLL from f_n ≥ 20; see `phase06g.md`.)* **Model check: V0 follows it within
+20 % at every f_n ✓.**
 **Within 2× of the paper?** Only **V0 and V4** (V0 f_n≥80: S2 20/10 ≤ 46, S3 8/4 ≤ 20);
 the **nominal V2 never** (min 108 rpm at f_n=160).
 
-**Verdict:** the factor between the paper-level errors and V2 is the **DSOGI-FLL**, not the
-observer and not the PLL (whose model is validated). The residual between V2 and V0 is
-**PLL bandwidth *as seen through the FLL*** — the FLL's fixed Γ caps the effective bandwidth,
-so raising f_n cannot help.
+**Verdict:** the factor between the paper-level errors and V2 is the combined **SOGI+FLL**
+path, not the observer and not the PLL (whose model is validated). The SOGI band-pass
+contributes from `f_n >= 40`, while the fixed-gain FLL contributes at every tested
+frequency. The FLL algebra is unprinted, so its exact small-signal normalization remains
+underdetermined.
 
 ## Step 3 — FLL-speed diagnostic (DIAGNOSTIC — not adopted)
 
@@ -115,6 +125,21 @@ loop is stable at f_n=80; with θ from the encoder it is not. (Matches 06b's fin
 At a stable α_ω the high-f_n steady **cost is negligible** (0.61° everywhere; ripple grows
 slightly with f_n). The 06e "176.9° at f_n=80" was indeed α_ω=10 instability, not a PLL
 steady cost.
+
+## Step 4a — corrected FLL time scale
+
+The small-signal frozen-amplitude tests measured 3.82 ms at 1000 rpm and 5.08 ms at
+800 rpm. The empirical relation is `tau = k_s*omega'/(Gamma*A^2)`, giving 3.84 ms,
+4.80 ms and 7.68 ms at 1000, 800 and 500 rpm. For S2, evaluating the falling speed
+at approximately 765 rpm gives `tau ≈ 5.02 ms` and `a0*tau ≈ 121 rpm`, versus the
+measured 135 rpm first peak. The prior factor-of-two formula and “10–20% at 500 rpm”
+claim are retracted. Phase 03d's 5.1 ms settling result used a settling band, not a
+63% time constant.
+
+Normalization readings range from approximately 0.25 ms (A-normalized) through about
+3–12 s (A^2-normalized without an `omega'` factor); the standard `omega'`-factor form
+is approximately `k_s/Gamma ≈ 28 ms`. Since the paper does not print the FLL algebra,
+this ambiguity is recorded rather than resolved. It does not change the V0 conclusion.
 
 ## Bug
 None in `src`. The 06e metric/cell caveats are corrections, not bugs. (The normalized Q-PLL
