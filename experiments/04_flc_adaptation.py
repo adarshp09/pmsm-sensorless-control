@@ -69,8 +69,10 @@ def _rollout(observer, u, i, dt, *, record_gains=False):
     n = len(u)
     out = {key: np.empty(n) for key in ("ia", "ib", "sa", "sb", "ea", "eb")}
     if record_gains:
-        out["kf"] = np.empty(n); out["af"] = np.empty(n)
-        out["k"] = np.empty(n); out["a"] = np.empty(n)
+        out["kf"] = np.empty(n)
+        out["af"] = np.empty(n)
+        out["k"] = np.empty(n)
+        out["a"] = np.empty(n)
     try:
         for k in range(n):
             result = observer.step(u[k, 0], u[k, 1], i[k, 0], i[k, 1], dt)
@@ -117,10 +119,13 @@ def main() -> int:
     plant = PMSMPlant(parameters)
     base_engine = FuzzyEngine.from_yaml(directory)
     k0 = config.resolve_parameter(observer_cfg, "smo.switching_gain_k", unit="-") * (
-        math.sqrt(2.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V") / math.sqrt(3.0)
+        math.sqrt(2.0)
+        * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V")
+        / math.sqrt(3.0)
     )
     a0 = config.resolve_parameter(observer_cfg, "smo.sigmoid_slope_a", unit="-") / (
-        math.sqrt(2.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_power", unit="W")
+        math.sqrt(2.0)
+        * config.resolve_parameter(pmsm_cfg, "rating.rated_power", unit="W")
         / (math.sqrt(3.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V"))
     )
     nominal_ke = base_engine.parameters.ke
@@ -153,8 +158,14 @@ def main() -> int:
                 "steady": _steady_metrics(sm, emf, theta, steady_mask, i, dt),
                 "ramp": summarize_ramp(
                     sliding_window_ramp_metrics(
-                        sm["ea"][ramp_mask], sm["eb"][ramp_mask], emf[ramp_mask, 0], emf[ramp_mask, 1],
-                        f_true[ramp_mask], f_true[ramp_mask], t[ramp_mask], window_s=0.06,
+                        sm["ea"][ramp_mask],
+                        sm["eb"][ramp_mask],
+                        emf[ramp_mask, 0],
+                        emf[ramp_mask, 1],
+                        f_true[ramp_mask],
+                        f_true[ramp_mask],
+                        t[ramp_mask],
+                        window_s=0.06,
                     )
                 ),
             }
@@ -163,8 +174,12 @@ def main() -> int:
                 k, a = sm["k"][steady_mask], sm["a"][steady_mask]
                 e_true = np.abs(omega_e[steady_mask] * parameters.psi_f)
                 entry["gains"] = {
-                    "kf_mean": float(np.mean(kf)), "kf_min": float(np.min(kf)), "kf_max": float(np.max(kf)),
-                    "af_mean": float(np.mean(af)), "af_min": float(np.min(af)), "af_max": float(np.max(af)),
+                    "kf_mean": float(np.mean(kf)),
+                    "kf_min": float(np.min(kf)),
+                    "kf_max": float(np.max(kf)),
+                    "af_mean": float(np.mean(af)),
+                    "af_min": float(np.min(af)),
+                    "af_max": float(np.max(af)),
                     "kf_af_mean": float(np.mean(kf * af)),
                     "fraction_below_stability_bound": float(np.mean(kf * af < bound)),
                     "fraction_k_below_emf": float(np.mean(kf * k0 < e_true)),
@@ -182,7 +197,7 @@ def main() -> int:
                     "ehat_alpha_steady": sm["ea"][steady_idx][::s_stride].tolist(),
                     "etrue_alpha_steady": emf[steady_idx, 0][::s_stride].tolist(),
                 }
-            runs[f"Ts{dt*1e6:.0f}_{label}"] = entry
+            runs[f"Ts{dt * 1e6:.0f}_{label}"] = entry
 
         record("fixed_sign", ConventionalSMO.from_config(pmsm_cfg, observer_cfg))
         record("fixed_sigmoid", SigmoidSMO.from_config(pmsm_cfg, observer_cfg))
@@ -202,33 +217,43 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     def plot_nominal(dt):
-        entry = runs[f"Ts{dt*1e6:.0f}_flc_ke1_kec1"]
+        entry = runs[f"Ts{dt * 1e6:.0f}_flc_ke1_kec1"]
         traces = entry["traces"]
         fig, axes = plt.subplots(2, 2, figsize=(13, 7))
         axes[0, 0].plot(traces["t"], traces["kf"], label="kF")
         axes[0, 0].plot(traces["t"], traces["af"], label="aF")
-        axes[0, 0].set(xlabel="time (s)", ylabel="normalised gain", title="FLC outputs (Ke=1x, Kec=1x)")
-        axes[0, 0].legend(); axes[0, 0].grid(True, alpha=0.3)
+        axes[0, 0].set(
+            xlabel="time (s)", ylabel="normalised gain", title="FLC outputs (Ke=1x, Kec=1x)"
+        )
+        axes[0, 0].legend()
+        axes[0, 0].grid(True, alpha=0.3)
         axes[0, 1].plot(traces["t"], traces["ka"], label="kF*aF")
-        axes[0, 1].axhline(entry["bound"], color="crimson", ls="--", label=f"bound {entry['bound']:.3f}")
+        axes[0, 1].axhline(
+            entry["bound"], color="crimson", ls="--", label=f"bound {entry['bound']:.3f}"
+        )
         axes[0, 1].set(xlabel="time (s)", ylabel="kF*aF", title="FLC product vs stability bound")
-        axes[0, 1].legend(); axes[0, 1].grid(True, alpha=0.3)
+        axes[0, 1].legend()
+        axes[0, 1].grid(True, alpha=0.3)
         axes[1, 0].plot(traces["t_steady"], traces["etrue_alpha_steady"], "k", label="E_true alpha")
         axes[1, 0].plot(traces["t_steady"], traces["ehat_alpha_steady"], label="E_hat alpha (FLC)")
         axes[1, 0].set(xlabel="time (s)", ylabel="V", title="Steady-window E_hat vs E_true (alpha)")
-        axes[1, 0].legend(fontsize=8); axes[1, 0].grid(True, alpha=0.3)
+        axes[1, 0].legend(fontsize=8)
+        axes[1, 0].grid(True, alpha=0.3)
         axes[1, 1].text(
             0.02,
             0.5,
-            f"fixed sign ripple {runs[f'Ts{dt*1e6:.0f}_fixed_sign']['steady']['ripple_rms_v']:.1f} V\n"
-            f"fixed sigmoid ripple {runs[f'Ts{dt*1e6:.0f}_fixed_sigmoid']['steady']['ripple_rms_v']:.1f} V\n"
+            f"fixed sign ripple {runs[f'Ts{dt * 1e6:.0f}_fixed_sign']['steady']['ripple_rms_v']:.1f} V\n"
+            f"fixed sigmoid ripple {runs[f'Ts{dt * 1e6:.0f}_fixed_sigmoid']['steady']['ripple_rms_v']:.1f} V\n"
             f"FLC ripple {entry['steady']['ripple_rms_v']:.1f} V",
             fontsize=9,
         )
         axes[1, 1].axis("off")
-        fig.suptitle(f"Phase 04 FLC adaptation, Ts={dt*1e6:.0f}us; ASSUMPTION values Ke=0.13472, Kec=1.3472e-5", fontsize=9)
+        fig.suptitle(
+            f"Phase 04 FLC adaptation, Ts={dt * 1e6:.0f}us; ASSUMPTION values Ke=0.13472, Kec=1.3472e-5",
+            fontsize=9,
+        )
         fig.tight_layout(rect=(0, 0, 1, 0.95))
-        fig.savefig(output_dir / f"flc_traces_{dt*1e6:.0f}us.png", dpi=130)
+        fig.savefig(output_dir / f"flc_traces_{dt * 1e6:.0f}us.png", dpi=130)
         plt.close(fig)
 
     for dt in TS_VALUES:
@@ -236,18 +261,35 @@ def main() -> int:
 
     diff = config_diff.summary(
         "04_flc_adaptation",
-        {"epsilon_filter_tau": None, "min_omega": None, "normalize_error": False, "positive_sequence": True},
-        scenario={"ts_us": [x * 1e6 for x in TS_VALUES], "steady_cycles": STEADY_CYCLES,
-                  "grid_multipliers": GRID_MULTS,
-                  "assumptions": {"ke": nominal_ke, "kec": nominal_kec, "ku": base_engine.parameters.ku,
-                                  "cog_grid_points": base_engine.parameters.cog_grid_points}},
+        {
+            "epsilon_filter_tau": None,
+            "min_omega": None,
+            "normalize_error": False,
+            "positive_sequence": True,
+        },
+        scenario={
+            "ts_us": [x * 1e6 for x in TS_VALUES],
+            "steady_cycles": STEADY_CYCLES,
+            "grid_multipliers": GRID_MULTS,
+            "assumptions": {
+                "ke": nominal_ke,
+                "kec": nominal_kec,
+                "ku": base_engine.parameters.ku,
+                "cog_grid_points": base_engine.parameters.cog_grid_points,
+            },
+        },
     )
     diagnostics = {
         "note": "Phase 04 FLC adaptation; RAW E_hat only (no DSOGI-FLL). No position/speed claims. All FLC scaling/MF/operator/grid values are ASSUMPTIONS.",
-        "assumptions": {"ke_1_per_a": nominal_ke, "kec_s_per_a": nominal_kec,
-                        "ku": base_engine.parameters.ku, "cog_grid_points": base_engine.parameters.cog_grid_points},
+        "assumptions": {
+            "ke_1_per_a": nominal_ke,
+            "kec_s_per_a": nominal_kec,
+            "ku": base_engine.parameters.ku,
+            "cog_grid_points": base_engine.parameters.cog_grid_points,
+        },
         "config_diff": diff,
-        "k0_v": k0, "a0_per_a": a0,
+        "k0_v": k0,
+        "a0_per_a": a0,
         "runs": runs,
     }
     (output_dir / "flc.json").write_text(json.dumps(diagnostics, indent=2), encoding="utf-8")
@@ -255,21 +297,26 @@ def main() -> int:
 
     # nominal headline + grid summary
     for dt in TS_VALUES:
-        base = runs[f"Ts{dt*1e6:.0f}_fixed_sigmoid"]["steady"]
-        print(f"== Ts={dt*1e6:.0f}us (ASSUMPTION Ke={nominal_ke:.5f}, Kec={nominal_kec:.3e}) ==")
+        base = runs[f"Ts{dt * 1e6:.0f}_fixed_sigmoid"]["steady"]
+        print(f"== Ts={dt * 1e6:.0f}us (ASSUMPTION Ke={nominal_ke:.5f}, Kec={nominal_kec:.3e}) ==")
         for label in ("fixed_sign", "fixed_sigmoid", "flc_ke1_kec1"):
-            s = runs[f"Ts{dt*1e6:.0f}_{label}"]["steady"]
-            print(f"  {label:18s}: gain={s['fundamental_gain']:.3f} phase={s['fundamental_phase_deg']:+6.2f} "
-                  f"ripple={s['ripple_rms_v']:7.2f} rmse={s['current_rmse_a']:.3f} |S|={s['mean_abs_surface_a']:.3f} "
-                  f"p2={s['period2_flag']}")
+            s = runs[f"Ts{dt * 1e6:.0f}_{label}"]["steady"]
+            print(
+                f"  {label:18s}: gain={s['fundamental_gain']:.3f} phase={s['fundamental_phase_deg']:+6.2f} "
+                f"ripple={s['ripple_rms_v']:7.2f} rmse={s['current_rmse_a']:.3f} |S|={s['mean_abs_surface_a']:.3f} "
+                f"p2={s['period2_flag']}"
+            )
         cells = []
         for ke_mult in GRID_MULTS:
             for kec_mult in GRID_MULTS:
-                cell = runs[f"Ts{dt*1e6:.0f}_flc_ke{ke_mult:g}_kec{kec_mult:g}"]
+                cell = runs[f"Ts{dt * 1e6:.0f}_flc_ke{ke_mult:g}_kec{kec_mult:g}"]
                 cells.append((f"ke{ke_mult:g}_kec{kec_mult:g}", cell))
-        beats = [name for name, cell in cells
-                 if cell["steady"]["ripple_rms_v"] < base["ripple_rms_v"]
-                 and abs(cell["steady"]["fundamental_gain"] - 1.0) < abs(base["fundamental_gain"] - 1.0)]
+        beats = [
+            name
+            for name, cell in cells
+            if cell["steady"]["ripple_rms_v"] < base["ripple_rms_v"]
+            and abs(cell["steady"]["fundamental_gain"] - 1.0) < abs(base["fundamental_gain"] - 1.0)
+        ]
         print(f"  cells beating fixed sigmoid on ripple AND gain error: {len(beats)}/9 {beats}")
     print(f"\nOutputs written to: {output_dir}")
     return 0

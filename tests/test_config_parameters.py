@@ -43,9 +43,7 @@ def test_resolve_parameter_rejects_unit_mismatch(pmsm_cfg) -> None:
 
 def test_accessors_reject_malformed_parameter(tmp_path) -> None:
     path = tmp_path / "bad.yaml"
-    path.write_text(
-        "parameters:\n  x: {value: high, unit: '-'}\n", encoding="utf-8"
-    )
+    path.write_text("parameters:\n  x: {value: high, unit: '-'}\n", encoding="utf-8")
     loaded = config.load_config(path)
     with pytest.raises(ConfigError):
         config.resolve_parameter(loaded, "x")

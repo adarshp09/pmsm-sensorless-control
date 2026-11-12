@@ -97,8 +97,13 @@ def test_inference_at_hand_computed_point(engine: FuzzyEngine) -> None:
 
 def test_inference_saturates_and_stays_in_range(engine: FuzzyEngine) -> None:
     for s_n, s_dot_n in [
-        (1.0, 1.0), (-1.0, -1.0), (5.0, -5.0), (-7.0, 7.0),
-        (float("inf"), 0.0), (float("-inf"), 1.0), (float("nan"), 0.0),
+        (1.0, 1.0),
+        (-1.0, -1.0),
+        (5.0, -5.0),
+        (-7.0, 7.0),
+        (float("inf"), 0.0),
+        (float("-inf"), 1.0),
+        (float("nan"), 0.0),
     ]:
         k_f, a_f = engine.evaluate(s_n, s_dot_n)
         assert math.isfinite(k_f) and math.isfinite(a_f)

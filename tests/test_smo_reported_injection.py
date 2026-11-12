@@ -72,9 +72,7 @@ def test_reported_back_emf_uses_the_sample_instant_error() -> None:
 
 
 def test_sign_reported_back_emf_matches_truth_at_100us(plant, configs) -> None:
-    gain, phase = _reported_gain_phase(
-        plant, ConventionalSMO.from_config(*configs), 100e-6
-    )
+    gain, phase = _reported_gain_phase(plant, ConventionalSMO.from_config(*configs), 100e-6)
     assert gain == pytest.approx(0.957, abs=0.04)
     assert phase == pytest.approx(-1.6, abs=3.0)
 

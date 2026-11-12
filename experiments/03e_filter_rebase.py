@@ -99,7 +99,9 @@ def _regime(observer: str, dt: float, lam: float) -> str:
 
 
 def step3(plant, phase02, pmsm_cfg, observer_cfg, lam, dt_config):
-    profile = config.load_config("experiments", directory=config.default_config_dir())["specs"]["speed_profile"][0]
+    profile = config.load_config("experiments", directory=config.default_config_dir())["specs"][
+        "speed_profile"
+    ][0]
     from_rpm, to_rpm = float(profile["from_rpm"]), float(profile["to_rpm"])
 
     def rpm_at(t):
@@ -112,7 +114,10 @@ def step3(plant, phase02, pmsm_cfg, observer_cfg, lam, dt_config):
     for dt in TS_VALUES:
         t = np.arange(int(round(DURATION_S / dt))) * dt
         _, u, i, emf = phase02.plant_rollout(
-            plant, lambda tt: plant.parameters.pole_pairs * rpm_at(tt) * 2 * math.pi / 60, DURATION_S, dt
+            plant,
+            lambda tt: plant.parameters.pole_pairs * rpm_at(tt) * 2 * math.pi / 60,
+            DURATION_S,
+            dt,
         )
         theta = electrical_angle(emf[:, 0], emf[:, 1])
         f_true = plant.parameters.pole_pairs * np.array([rpm_at(tt) for tt in t]) / 60.0
@@ -131,35 +136,54 @@ def step3(plant, phase02, pmsm_cfg, observer_cfg, lam, dt_config):
             freq, va, vb = _run_fll(sm["ea"], sm["eb"], dt, initial_omega)
             for window, mask in masks.items():
                 if np.isnan(freq[mask]).any():
-                    rows.append({"ts_us": dt * 1e6, "observer": observer_name, "window": window,
-                                 "regime": _regime(observer_name, dt, lam), "diverged": True})
+                    rows.append(
+                        {
+                            "ts_us": dt * 1e6,
+                            "observer": observer_name,
+                            "window": window,
+                            "regime": _regime(observer_name, dt, lam),
+                            "diverged": True,
+                        }
+                    )
                     continue
-                raw = vector_metrics(sm["ea"][mask], sm["eb"][mask], emf[mask, 0], emf[mask, 1], theta[mask])
+                raw = vector_metrics(
+                    sm["ea"][mask], sm["eb"][mask], emf[mask, 0], emf[mask, 1], theta[mask]
+                )
                 filt = vector_metrics(va[mask], vb[mask], emf[mask, 0], emf[mask, 1], theta[mask])
                 omega_true = 2.0 * math.pi * float(np.mean(f_true[mask]))
                 omega_mean = 2.0 * math.pi * float(np.mean(freq[mask]))
                 stride = max(1, len(t) // 300)
-                rows.append({
-                    "ts_us": dt * 1e6,
-                    "observer": observer_name,
-                    "window": window,
-                    "window_s": [float(t[mask][0]), float(t[mask][-1])],
-                    "regime": _regime(observer_name, dt, lam),
-                    "t_trace_s": t[::stride].tolist(),
-                    "freq_trace_hz": freq[::stride].tolist(),
-                    "initial_omega_rad_s": initial_omega,
-                    "initial_omega_choice": "true electrical frequency at the ramp start (500 rpm); paper states none",
-                    "raw": raw,
-                    "filtered": filt,
-                    "frequency_error_mean_hz": float(np.mean(freq[mask] - f_true[mask])),
-                    "omega_prime_jitter_hz": float(np.std(freq[mask])),
-                    "predicted_phase_offset_deg": _predicted_phase_offset(omega_mean, omega_true),
-                    "measured_filtered_minus_raw_phase_deg": filt["fundamental_phase_deg"]
-                    - raw["fundamental_phase_deg"],
-                })
-    return {"steady_window": {"cycles": STEADY_CYCLES, "start_s": DURATION_S - STEADY_CYCLES / (plant.parameters.pole_pairs * RPM_END / 60.0), "end_s": DURATION_S},
-            "ramp_window": {"start_s": 0.0, "end_s": RAMP_S},
-            "rows": rows}
+                rows.append(
+                    {
+                        "ts_us": dt * 1e6,
+                        "observer": observer_name,
+                        "window": window,
+                        "window_s": [float(t[mask][0]), float(t[mask][-1])],
+                        "regime": _regime(observer_name, dt, lam),
+                        "t_trace_s": t[::stride].tolist(),
+                        "freq_trace_hz": freq[::stride].tolist(),
+                        "initial_omega_rad_s": initial_omega,
+                        "initial_omega_choice": "true electrical frequency at the ramp start (500 rpm); paper states none",
+                        "raw": raw,
+                        "filtered": filt,
+                        "frequency_error_mean_hz": float(np.mean(freq[mask] - f_true[mask])),
+                        "omega_prime_jitter_hz": float(np.std(freq[mask])),
+                        "predicted_phase_offset_deg": _predicted_phase_offset(
+                            omega_mean, omega_true
+                        ),
+                        "measured_filtered_minus_raw_phase_deg": filt["fundamental_phase_deg"]
+                        - raw["fundamental_phase_deg"],
+                    }
+                )
+    return {
+        "steady_window": {
+            "cycles": STEADY_CYCLES,
+            "start_s": DURATION_S - STEADY_CYCLES / (plant.parameters.pole_pairs * RPM_END / 60.0),
+            "end_s": DURATION_S,
+        },
+        "ramp_window": {"start_s": 0.0, "end_s": RAMP_S},
+        "rows": rows,
+    }
 
 
 def _mean_epsilon_f(v_a, v_b, omega_fixed, dt) -> float:
@@ -208,21 +232,29 @@ def step4(_plant, _phase02, _pmsm_cfg, _observer_cfg):
             for lpf in (True, False):
                 tau = 0.01 if lpf else None
                 freq, _, _ = _run_fll(
-                    signals[0], signals[1], dt, omega_true,
-                    epsilon_filter_tau=tau, min_omega=2.0 * math.pi * STEP4_MIN_FREQ_HZ,
+                    signals[0],
+                    signals[1],
+                    dt,
+                    omega_true,
+                    epsilon_filter_tau=tau,
+                    min_omega=2.0 * math.pi * STEP4_MIN_FREQ_HZ,
                 )
                 below = np.where(freq < 10.0)[0]
                 first_below = float(t[below[0]]) if len(below) else None
                 recovered = bool(np.any(freq[below[-1] + 1 :] >= 10.0)) if len(below) else False
-                rows.append({
-                    "rpm": rpm,
-                    "case": name,
-                    "epsilon_filter_tau": tau,
-                    "final_omega_prime_hz": float(freq[-1]) if not np.isnan(freq[-1]) else None,
-                    "first_below_10hz_s": first_below,
-                    "recovers_above_10hz": recovered,
-                    "omega_prime_trace_hz": [float(x) for x in freq[:: max(1, len(freq) // 300)]],
-                })
+                rows.append(
+                    {
+                        "rpm": rpm,
+                        "case": name,
+                        "epsilon_filter_tau": tau,
+                        "final_omega_prime_hz": float(freq[-1]) if not np.isnan(freq[-1]) else None,
+                        "first_below_10hz_s": first_below,
+                        "recovers_above_10hz": recovered,
+                        "omega_prime_trace_hz": [
+                            float(x) for x in freq[:: max(1, len(freq) // 300)]
+                        ],
+                    }
+                )
 
         # (c) open-loop budget at frozen omega' = omega_true.
         eps_fund = _mean_epsilon_f(true_a, true_b, omega_true, dt)
@@ -231,22 +263,32 @@ def step4(_plant, _phase02, _pmsm_cfg, _observer_cfg):
         eps_p2_both = _mean_epsilon_f(true_a + period2, true_b + period2, omega_true, dt)
         eps_white_both = _mean_epsilon_f(true_a + white, true_b + white, omega_true, dt)
         dw = 0.01 * omega_true
-        slope = (_mean_epsilon_f(true_a, true_b, omega_true + dw, dt)
-                 - _mean_epsilon_f(true_a, true_b, omega_true - dw, dt)) / (2.0 * dw)
-        budget.append({
-            "rpm": rpm,
-            "omega_true_rad_s": omega_true,
-            "mean_epsilon_f_fundamental": eps_fund,
-            "mean_epsilon_f_period2_only": eps_p2,
-            "mean_epsilon_f_white_only": eps_white,
-            "mean_epsilon_f_period2_both": eps_p2_both,
-            "mean_epsilon_f_white_both": eps_white_both,
-            "implied_domega_dt_period2_hz_per_s": GAMMA * eps_p2_both / (2.0 * math.pi),
-            "implied_domega_dt_white_hz_per_s": GAMMA * eps_white_both / (2.0 * math.pi),
-            "fundamental_restoring_slope": slope,
-        })
-    return {"rows": rows, "open_loop_budget": budget,
-            "settings": {"epsilon_filter_tau": "on (0.01 s) and off, per row", "min_omega_hz": STEP4_MIN_FREQ_HZ}}
+        slope = (
+            _mean_epsilon_f(true_a, true_b, omega_true + dw, dt)
+            - _mean_epsilon_f(true_a, true_b, omega_true - dw, dt)
+        ) / (2.0 * dw)
+        budget.append(
+            {
+                "rpm": rpm,
+                "omega_true_rad_s": omega_true,
+                "mean_epsilon_f_fundamental": eps_fund,
+                "mean_epsilon_f_period2_only": eps_p2,
+                "mean_epsilon_f_white_only": eps_white,
+                "mean_epsilon_f_period2_both": eps_p2_both,
+                "mean_epsilon_f_white_both": eps_white_both,
+                "implied_domega_dt_period2_hz_per_s": GAMMA * eps_p2_both / (2.0 * math.pi),
+                "implied_domega_dt_white_hz_per_s": GAMMA * eps_white_both / (2.0 * math.pi),
+                "fundamental_restoring_slope": slope,
+            }
+        )
+    return {
+        "rows": rows,
+        "open_loop_budget": budget,
+        "settings": {
+            "epsilon_filter_tau": "on (0.01 s) and off, per row",
+            "min_omega_hz": STEP4_MIN_FREQ_HZ,
+        },
+    }
 
 
 def make_plot(step3_rows, output_dir: Path) -> None:
@@ -263,7 +305,8 @@ def make_plot(step3_rows, output_dir: Path) -> None:
             row["t_trace_s"], row["freq_trace_hz"], label=f"{row['observer']} {row['ts_us']:.0f}us"
         )
     axes[0].set(
-        xlabel="time (s)", ylabel="omega' (Hz)",
+        xlabel="time (s)",
+        ylabel="omega' (Hz)",
         title="FLL omega'(t), ramp 500->1000 rpm (epsilon_filter_tau=OFF)",
     )
     axes[0].legend(fontsize=8)
@@ -307,8 +350,10 @@ def main() -> int:
         * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V")
         / math.sqrt(3.0)
     )
-    i_base = math.sqrt(2.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_power", unit="W") / (
-        math.sqrt(3.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V")
+    i_base = (
+        math.sqrt(2.0)
+        * config.resolve_parameter(pmsm_cfg, "rating.rated_power", unit="W")
+        / (math.sqrt(3.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V"))
     )
     a = config.resolve_parameter(observer_cfg, "smo.sigmoid_slope_a", unit="-") / i_base
     lam = (parameters.stator_resistance + k * a / 2.0) / parameters.ld
@@ -318,10 +363,18 @@ def main() -> int:
 
     diff = config_diff.summary(
         "03e_filter_rebase",
-        {"epsilon_filter_tau": None, "min_omega": None, "max_omega": None,
-         "normalize_error": False, "positive_sequence": True},
-        scenario={"ts_us": [x * 1e6 for x in TS_VALUES], "steady_cycles": STEADY_CYCLES,
-                  "step4_settings": collapse["settings"]},
+        {
+            "epsilon_filter_tau": None,
+            "min_omega": None,
+            "max_omega": None,
+            "normalize_error": False,
+            "positive_sequence": True,
+        },
+        scenario={
+            "ts_us": [x * 1e6 for x in TS_VALUES],
+            "steady_cycles": STEADY_CYCLES,
+            "step4_settings": collapse["settings"],
+        },
     )
     diagnostics = {
         "note": "Phase 03e re-base; filtered metrics use epsilon_filter_tau=OFF (library default), no clamps, no normalization.",
@@ -342,22 +395,28 @@ def main() -> int:
         if row.get("diverged"):
             print(f"  {row['ts_us']:5.0f}us {row['observer']:7s} {row['window']:6s}: DIVERGED")
             continue
-        print(f"  {row['ts_us']:5.0f}us {row['observer']:7s} {row['window']:6s} [{row['regime']:11s}]: "
-              f"ferr={row['frequency_error_mean_hz']:+7.3f} Hz jit={row['omega_prime_jitter_hz']:6.3f} "
-              f"rawG={row['raw']['fundamental_gain']:.3f} rawPh={row['raw']['fundamental_phase_deg']:+6.2f} "
-              f"filtG={row['filtered']['fundamental_gain']:.3f} filtPh={row['filtered']['fundamental_phase_deg']:+6.2f} "
-              f"rawRip={row['raw']['ripple_rms_v']:7.2f} filtRip={row['filtered']['ripple_rms_v']:6.2f} "
-              f"predPh={row['predicted_phase_offset_deg']:+6.2f} measPh={row['measured_filtered_minus_raw_phase_deg']:+6.2f}")
+        print(
+            f"  {row['ts_us']:5.0f}us {row['observer']:7s} {row['window']:6s} [{row['regime']:11s}]: "
+            f"ferr={row['frequency_error_mean_hz']:+7.3f} Hz jit={row['omega_prime_jitter_hz']:6.3f} "
+            f"rawG={row['raw']['fundamental_gain']:.3f} rawPh={row['raw']['fundamental_phase_deg']:+6.2f} "
+            f"filtG={row['filtered']['fundamental_gain']:.3f} filtPh={row['filtered']['fundamental_phase_deg']:+6.2f} "
+            f"rawRip={row['raw']['ripple_rms_v']:7.2f} filtRip={row['filtered']['ripple_rms_v']:6.2f} "
+            f"predPh={row['predicted_phase_offset_deg']:+6.2f} measPh={row['measured_filtered_minus_raw_phase_deg']:+6.2f}"
+        )
     print("== step4 collapse ==")
     for row in collapse["rows"]:
-        print(f"  {row['rpm']:.0f}rpm {row['case']:20s} tau={row['epsilon_filter_tau']}: "
-              f"final={row['final_omega_prime_hz']} first<10Hz={row['first_below_10hz_s']} recovers={row['recovers_above_10hz']}")
+        print(
+            f"  {row['rpm']:.0f}rpm {row['case']:20s} tau={row['epsilon_filter_tau']}: "
+            f"final={row['final_omega_prime_hz']} first<10Hz={row['first_below_10hz_s']} recovers={row['recovers_above_10hz']}"
+        )
     print("== open-loop budget ==")
     for b in collapse["open_loop_budget"]:
-        print(f"  {b['rpm']:.0f}rpm: eps_fund={b['mean_epsilon_f_fundamental']:+.4e} "
-              f"eps_p2={b['mean_epsilon_f_period2_only']:+.4e} eps_white={b['mean_epsilon_f_white_only']:+.4e} "
-              f"dwd_t_p2={b['implied_domega_dt_period2_hz_per_s']:+.4f} dwdt_white={b['implied_domega_dt_white_hz_per_s']:+.4f} "
-              f"restoring_slope={b['fundamental_restoring_slope']:+.4e}")
+        print(
+            f"  {b['rpm']:.0f}rpm: eps_fund={b['mean_epsilon_f_fundamental']:+.4e} "
+            f"eps_p2={b['mean_epsilon_f_period2_only']:+.4e} eps_white={b['mean_epsilon_f_white_only']:+.4e} "
+            f"dwd_t_p2={b['implied_domega_dt_period2_hz_per_s']:+.4f} dwdt_white={b['implied_domega_dt_white_hz_per_s']:+.4f} "
+            f"restoring_slope={b['fundamental_restoring_slope']:+.4e}"
+        )
     print(f"\nOutputs written to: {output_dir}")
     return 0
 

@@ -38,8 +38,10 @@ DT = 1.0e-4
 T0 = 0.30
 DURATION = 1.50
 TAU_TOL = 0.40
-PAPER = {"S2": {"speed_rpm": 23.0, "position_rad": 0.22},
-         "S3": {"speed_rpm": 10.0, "position_rad": 0.152}}
+PAPER = {
+    "S2": {"speed_rpm": 23.0, "position_rad": 0.22},
+    "S3": {"speed_rpm": 10.0, "position_rad": 0.152},
+}
 
 
 @dataclass(frozen=True)
@@ -69,8 +71,7 @@ class TransientProfile:
         return 1000.0 - self.drop_rpm * x * math.exp(1.0 - x)
 
 
-def _rollout(plant: PMSMPlant, profile, *, i_q: float, dt: float,
-             duration: float) -> ProfileResult:
+def _rollout(plant: PMSMPlant, profile, *, i_q: float, dt: float, duration: float) -> ProfileResult:
     steps = int(round(duration / dt))
     t = np.arange(steps) * dt
     names = ("u_alpha", "u_beta", "i_alpha", "i_beta", "theta_e", "omega_e")
@@ -78,9 +79,7 @@ def _rollout(plant: PMSMPlant, profile, *, i_q: float, dt: float,
     p = plant.parameters
     omega = profile.rpm(0.0) * p.pole_pairs * RPM_TO_RAD_S
     state = PMSMState(0.0, i_q, omega, 0.0)
-    state.i_alpha, state.i_beta = (
-        i_q * -math.sin(state.theta_e), i_q * math.cos(state.theta_e)
-    )
+    state.i_alpha, state.i_beta = (i_q * -math.sin(state.theta_e), i_q * math.cos(state.theta_e))
     for n, now in enumerate(t):
         omega = profile.rpm(float(now)) * p.pole_pairs * RPM_TO_RAD_S
         state.omega_e = omega
@@ -96,22 +95,42 @@ def _rollout(plant: PMSMPlant, profile, *, i_q: float, dt: float,
     return ProfileResult(t=t, **out)
 
 
-def rollout_transient(plant: PMSMPlant, *, drop_rpm: float, a0_rpm_s: float,
-                      i_q: float, dt: float = DT, duration: float = DURATION) -> ProfileResult:
-    return _rollout(plant, TransientProfile(drop_rpm=drop_rpm, a0_rpm_s=a0_rpm_s),
-                    i_q=i_q, dt=dt, duration=duration)
+def rollout_transient(
+    plant: PMSMPlant,
+    *,
+    drop_rpm: float,
+    a0_rpm_s: float,
+    i_q: float,
+    dt: float = DT,
+    duration: float = DURATION,
+) -> ProfileResult:
+    return _rollout(
+        plant,
+        TransientProfile(drop_rpm=drop_rpm, a0_rpm_s=a0_rpm_s),
+        i_q=i_q,
+        dt=dt,
+        duration=duration,
+    )
 
 
 def regression_linear(stack, plant) -> dict:
     from pmsm_sensorless.simulation.nominal_drive import nominal_drive_rollout
 
     expected = nominal_drive_rollout(
-        plant, i_q=stack.i_rated, dt=DT, duration=0.20,
-        rpm_start=500.0, rpm_end=1000.0, ramp_time=0.10,
+        plant,
+        i_q=stack.i_rated,
+        dt=DT,
+        duration=0.20,
+        rpm_start=500.0,
+        rpm_end=1000.0,
+        ramp_time=0.10,
     )
     actual = _rollout(
-        plant, _SpeedProfile(500.0, 1000.0, 0.10, stack.pole_pairs),
-        i_q=stack.i_rated, dt=DT, duration=0.20,
+        plant,
+        _SpeedProfile(500.0, 1000.0, 0.10, stack.pole_pairs),
+        i_q=stack.i_rated,
+        dt=DT,
+        duration=0.20,
     )
     diffs = {
         name: float(np.max(np.abs(getattr(expected, name) - getattr(actual, name))))
@@ -132,15 +151,23 @@ def _replay(stack, rec: ProfileResult, variant: str, f_n: float):
         fll = C.build_fll(rec.omega_e[0], min_omega=None)
     elif variant == "V4":
         fll = _oracle_fll(stack, rec.omega_e[0])
-    qpll = QPLL(QPLLParameters.from_design(
-        zeta=0.707, f_n_hz=f_n, amplitude_v=stack.design_amp_v,
-    ), initial_theta=float(rec.theta_e[0]), initial_omega=float(rec.omega_e[0]))
+    qpll = QPLL(
+        QPLLParameters.from_design(
+            zeta=0.707,
+            f_n_hz=f_n,
+            amplitude_v=stack.design_amp_v,
+        ),
+        initial_theta=float(rec.theta_e[0]),
+        initial_omega=float(rec.omega_e[0]),
+    )
     theta_hat = np.empty(n)
     omega_hat = np.empty(n)
     for k in range(n):
         if variant == "V0":
-            ea, eb = -rec.omega_e[k] * stack.psi_f * math.sin(rec.theta_e[k]), \
-                rec.omega_e[k] * stack.psi_f * math.cos(rec.theta_e[k])
+            ea, eb = (
+                -rec.omega_e[k] * stack.psi_f * math.sin(rec.theta_e[k]),
+                rec.omega_e[k] * stack.psi_f * math.cos(rec.theta_e[k]),
+            )
         else:
             s = observer.step(rec.u_alpha[k], rec.u_beta[k], rec.i_alpha[k], rec.i_beta[k], DT)
             ea, eb = s.back_emf_alpha, s.back_emf_beta
@@ -201,8 +228,7 @@ def main() -> int:
         "profiles": {},
     }
     frozen["profiles"] = {
-        "S2": {"drop_rpm": [190.0, 235.0, 350.0],
-               "a0_rpm_s": list(a0_grid["S2"][3])},
+        "S2": {"drop_rpm": [190.0, 235.0, 350.0], "a0_rpm_s": list(a0_grid["S2"][3])},
         "S3": {"drop_rpm": [46.0], "a0_rpm_s": list(a0_grid["S3"][3])},
     }
     results = []
@@ -210,8 +236,7 @@ def main() -> int:
         drops = (first_drop, second_drop, third_drop) if scenario == "S2" else (46.0,)
         for drop in drops:
             for a0 in a0s:
-                rec = rollout_transient(plant, drop_rpm=drop, a0_rpm_s=a0,
-                                        i_q=stack.i_rated)
+                rec = rollout_transient(plant, drop_rpm=drop, a0_rpm_s=a0, i_q=stack.i_rated)
                 for variant in ("V0", "V1", "V2", "V4"):
                     fns = (20.0,)
                     if variant in ("V0", "V2") and a0 in (24027.0, 5000.0, 1400.0):
@@ -223,52 +248,71 @@ def main() -> int:
                             tau_prediction = {"S2": 5.63, "S3": 4.20}[scenario]
                         elif variant in ("V0", "V4"):
                             tau_prediction = {"S2": 3.62, "S3": 3.44}[scenario]
-                        results.append({
-                            "scenario": scenario, "drop_rpm": drop, "a0_rpm_s": a0,
-                            "tau_d_ms": 1000.0 * drop * math.e / a0,
-                            "variant": variant, "f_n_hz": f_n,
-                            "predicted_tau_eff_ms": tau_prediction,
-                            "predicted_e_over_a0_ms": tau_prediction,
-                            "predicted_speed_error_rpm": (
-                                a0 * tau_prediction / 1000.0
-                                if tau_prediction is not None else None
-                            ),
-                            **_metrics(rec, th, om, t0=T0, a0_rpm_s=a0),
-                        })
+                        results.append(
+                            {
+                                "scenario": scenario,
+                                "drop_rpm": drop,
+                                "a0_rpm_s": a0,
+                                "tau_d_ms": 1000.0 * drop * math.e / a0,
+                                "variant": variant,
+                                "f_n_hz": f_n,
+                                "predicted_tau_eff_ms": tau_prediction,
+                                "predicted_e_over_a0_ms": tau_prediction,
+                                "predicted_speed_error_rpm": (
+                                    a0 * tau_prediction / 1000.0
+                                    if tau_prediction is not None
+                                    else None
+                                ),
+                                **_metrics(rec, th, om, t0=T0, a0_rpm_s=a0),
+                            }
+                        )
     closed_loop = []
     for rise_s in (0.1, 0.2):
+
         def load(t, rise_s=rise_s):
             if t < 0.5:
                 return 0.0
             return min((t - 0.5) / rise_s, 1.0) * 0.5 * 7.7
 
         source, chain_source, result = E.run_sensorless(
-            stack, params, plant, speed_ref=1000.0, load_torque=load,
-            duration=2.0, alpha_w=10.0, f_n=20.0,
+            stack,
+            params,
+            plant,
+            speed_ref=1000.0,
+            load_torque=load,
+            duration=2.0,
+            alpha_w=10.0,
+            f_n=20.0,
         )
         post = result.t >= 0.5
         speed_rpm = result.omega_m * 60.0 / TWO_PI
         decel = np.gradient(speed_rpm, result.t)
         frozen_target = next(
-            r for r in results
-            if r["scenario"] == "S2" and r["drop_rpm"] == 235.0
-            and r["a0_rpm_s"] == 5000.0 and r["variant"] == "V2"
+            r
+            for r in results
+            if r["scenario"] == "S2"
+            and r["drop_rpm"] == 235.0
+            and r["a0_rpm_s"] == 5000.0
+            and r["variant"] == "V2"
             and r["f_n_hz"] == 20.0
         )
-        closed_loop.append({
-            "load_ramp_s": rise_s,
-            "true_dip_rpm": float(np.min(speed_rpm[post]) - 1000.0),
-            "peak_deceleration_rpm_s": float(np.min(decel[post])),
-            "peak_theta_err_deg": float(np.max(np.abs(source.theta_err_deg))),
-            "peak_omega_err_rpm": float(np.max(np.abs(source.omega_err_rpm))),
-            "fll_status": chain_source.status,
-            "handover_s": source.switch_time_s,
-            "comparison_profile": {
-                "drop_rpm": 235.0, "a0_rpm_s": 5000.0,
-                "v2_first_peak_rpm": frozen_target["first_peak_rpm"],
-                "v2_peak_theta_rad": frozen_target["peak_theta_rad"],
-            },
-        })
+        closed_loop.append(
+            {
+                "load_ramp_s": rise_s,
+                "true_dip_rpm": float(np.min(speed_rpm[post]) - 1000.0),
+                "peak_deceleration_rpm_s": float(np.min(decel[post])),
+                "peak_theta_err_deg": float(np.max(np.abs(source.theta_err_deg))),
+                "peak_omega_err_rpm": float(np.max(np.abs(source.omega_err_rpm))),
+                "fll_status": chain_source.status,
+                "handover_s": source.switch_time_s,
+                "comparison_profile": {
+                    "drop_rpm": 235.0,
+                    "a0_rpm_s": 5000.0,
+                    "v2_first_peak_rpm": frozen_target["first_peak_rpm"],
+                    "v2_peak_theta_rad": frozen_target["peak_theta_rad"],
+                },
+            }
+        )
     frozen["closed_loop_confirmation"] = {
         "assumptions": "nominal chain, alpha_w=10 Hz, t_h=0.30 s, dead time OFF, ramp starts at 0.5 s",
         "rows": closed_loop,

@@ -39,7 +39,8 @@ ANGLE_LIMIT_DEG = 30.0
 def _flat(entry, spec):
     """Flatten one sensorless run into a report row."""
     row = {
-        "handed_over": entry["handed_over"], "switch_time_s": entry["switch_time_s"],
+        "handed_over": entry["handed_over"],
+        "switch_time_s": entry["switch_time_s"],
         "fll_status": entry["fll_status"],
         "peak_theta_err_deg": entry["peak_theta_err_deg"],
         "steady_theta_max_deg": entry["steady_theta_err"]["max"],
@@ -56,17 +57,34 @@ def _flat(entry, spec):
         if k in entry:
             row[k] = entry[k]
     row["passed"] = bool(
-        entry["handed_over"] and entry["fll_status"] == "ok"
-        and (entry["peak_theta_err_deg"] is not None and entry["peak_theta_err_deg"] < ANGLE_LIMIT_DEG)
-        and entry["saturation_after_transient"] == 0.0)
+        entry["handed_over"]
+        and entry["fll_status"] == "ok"
+        and (
+            entry["peak_theta_err_deg"] is not None
+            and entry["peak_theta_err_deg"] < ANGLE_LIMIT_DEG
+        )
+        and entry["saturation_after_transient"] == 0.0
+    )
     return row
 
 
-def _sensorless(stack, params, plant, spec, advance, *, cell="matched_sigmoid", f_n=None, alpha_w=None):
+def _sensorless(
+    stack, params, plant, spec, advance, *, cell="matched_sigmoid", f_n=None, alpha_w=None
+):
     aw = spec["alpha_w"] if alpha_w is None else alpha_w
-    src, cs, res = E.run_sensorless(stack, params, plant, speed_ref=spec["speed_ref"],
-                                    load_torque=spec["load"], duration=spec["duration"],
-                                    alpha_w=aw, advance=advance, clamp=True, cell=cell, f_n=f_n)
+    src, cs, res = E.run_sensorless(
+        stack,
+        params,
+        plant,
+        speed_ref=spec["speed_ref"],
+        load_torque=spec["load"],
+        duration=spec["duration"],
+        alpha_w=aw,
+        advance=advance,
+        clamp=True,
+        cell=cell,
+        f_n=f_n,
+    )
     m = E.estimate_metrics(src, cs, res, dynamic=spec["dynamic"], steady=spec["steady"])
     if spec["disturbance_s"] is not None:
         m.update(E.speed_metrics(stack, res, {"disturbance_s": spec["disturbance_s"]}))
@@ -74,9 +92,16 @@ def _sensorless(stack, params, plant, spec, advance, *, cell="matched_sigmoid", 
 
 
 def _baseline(stack, params, plant, spec, advance=False):
-    res = E.run_encoder(stack, params, plant, speed_ref=spec["speed_ref"],
-                        load_torque=spec["load"], duration=spec["duration"],
-                        alpha_w=spec["alpha_w"], advance=advance)
+    res = E.run_encoder(
+        stack,
+        params,
+        plant,
+        speed_ref=spec["speed_ref"],
+        load_torque=spec["load"],
+        duration=spec["duration"],
+        alpha_w=spec["alpha_w"],
+        advance=advance,
+    )
     if spec["disturbance_s"] is None:
         return {}
     return E.speed_metrics(stack, res, {"disturbance_s": spec["disturbance_s"]})
@@ -119,10 +144,15 @@ def main() -> int:
 
     # Step 2 stress table (informational, beyond paper)
     def _stress(label, speed, load, duration=2.0, step_s=0.5, alpha_w=None):
-        spec = dict(speed_ref=float(speed), load=load, duration=duration,
-                    alpha_w=rule.get(speed, rule[1000]) if alpha_w is None else alpha_w,
-                    dynamic=(step_s, min(step_s + 0.5, duration)), steady=(duration - 0.2, duration),
-                    disturbance_s=step_s)
+        spec = dict(
+            speed_ref=float(speed),
+            load=load,
+            duration=duration,
+            alpha_w=rule.get(speed, rule[1000]) if alpha_w is None else alpha_w,
+            dynamic=(step_s, min(step_s + 0.5, duration)),
+            steady=(duration - 0.2, duration),
+            disturbance_s=step_s,
+        )
         m = _sensorless(stack, params, plant, spec, False)
         row = _flat(m, spec)
         if not row["handed_over"] or row["fll_status"] != "ok":
@@ -139,23 +169,34 @@ def main() -> int:
         "500rpm_20pct_step": _stress("500/20", 500, StepLoadTorque(0.0, 0.2 * E.RATED_TORQUE, 0.5)),
         "500rpm_50pct_step": _stress("500/50", 500, StepLoadTorque(0.0, 0.5 * E.RATED_TORQUE, 0.5)),
         "1000rpm_rated_step": _stress("1000/100", 1000, StepLoadTorque(0.0, E.RATED_TORQUE, 0.5)),
-        "500rpm_startup_under_load": _stress("500/load-start", 500, ConstantLoadTorque(0.2 * E.RATED_TORQUE),
-                                             duration=1.6, step_s=0.0),
+        "500rpm_startup_under_load": _stress(
+            "500/load-start",
+            500,
+            ConstantLoadTorque(0.2 * E.RATED_TORQUE),
+            duration=1.6,
+            step_s=0.0,
+        ),
     }
     stress["floor_reference_06b5"] = {
         "note": "500 rpm 20 % step, floor sweep from D-062",
-        "none": "guard trip, peak 35.9 deg", "100rpm": "diverges, peak 180 deg, sat 0.89",
-        "200rpm": "diverges, 180 deg", "300rpm": "persistent 36 deg (pinned)",
+        "none": "guard trip, peak 35.9 deg",
+        "100rpm": "diverges, peak 180 deg, sat 0.89",
+        "200rpm": "diverges, 180 deg",
+        "300rpm": "persistent 36 deg (pinned)",
         "400rpm": "diverges, 180 deg",
     }
 
     out = {
-        "note": ("Phase 06b-6 suite: paper scenarios at the decoupled bandwidths, chain B, "
-                 "matched cell, clamp ON; advance off/on; FLC nominal on the load steps. "
-                 "Sensorless cost vs the encoder baseline at the same alpha_w. Stress table "
-                 "is informational (beyond paper)."),
+        "note": (
+            "Phase 06b-6 suite: paper scenarios at the decoupled bandwidths, chain B, "
+            "matched cell, clamp ON; advance off/on; FLC nominal on the load steps. "
+            "Sensorless cost vs the encoder baseline at the same alpha_w. Stress table "
+            "is informational (beyond paper)."
+        ),
         "rule": {str(k): v for k, v in rule.items()},
-        "suite": suite, "sensitivity": sensitivity, "stress": stress,
+        "suite": suite,
+        "sensitivity": sensitivity,
+        "stress": stress,
     }
     out_dir = config.find_project_root() / "experiments" / "output" / "06b6_scenarios"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -166,20 +207,26 @@ def main() -> int:
         for cell, row in cells.items():
             if isinstance(row, str) or "peak_theta_err_deg" not in row:
                 continue
-            print(f"  {name:20s} {cell:22s} fll={row['fll_status']:9s} "
-                  f"steady|dth|max={row['steady_theta_max_deg']:5.2f}° steady|dw|max={row['steady_omega_max_rpm']:6.2f} "
-                  f"dyn|dth|max={row['dynamic_theta_max_deg']:6.2f}° dyn|dw|max={row['dynamic_omega_max_rpm']:7.1f} "
-                  f"dip={row.get('dip_rpm', float('nan')):8.1f} sat={row['saturation_after_transient']:.3f} "
-                  f"{'PASS' if row['passed'] else 'FAIL'}")
+            print(
+                f"  {name:20s} {cell:22s} fll={row['fll_status']:9s} "
+                f"steady|dth|max={row['steady_theta_max_deg']:5.2f}° steady|dw|max={row['steady_omega_max_rpm']:6.2f} "
+                f"dyn|dth|max={row['dynamic_theta_max_deg']:6.2f}° dyn|dw|max={row['dynamic_omega_max_rpm']:7.1f} "
+                f"dip={row.get('dip_rpm', float('nan')):8.1f} sat={row['saturation_after_transient']:.3f} "
+                f"{'PASS' if row['passed'] else 'FAIL'}"
+            )
     print("\n== stress (informational) ==")
     for k, v in stress.items():
         if isinstance(v, dict) and "peak_theta_err_deg" in v:
-            print(f"  {k:28s} peak={v['peak_theta_err_deg']:7.1f} fll={v['fll_status']:9s} "
-                  f"sat={v['saturation_after_transient']:.3f} mode={v['failure_mode']} {'PASS' if v['passed'] else 'FAIL'}")
+            print(
+                f"  {k:28s} peak={v['peak_theta_err_deg']:7.1f} fll={v['fll_status']:9s} "
+                f"sat={v['saturation_after_transient']:.3f} mode={v['failure_mode']} {'PASS' if v['passed'] else 'FAIL'}"
+            )
     print("\n== sensitivity (S2 50 %) ==")
     for k, v in sensitivity.items():
-        print(f"  {k:22s} peak={v['peak_theta_err_deg']:7.1f} dip={v.get('dip_rpm', float('nan')):8.1f} "
-              f"fll={v['fll_status']:9s} {'PASS' if v['passed'] else 'FAIL'}")
+        print(
+            f"  {k:22s} peak={v['peak_theta_err_deg']:7.1f} dip={v.get('dip_rpm', float('nan')):8.1f} "
+            f"fll={v['fll_status']:9s} {'PASS' if v['passed'] else 'FAIL'}"
+        )
     print(f"\nOutputs written to: {out_dir}")
     return 0
 

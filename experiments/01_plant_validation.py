@@ -52,9 +52,9 @@ from pmsm_sensorless.plant.pmsm import PMSMPlant, PMSMParameters, PMSMState  # n
 RPM_TO_RAD_S = 2.0 * math.pi / 60.0
 
 # Local demonstration settings (not paper values).
-STANDSTILL_VOLTAGE = 5.0          # V, drives scenario A
-MECH_FRICTION_DEMO = 2.0e-3       # N.m.s/rad, local assumption for scenario C
-MECH_SPEED_DEMO_RPM = 500.0       # rpm, initial mechanical speed for scenario C
+STANDSTILL_VOLTAGE = 5.0  # V, drives scenario A
+MECH_FRICTION_DEMO = 2.0e-3  # N.m.s/rad, local assumption for scenario C
+MECH_SPEED_DEMO_RPM = 500.0  # rpm, initial mechanical speed for scenario C
 
 
 def load_configs() -> tuple[dict, dict]:
@@ -123,8 +123,11 @@ def scenario_b(plant: PMSMPlant, dt: float, duration: float = 0.1):
         dt=dt,
     )
     theta = omega_e * result["t"]
-    a_ss = -1j * omega_e * parameters.psi_f / (
-        parameters.stator_resistance + 1j * omega_e * parameters.ld
+    a_ss = (
+        -1j
+        * omega_e
+        * parameters.psi_f
+        / (parameters.stator_resistance + 1j * omega_e * parameters.ld)
     )
     complex_current = a_ss * np.exp(1j * theta) - a_ss * np.exp(-result["t"] / tau)
     result["analytic_i_alpha"] = complex_current.real
@@ -134,9 +137,7 @@ def scenario_b(plant: PMSMPlant, dt: float, duration: float = 0.1):
     )
     result["omega_e"] = omega_e
     result["steady_amplitude"] = abs(a_ss)
-    result["final_magnitude"] = float(
-        math.hypot(result["i_alpha"][-1], result["i_beta"][-1])
-    )
+    result["final_magnitude"] = float(math.hypot(result["i_alpha"][-1], result["i_beta"][-1]))
     result["max_abs_error"] = float(
         np.max(
             np.hypot(
@@ -179,7 +180,9 @@ def make_plots(a, b, c, param, output_dir: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
     axes[0].plot(a["t"] * 1e3, a["i_alpha"], label="numeric")
     axes[0].plot(a["t"] * 1e3, a["analytic_i_alpha"], "--", label="analytic")
-    axes[0].set(xlabel="time (ms)", ylabel="i_alpha (A)", title="A. Standstill step response of Eq.(1)")
+    axes[0].set(
+        xlabel="time (ms)", ylabel="i_alpha (A)", title="A. Standstill step response of Eq.(1)"
+    )
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
     axes[1].plot(a["t"] * 1e3, np.abs(a["i_alpha"] - a["analytic_i_alpha"]), color="crimson")
@@ -203,7 +206,9 @@ def make_plots(a, b, c, param, output_dir: Path) -> None:
     axes[1].legend(fontsize=8)
     axes[1].grid(True, alpha=0.3)
     axes[2].plot(b["emf"][:, 0], b["emf"][:, 1])
-    axes[2].set(xlabel="E_alpha (V)", ylabel="E_beta (V)", title="B. Back-EMF locus (Eq.2)", aspect="equal")
+    axes[2].set(
+        xlabel="E_alpha (V)", ylabel="E_beta (V)", title="B. Back-EMF locus (Eq.2)", aspect="equal"
+    )
     axes[2].grid(True, alpha=0.3)
     fig.tight_layout()
     fig.savefig(output_dir / "scenario_b_rotating_emf.png", dpi=130)
@@ -212,7 +217,9 @@ def make_plots(a, b, c, param, output_dir: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
     axes[0].plot(c["t"], rpm(c["omega_e"]), label="numeric")
     axes[0].plot(c["t"], rpm(c["analytic_omega_e"]), "--", label="analytic")
-    axes[0].set(xlabel="time (s)", ylabel="mechanical speed (rpm)", title="C. Mechanical friction decay")
+    axes[0].set(
+        xlabel="time (s)", ylabel="mechanical speed (rpm)", title="C. Mechanical friction decay"
+    )
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
     axes[1].plot(c["t"], c["theta_e"], label="numeric")
@@ -248,12 +255,21 @@ def main() -> int:
 
     np.savez(
         output_dir / "states.npz",
-        t_a=a["t"], i_alpha_a=a["i_alpha"], analytic_i_alpha_a=a["analytic_i_alpha"],
-        t_b=b["t"], i_alpha_b=b["i_alpha"], i_beta_b=b["i_beta"],
-        analytic_i_alpha_b=b["analytic_i_alpha"], analytic_i_beta_b=b["analytic_i_beta"],
-        e_alpha=b["emf"][:, 0], e_beta=b["emf"][:, 1],
-        t_c=c["t"], omega_e_c=c["omega_e"], analytic_omega_e_c=c["analytic_omega_e"],
-        theta_e_c=c["theta_e"], analytic_theta_e_c=c["analytic_theta_e"],
+        t_a=a["t"],
+        i_alpha_a=a["i_alpha"],
+        analytic_i_alpha_a=a["analytic_i_alpha"],
+        t_b=b["t"],
+        i_alpha_b=b["i_alpha"],
+        i_beta_b=b["i_beta"],
+        analytic_i_alpha_b=b["analytic_i_alpha"],
+        analytic_i_beta_b=b["analytic_i_beta"],
+        e_alpha=b["emf"][:, 0],
+        e_beta=b["emf"][:, 1],
+        t_c=c["t"],
+        omega_e_c=c["omega_e"],
+        analytic_omega_e_c=c["analytic_omega_e"],
+        theta_e_c=c["theta_e"],
+        analytic_theta_e_c=c["analytic_theta_e"],
     )
 
     diagnostics = {

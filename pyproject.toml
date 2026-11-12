@@ -47,3 +47,10 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# E501 residual: unsplittable long literals (ASCII tables printed by the experiment
+# scripts, and one docstring line in the DSOGI module). `ruff format` reduced E501 from
+# 384 to 91; these are exempted per-file rather than hand-wrapped.
+"experiments/*.py" = ["E501"]
+"src/pmsm_sensorless/filters/dsogi_fll.py" = ["E501"]

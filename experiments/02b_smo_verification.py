@@ -120,7 +120,9 @@ def make_sweep_plot(rows, base_a, output_dir: Path) -> None:
     axes[0].set(xlabel="sigmoid slope a (1/A)", ylabel="steady RMSE (A)", title="RMSE vs a")
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
-    axes[1].semilogx(a, [row["ripple_rms_v"] for row in rows], "s-", color="crimson", label="ripple rms")
+    axes[1].semilogx(
+        a, [row["ripple_rms_v"] for row in rows], "s-", color="crimson", label="ripple rms"
+    )
     axes[1].axvline(base_a, color="k", ls=":", label="default a")
     axes[1].set(xlabel="sigmoid slope a (1/A)", ylabel="ripple rms (V)", title="Ripple vs a")
     axes[1].legend()
@@ -173,9 +175,16 @@ def main() -> int:
     assert base_a is not None
     a_values = sorted(
         {
-            0.05, 0.1, 0.2,
-            base_a / 1.5, base_a / 1.25, base_a, base_a / 0.75, base_a / 0.5,
-            2.0, 4.0,
+            0.05,
+            0.1,
+            0.2,
+            base_a / 1.5,
+            base_a / 1.25,
+            base_a,
+            base_a / 0.75,
+            base_a / 0.5,
+            2.0,
+            4.0,
         }
     )
     sweep = []
@@ -241,9 +250,15 @@ def main() -> int:
         * (conv_fund["ripple_rms_v"] - sig_fund["ripple_rms_v"])
         / conv_fund["ripple_rms_v"],
         "sigmoid_slope_sweep": sweep,
-        "defaults": {"a_si_per_a": base_a, "i_base_a": i_base, "k_v": sigmoid.parameters.switching_gain_k},
+        "defaults": {
+            "a_si_per_a": base_a,
+            "i_base_a": i_base,
+            "k_v": sigmoid.parameters.switching_gain_k,
+        },
     }
-    (output_dir / "verification.json").write_text(json.dumps(diagnostics, indent=2), encoding="utf-8")
+    (output_dir / "verification.json").write_text(
+        json.dumps(diagnostics, indent=2), encoding="utf-8"
+    )
     config_diff.emit(diff)
     print(json.dumps(diagnostics, indent=2))
     print(f"\nOutputs written to: {output_dir}")

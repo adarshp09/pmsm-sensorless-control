@@ -63,12 +63,24 @@ def _phase02():
     return module
 
 
-def _run_fll(e_alpha, e_beta, dt, initial_omega, *, positive_sequence=True, min_omega=None,
-             epsilon_filter_tau=None):
+def _run_fll(
+    e_alpha,
+    e_beta,
+    dt,
+    initial_omega,
+    *,
+    positive_sequence=True,
+    min_omega=None,
+    epsilon_filter_tau=None,
+):
     fll = DSOGIFLL(
         DSOGIFLLParameters(
-            K_S, GAMMA, initial_omega, min_omega=min_omega,
-            epsilon_filter_tau=epsilon_filter_tau, positive_sequence=positive_sequence,
+            K_S,
+            GAMMA,
+            initial_omega,
+            min_omega=min_omega,
+            epsilon_filter_tau=epsilon_filter_tau,
+            positive_sequence=positive_sequence,
         )
     )
     n = len(e_alpha)
@@ -131,7 +143,10 @@ def main() -> int:
             ("sigmoid", SigmoidSMO.from_config(pmsm_cfg, observer_cfg)),
         ):
             sm = phase02.observer_rollout(observer, u, i, dt)
-            for output_name, positive_sequence in (("in_phase_v_prime", False), ("positive_sequence", True)):
+            for output_name, positive_sequence in (
+                ("in_phase_v_prime", False),
+                ("positive_sequence", True),
+            ):
                 freq, va, vb, error = _run_fll(
                     sm["ea"], sm["eb"], dt, initial_omega, positive_sequence=positive_sequence
                 )
@@ -142,8 +157,12 @@ def main() -> int:
                     if np.isnan(freq[mask]).any():
                         metrics = {"diverged": True, "error": error}
                     else:
-                        vm = vector_metrics(sm["ea"][mask], sm["eb"][mask], emf[mask, 0], emf[mask, 1], theta[mask])
-                        filt = vector_metrics(va[mask], vb[mask], emf[mask, 0], emf[mask, 1], theta[mask])
+                        vm = vector_metrics(
+                            sm["ea"][mask], sm["eb"][mask], emf[mask, 0], emf[mask, 1], theta[mask]
+                        )
+                        filt = vector_metrics(
+                            va[mask], vb[mask], emf[mask, 0], emf[mask, 1], theta[mask]
+                        )
                         metrics = {
                             "raw_gain": vm["fundamental_gain"],
                             "raw_phase_deg": vm["fundamental_phase_deg"],
@@ -151,34 +170,64 @@ def main() -> int:
                             "gain": filt["fundamental_gain"],
                             "phase_deg": filt["fundamental_phase_deg"],
                             "ripple_rms_v": filt["ripple_rms_v"],
-                            "frequency_error_mean_hz": float(np.mean(freq[mask] - f_true_local[mask])),
+                            "frequency_error_mean_hz": float(
+                                np.mean(freq[mask] - f_true_local[mask])
+                            ),
                             "omega_prime_std_hz": float(np.std(freq[mask])),
                             "measured_filtered_minus_raw_phase_deg": filt["fundamental_phase_deg"]
                             - vm["fundamental_phase_deg"],
                         }
                     step3_rows.append(
-                        {"ts_us": dt * 1e6, "observer": observer_name, "output": output_name,
-                         "window": window, "metrics": metrics}
+                        {
+                            "ts_us": dt * 1e6,
+                            "observer": observer_name,
+                            "output": output_name,
+                            "window": window,
+                            "metrics": metrics,
+                        }
                     )
                 # Step 6: windowed ramp fit (skip if NaN)
                 if not np.isnan(freq).any():
                     ramp_slice = ramp_mask
                     rows = sliding_window_ramp_metrics(
-                        va[ramp_slice], vb[ramp_slice], emf[ramp_slice, 0], emf[ramp_slice, 1],
-                        freq[ramp_slice], f_true[ramp_slice], t[ramp_slice], window_s=0.06,
+                        va[ramp_slice],
+                        vb[ramp_slice],
+                        emf[ramp_slice, 0],
+                        emf[ramp_slice, 1],
+                        freq[ramp_slice],
+                        f_true[ramp_slice],
+                        t[ramp_slice],
+                        window_s=0.06,
                     )
-                    step6_rows[f"Ts{dt*1e6:.0f}_{observer_name}_{output_name}"] = summarize_ramp(rows)
+                    step6_rows[f"Ts{dt * 1e6:.0f}_{observer_name}_{output_name}"] = summarize_ramp(
+                        rows
+                    )
                 # Step 2: phase-average check for the sign observer, positive-sequence
                 if observer_name == "sign" and positive_sequence and not np.isnan(freq).any():
                     r = freq[steady_mask] / f_true[steady_mask]
                     avg = float(np.degrees(np.mean(np.arctan((r * r - 1.0) / (K_S * r)))))
                     step2_rows.append(
-                        {"ts_us": dt * 1e6, "time_avg_formula_deg": avg,
-                         "mean_r": float(np.mean(r)),
-                         "measured_filtered_minus_raw_phase_deg": float(
-                             vector_metrics(va[steady_mask], vb[steady_mask], emf[steady_mask, 0], emf[steady_mask, 1], theta[steady_mask])["fundamental_phase_deg"]
-                             - vector_metrics(sm["ea"][steady_mask], sm["eb"][steady_mask], emf[steady_mask, 0], emf[steady_mask, 1], theta[steady_mask])["fundamental_phase_deg"]
-                         )}
+                        {
+                            "ts_us": dt * 1e6,
+                            "time_avg_formula_deg": avg,
+                            "mean_r": float(np.mean(r)),
+                            "measured_filtered_minus_raw_phase_deg": float(
+                                vector_metrics(
+                                    va[steady_mask],
+                                    vb[steady_mask],
+                                    emf[steady_mask, 0],
+                                    emf[steady_mask, 1],
+                                    theta[steady_mask],
+                                )["fundamental_phase_deg"]
+                                - vector_metrics(
+                                    sm["ea"][steady_mask],
+                                    sm["eb"][steady_mask],
+                                    emf[steady_mask, 0],
+                                    emf[steady_mask, 1],
+                                    theta[steady_mask],
+                                )["fundamental_phase_deg"]
+                            ),
+                        }
                     )
 
     # Step 4: sigmoid @100 us status (library default, no clamp)
@@ -196,7 +245,9 @@ def main() -> int:
         "settings": "epsilon_filter_tau=OFF, min_omega=None, no normalization",
         "raw_metrics_independent_of_filter": raw,
         "first_nan_time_s": None if len(nan_idx) == 0 else float(nan_idx[0] * dt),
-        "omega_prime_hz_just_before_nan": None if len(nan_idx) == 0 else float(freq[nan_idx[0] - 1]),
+        "omega_prime_hz_just_before_nan": None
+        if len(nan_idx) == 0
+        else float(freq[nan_idx[0] - 1]),
         "error": error,
         "nan_from_tan_omega_singularity": False,
         "note": "omega' went negative; SOGIQSG rejects omega'<0 (ValueError). No tan(w'Ts/2)/w' is used.",
@@ -226,10 +277,14 @@ def main() -> int:
             freq5, _, _, error5 = _run_fll(ea, eb, dt5, omega, min_omega=None)
             nan5 = np.where(np.isnan(freq5))[0]
             collapse.append(
-                {"rpm": rpm, "case": name, "min_omega": None,
-                 "final": None if np.isnan(freq5[-1]) else float(freq5[-1]),
-                 "first_nan_s": None if len(nan5) == 0 else float(nan5[0] * dt5),
-                 "error": error5}
+                {
+                    "rpm": rpm,
+                    "case": name,
+                    "min_omega": None,
+                    "final": None if np.isnan(freq5[-1]) else float(freq5[-1]),
+                    "first_nan_s": None if len(nan5) == 0 else float(nan5[0] * dt5),
+                    "error": error5,
+                }
             )
     # synthetic white budget (32 seeds)
     omega_b = parameters.pole_pairs * 1000.0 * 2.0 * math.pi / 60.0
@@ -245,11 +300,15 @@ def main() -> int:
         vals.append(_mean_eps(ta_b + wh, tb_b + wh, omega_b, dt5))
     vals = np.asarray(vals)
     budget_synthetic = {
-        "white_mean_eps_f": float(vals.mean()), "white_std_eps_f": float(vals.std()),
+        "white_mean_eps_f": float(vals.mean()),
+        "white_std_eps_f": float(vals.std()),
         "white_implied_domega_dt_hz_per_s": float(GAMMA * vals.mean() / (2 * math.pi)),
         "period2_mean_eps_f": _mean_eps(
             ta_b + amp_b * frac_b * ((-1.0) ** np.arange(len(tb))),
-            tb_b + amp_b * frac_b * ((-1.0) ** np.arange(len(tb))), omega_b, dt5),
+            tb_b + amp_b * frac_b * ((-1.0) ** np.arange(len(tb))),
+            omega_b,
+            dt5,
+        ),
         "n_seeds": 32,
     }
     budget_real = []
@@ -258,7 +317,9 @@ def main() -> int:
         ts = ts_us * 1e-6
         _, ur, ir, emfr = phase02.plant_rollout(plant, lambda x: omega_b, 0.3, ts)
         thr = electrical_angle(emfr[:, 0], emfr[:, 1])
-        smr = phase02.observer_rollout(ConventionalSMO.from_config(pmsm_cfg, observer_cfg), ur, ir, ts)
+        smr = phase02.observer_rollout(
+            ConventionalSMO.from_config(pmsm_cfg, observer_cfg), ur, ir, ts
+        )
         z = smr["ea"] + 1j * smr["eb"]
         phasor = np.mean(z * np.exp(-1j * thr))
         ripple = z - phasor * np.exp(1j * thr)
@@ -270,20 +331,30 @@ def main() -> int:
             _mean_eps(fund.real, fund.imag, omega_b + dw, ts)
             - _mean_eps(fund.real, fund.imag, omega_b - dw, ts)
         ) / (2 * dw)
-        budget_real.append({
-            "ts_us": ts_us,
-            "mean_eps_fundamental": eps_fund,
-            "mean_eps_ripple": eps_ripple,
-            "restoring_slope": slope,
-            "predicted_offset_hz": float(-eps_ripple / slope / (2 * math.pi)),
-            "observed_offset_hz": observed[ts_us],
-        })
+        budget_real.append(
+            {
+                "ts_us": ts_us,
+                "mean_eps_fundamental": eps_fund,
+                "mean_eps_ripple": eps_ripple,
+                "restoring_slope": slope,
+                "predicted_offset_hz": float(-eps_ripple / slope / (2 * math.pi)),
+                "observed_offset_hz": observed[ts_us],
+            }
+        )
 
     diff = config_diff.summary(
         "03f_verification",
-        {"epsilon_filter_tau": None, "min_omega": None, "normalize_error": False, "positive_sequence": True},
-        scenario={"ts_us": [x * 1e6 for x in TS_VALUES], "step6_window_s": 0.06,
-                  "step4_5_settings": "library default; step5 min_omega=None"},
+        {
+            "epsilon_filter_tau": None,
+            "min_omega": None,
+            "normalize_error": False,
+            "positive_sequence": True,
+        },
+        scenario={
+            "ts_us": [x * 1e6 for x in TS_VALUES],
+            "step6_window_s": 0.06,
+            "step4_5_settings": "library default; step5 min_omega=None",
+        },
     )
     result = {
         "note": "Phase 03f; library default (epsilon_filter_tau=OFF, no clamps, no normalization) unless stated. Filter metrics only; no position/speed.",
@@ -291,7 +362,11 @@ def main() -> int:
         "step2_phase_check": step2_rows,
         "step3_outputs": step3_rows,
         "step4_sigmoid_100us": step4,
-        "step5": {"collapse_no_clamp": collapse, "budget_synthetic": budget_synthetic, "budget_real": budget_real},
+        "step5": {
+            "collapse_no_clamp": collapse,
+            "budget_synthetic": budget_synthetic,
+            "budget_real": budget_real,
+        },
         "step6_ramp": step6_rows,
     }
     output_dir = config.find_project_root() / "experiments" / "output" / "03f_verification"
@@ -301,13 +376,17 @@ def main() -> int:
     config_diff.emit(diff)
     print("== step2 phase check (sign rows; formula vs measured filtered-raw) ==")
     for row in step2_rows:
-        print(f"  Ts={row['ts_us']:.0f}us: time-avg formula={row['time_avg_formula_deg']:+.2f} deg, "
-              f"measured={row['measured_filtered_minus_raw_phase_deg']:+.2f} deg")
+        print(
+            f"  Ts={row['ts_us']:.0f}us: time-avg formula={row['time_avg_formula_deg']:+.2f} deg, "
+            f"measured={row['measured_filtered_minus_raw_phase_deg']:+.2f} deg"
+        )
     print("== step4 sigmoid@100us ==")
     print(json.dumps(step4, indent=2))
     print("== step5 collapse (no clamp) ==")
     for row in collapse:
-        print(f"  {row['rpm']:.0f}rpm {row['case']:14s}: final={row['final']} firstNaN={row['first_nan_s']} err={row['error']}")
+        print(
+            f"  {row['rpm']:.0f}rpm {row['case']:14s}: final={row['final']} firstNaN={row['first_nan_s']} err={row['error']}"
+        )
     print("== step5 budgets ==")
     print(json.dumps({"synthetic": budget_synthetic, "real": budget_real}, indent=2))
     print("== step6 ramp (mean gain/phase/ripple/omega-err) ==")

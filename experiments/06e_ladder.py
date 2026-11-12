@@ -63,11 +63,15 @@ def _qpll(fn):
 
 def _fll():
     a = C.handover_assumptions(STACK)
-    return C.build_fll(STACK.initial_omega_at(a.omega_h_rpm), min_omega=C.fll_min_omega_rad_s(STACK))
+    return C.build_fll(
+        STACK.initial_omega_at(a.omega_h_rpm), min_omega=C.fll_min_omega_rad_s(STACK)
+    )
 
 
 def _wrap(observer, fn):
-    return C.EstimatorSource(observer=observer, fll=_fll(), qpll=_qpll(fn), pole_pairs=STACK.pole_pairs)
+    return C.EstimatorSource(
+        observer=observer, fll=_fll(), qpll=_qpll(fn), pole_pairs=STACK.pole_pairs
+    )
 
 
 def builders(fn):
@@ -75,35 +79,56 @@ def builders(fn):
     rs, ld = PARAMS.stator_resistance, PARAMS.ld
     b = {
         "R2_sign_dsogi": lambda: _wrap(ConventionalSMO(SMOObserverParameters(rs, ld, s.k0)), fn),
-        "R3_fixed_sigmoid_dsogi": lambda: _wrap(SigmoidSMO(SMOObserverParameters(rs, ld, s.k0, sigmoid_slope_a=s.a0)), fn),
-        "R4_flc_dsogi": lambda: _wrap(FuzzySMO.from_config(s.pmsm_config, s.observer_config,
-                                                           fuzzy_directory=s.config_dir), fn),
+        "R3_fixed_sigmoid_dsogi": lambda: _wrap(
+            SigmoidSMO(SMOObserverParameters(rs, ld, s.k0, sigmoid_slope_a=s.a0)), fn
+        ),
+        "R4_flc_dsogi": lambda: _wrap(
+            FuzzySMO.from_config(s.pmsm_config, s.observer_config, fuzzy_directory=s.config_dir), fn
+        ),
         "R5_matched_dsogi": lambda: _wrap(C.build_observer("matched_sigmoid", s), fn),
-        "R6_matched_raw_qpll": lambda: D06.make_source(1, s, f_n=fn, initial_omega=s.initial_omega_at(
-            C.handover_assumptions(s).omega_h_rpm), min_omega=C.fll_min_omega_rad_s(s)),
+        "R6_matched_raw_qpll": lambda: D06.make_source(
+            1,
+            s,
+            f_n=fn,
+            initial_omega=s.initial_omega_at(C.handover_assumptions(s).omega_h_rpm),
+            min_omega=C.fll_min_omega_rad_s(s),
+        ),
     }
     for fc in (100, 200, 400):
         for comp in (False, True):
-            b[f"R1_conv_fc{fc}_{'comp' if comp else 'raw'}"] = (
-                lambda fc=fc, comp=comp: CMP.ConventionalEstimator(s, lpf_hz=float(fc), compensate=comp, f_n=fn))
-    b["R1_conv_arctan_fc200_raw"] = (
-        lambda: CMP.ConventionalEstimator(s, lpf_hz=200.0, compensate=False, estimator="arctan", f_n=fn))
+            b[f"R1_conv_fc{fc}_{'comp' if comp else 'raw'}"] = lambda fc=fc, comp=comp: (
+                CMP.ConventionalEstimator(s, lpf_hz=float(fc), compensate=comp, f_n=fn)
+            )
+    b["R1_conv_arctan_fc200_raw"] = lambda: CMP.ConventionalEstimator(
+        s, lpf_hz=200.0, compensate=False, estimator="arctan", f_n=fn
+    )
     return b
 
 
 def _row(rec, src, res, spec):
     ok, peak = P.lock_valid(rec)
-    m = P.metrics(rec, src, res, dynamic=spec["dynamic"], steady=spec["steady"],
-                  disturbance_s=spec["disturbance_s"])
-    return {"lock_valid": ok, "lock_peak_deg": peak,
-            "steady_theta_max_deg": m["steady_theta"]["max"],
-            "steady_theta_rms_deg": m["steady_theta"]["rms"],
-            "dynamic_theta_max_deg": m["dynamic_theta"]["max"],
-            "dynamic_omega_max_rpm": m["dynamic_omega"]["max"],
-            "dip_rpm": m.get("dip_rpm"), "recovery_10rpm_s": m.get("recovery_10rpm_s"),
-            "current_ripple_rms_a": m.get("current_ripple_rms_a"),
-            "saturation_after_transient": m["saturation_after_transient"],
-            "fll_status": m["fll_status"], "handed_over": m["handed_over"]}
+    m = P.metrics(
+        rec,
+        src,
+        res,
+        dynamic=spec["dynamic"],
+        steady=spec["steady"],
+        disturbance_s=spec["disturbance_s"],
+    )
+    return {
+        "lock_valid": ok,
+        "lock_peak_deg": peak,
+        "steady_theta_max_deg": m["steady_theta"]["max"],
+        "steady_theta_rms_deg": m["steady_theta"]["rms"],
+        "dynamic_theta_max_deg": m["dynamic_theta"]["max"],
+        "dynamic_omega_max_rpm": m["dynamic_omega"]["max"],
+        "dip_rpm": m.get("dip_rpm"),
+        "recovery_10rpm_s": m.get("recovery_10rpm_s"),
+        "current_ripple_rms_a": m.get("current_ripple_rms_a"),
+        "saturation_after_transient": m["saturation_after_transient"],
+        "fll_status": m["fll_status"],
+        "handed_over": m["handed_over"],
+    }
 
 
 def main() -> int:
@@ -142,17 +167,30 @@ def main() -> int:
         # S4 dead time ON+comp for the matched chain
         for cname in ("R5_matched_dsogi",):
             spec = scen_runs["S4"][0]
-            rec, src, res = P.run_fixed(builders(fn)[cname], stack, params, plant, spec,
-                                        alpha_w=10.0, dead_time=2e-6, compensation=True)
+            rec, src, res = P.run_fixed(
+                builders(fn)[cname],
+                stack,
+                params,
+                plant,
+                spec,
+                alpha_w=10.0,
+                dead_time=2e-6,
+                compensation=True,
+            )
             rows[f"{cname}|S4_deadOnComp"] = _row(rec, src, res, spec)
         tables[table] = {"f_n_hz": fn, "rows": rows}
 
-    out = {"note": ("Phase 06e Step 3 ablation ladder; fixed t_h=0.30 s; dead time OFF "
-                    "(S4 also dead ON+comp); two f_n tables. Conventional/LPF = our "
-                    "construction; R6 DIAGNOSTIC."),
-           "paper_level_f_n_hz": paper_fn, "paper_level_reached_within_2x": reached,
-           "alpha_w_used": {k: v[1] for k, v in scen_runs.items()},
-           "tables": tables}
+    out = {
+        "note": (
+            "Phase 06e Step 3 ablation ladder; fixed t_h=0.30 s; dead time OFF "
+            "(S4 also dead ON+comp); two f_n tables. Conventional/LPF = our "
+            "construction; R6 DIAGNOSTIC."
+        ),
+        "paper_level_f_n_hz": paper_fn,
+        "paper_level_reached_within_2x": reached,
+        "alpha_w_used": {k: v[1] for k, v in scen_runs.items()},
+        "tables": tables,
+    }
     out_dir = config.find_project_root() / "experiments" / "output" / "06e_ladder"
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "ladder.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
@@ -161,9 +199,11 @@ def main() -> int:
     for table, tb in tables.items():
         print(f"\n== {table} (f_n={tb['f_n_hz']:g} Hz) ==")
         for k, v in tb["rows"].items():
-            print(f"  {k:38s} lv={v['lock_valid']}({v['lock_peak_deg']}) steady={v['steady_theta_max_deg']} "
-                  f"dyn_dth={v['dynamic_theta_max_deg']} dyn_dw={v['dynamic_omega_max_rpm']} "
-                  f"ripple={v['current_ripple_rms_a']} sat={v['saturation_after_transient']}")
+            print(
+                f"  {k:38s} lv={v['lock_valid']}({v['lock_peak_deg']}) steady={v['steady_theta_max_deg']} "
+                f"dyn_dth={v['dynamic_theta_max_deg']} dyn_dw={v['dynamic_omega_max_rpm']} "
+                f"ripple={v['current_ripple_rms_a']} sat={v['saturation_after_transient']}"
+            )
     print(f"\nOutputs: {out_dir}")
     return 0
 

@@ -55,15 +55,28 @@ CHAIN_A_FN = (20.0, 200.0)
 CHAIN_B_FN = (10.0, 20.0, 50.0, 200.0)
 
 
-def _rollout(plant: PMSMPlant, *, i_q: float, dt: float, duration: float,
-             rpm0: float, eps: float, f_m: float) -> dict:
+def _rollout(
+    plant: PMSMPlant, *, i_q: float, dt: float, duration: float, rpm0: float, eps: float, f_m: float
+) -> dict:
     """04c ideal-FOC feedforward with a prescribed sinusoidal mechanical speed."""
     p = plant.parameters
     steps = int(round(duration / dt))
     t = np.arange(steps) * dt
-    omega_m = rpm0 * (1.0 + eps * np.sin(TWO_PI * f_m * t))          # mechanical rpm
+    omega_m = rpm0 * (1.0 + eps * np.sin(TWO_PI * f_m * t))  # mechanical rpm
     omega_e = p.pole_pairs * omega_m * RPM_TO_RAD_S
-    out = {k: np.empty(steps) for k in ("u_alpha", "u_beta", "i_alpha", "i_beta", "e_alpha", "e_beta", "theta_e", "omega_e")}
+    out = {
+        k: np.empty(steps)
+        for k in (
+            "u_alpha",
+            "u_beta",
+            "i_alpha",
+            "i_beta",
+            "e_alpha",
+            "e_beta",
+            "theta_e",
+            "omega_e",
+        )
+    }
     i_ref = i_q * np.array([-math.sin(0.0), math.cos(0.0)])
     state = PMSMState(float(i_ref[0]), float(i_ref[1]), float(omega_e[0]), 0.0)
     for n in range(steps):
@@ -89,7 +102,9 @@ def _observer_fll(stack: C.Stack, plant: PMSMPlant, roll: dict, *, rpm0: float):
     n = len(roll["t"])
     ea, eb, va, vb, freq = (np.empty(n) for _ in range(5))
     for k in range(n):
-        s = observer.step(roll["u_alpha"][k], roll["u_beta"][k], roll["i_alpha"][k], roll["i_beta"][k], TS)
+        s = observer.step(
+            roll["u_alpha"][k], roll["u_beta"][k], roll["i_alpha"][k], roll["i_beta"][k], TS
+        )
         ea[k], eb[k] = s.back_emf_alpha, s.back_emf_beta
         f = fll.step(ea[k], eb[k], TS)
         va[k], vb[k], freq[k] = f.v_alpha_prime, f.v_beta_prime, f.frequency_hz
@@ -141,22 +156,28 @@ def main() -> int:
         for f_m in FREQS:
             periods = MIN_PERIODS / f_m
             duration = SETTLE_S + max(2.0 / f_m, periods)
-            roll = _rollout(plant, i_q=stack.i_rated, dt=TS, duration=duration,
-                            rpm0=rpm0, eps=EPS, f_m=f_m)
+            roll = _rollout(
+                plant, i_q=stack.i_rated, dt=TS, duration=duration, rpm0=rpm0, eps=EPS, f_m=f_m
+            )
             t = roll["t"]
             mask = t >= SETTLE_S
             x = roll["omega_m"] - np.mean(roll["omega_m"][mask])
             ea, eb, va, vb, freq = _observer_fll(stack, plant, roll, rpm0=rpm0)
-            entry = {"rpm": rpm0, "f_m": f_m, "duration_s": duration,
-                     "window_s": [SETTLE_S, float(t[-1])],
-                     "fll_status": "guard-fail" if not np.all(np.isfinite(freq)) else "locked",
-                     "e_hat_ripple_v": None}
+            entry = {
+                "rpm": rpm0,
+                "f_m": f_m,
+                "duration_s": duration,
+                "window_s": [SETTLE_S, float(t[-1])],
+                "fll_status": "guard-fail" if not np.all(np.isfinite(freq)) else "locked",
+                "e_hat_ripple_v": None,
+            }
             chains = {}
             for name, fns, basis in (("A", CHAIN_A_FN, (ea, eb)), ("B", CHAIN_B_FN, (va, vb))):
                 for f_n in fns:
                     omega_hat = _qpll(stack, basis[0], basis[1], TS, f_n=f_n)
                     y = omega_hat / stack.pole_pairs * 60.0 / TWO_PI - np.mean(
-                        omega_hat[mask] / stack.pole_pairs * 60.0 / TWO_PI)
+                        omega_hat[mask] / stack.pole_pairs * 60.0 / TWO_PI
+                    )
                     fit = _fit(t, x, y, f_m, mask)
                     chains[f"{name}_fn{f_n:g}"] = fit
             entry["chains"] = chains
@@ -166,15 +187,22 @@ def main() -> int:
     linearity = {}
     for rpm0 in SPEEDS:
         for eps in (0.0025, 0.005, 0.01):
-            roll = _rollout(plant, i_q=stack.i_rated, dt=TS,
-                            duration=SETTLE_S + max(2.0 / 20.0, MIN_PERIODS / 20.0),
-                            rpm0=rpm0, eps=eps, f_m=20.0)
+            roll = _rollout(
+                plant,
+                i_q=stack.i_rated,
+                dt=TS,
+                duration=SETTLE_S + max(2.0 / 20.0, MIN_PERIODS / 20.0),
+                rpm0=rpm0,
+                eps=eps,
+                f_m=20.0,
+            )
             mask = roll["t"] >= SETTLE_S
             x = roll["omega_m"] - np.mean(roll["omega_m"][mask])
             _ea, _eb, va, vb, _freq = _observer_fll(stack, plant, roll, rpm0=rpm0)
             omega_hat = _qpll(stack, va, vb, TS, f_n=20.0)
             y = omega_hat / stack.pole_pairs * 60.0 / TWO_PI - np.mean(
-                omega_hat[mask] / stack.pole_pairs * 60.0 / TWO_PI)
+                omega_hat[mask] / stack.pole_pairs * 60.0 / TWO_PI
+            )
             linearity[f"rpm{int(rpm0)}_eps{eps:g}"] = _fit(roll["t"], x, y, 20.0, mask)
 
     # ---- summaries: per chain/speed, gain & phase vs f_m; -3 dB; phase at 25/50 Hz
@@ -183,30 +211,56 @@ def main() -> int:
         for chain in ("A_fn20", "A_fn200", "B_fn10", "B_fn20", "B_fn50", "B_fn200"):
             freqs = list(FREQS)
             gains = [rows[f"rpm{int(rpm0)}_fm{f:g}"]["chains"][chain]["gain"] for f in freqs]
-            phases = list(np.degrees(np.unwrap(np.radians(
-                [rows[f"rpm{int(rpm0)}_fm{f:g}"]["chains"][chain]["phase_deg"] for f in freqs]))))
+            phases = list(
+                np.degrees(
+                    np.unwrap(
+                        np.radians(
+                            [
+                                rows[f"rpm{int(rpm0)}_fm{f:g}"]["chains"][chain]["phase_deg"]
+                                for f in freqs
+                            ]
+                        )
+                    )
+                )
+            )
             summary[f"rpm{int(rpm0)}_{chain}"] = {
                 "gain_vs_fm": dict(zip((f"{f:g}" for f in freqs), [round(g, 4) for g in gains])),
-                "phase_deg_vs_fm": dict(zip((f"{f:g}" for f in freqs), [round(p, 2) for p in phases])),
+                "phase_deg_vs_fm": dict(
+                    zip((f"{f:g}" for f in freqs), [round(p, 2) for p in phases])
+                ),
                 "minus3db_hz": _interp_cross(freqs, gains),
                 "phase_at_25Hz_deg": _interp(freqs, phases, 25.0),
                 "phase_at_50Hz_deg": _interp(freqs, phases, 50.0),
             }
 
     out = {
-        "note": ("Phase 06b-2 measured estimator response; open-loop nominal drive, matched "
-                 "cell; chain A = raw E_hat -> Q-PLL, chain B = DSOGI v' -> Q-PLL. "
-                 "All Q-PLL f_n are experiment overrides of the frozen 05b design."),
-        "config": {"ts_us": TS * 1e6, "eps": EPS, "settle_s": SETTLE_S, "min_periods": MIN_PERIODS,
-                   "speeds_rpm": list(SPEEDS), "freqs_hz": list(FREQS),
-                   "chain_a_fn_hz": list(CHAIN_A_FN), "chain_b_fn_hz": list(CHAIN_B_FN),
-                   "i_q_a": stack.i_rated, "frozen_f_n_hz": 20.0},
+        "note": (
+            "Phase 06b-2 measured estimator response; open-loop nominal drive, matched "
+            "cell; chain A = raw E_hat -> Q-PLL, chain B = DSOGI v' -> Q-PLL. "
+            "All Q-PLL f_n are experiment overrides of the frozen 05b design."
+        ),
+        "config": {
+            "ts_us": TS * 1e6,
+            "eps": EPS,
+            "settle_s": SETTLE_S,
+            "min_periods": MIN_PERIODS,
+            "speeds_rpm": list(SPEEDS),
+            "freqs_hz": list(FREQS),
+            "chain_a_fn_hz": list(CHAIN_A_FN),
+            "chain_b_fn_hz": list(CHAIN_B_FN),
+            "i_q_a": stack.i_rated,
+            "frozen_f_n_hz": 20.0,
+        },
         "hypotheses": {
-            "H1": ("the DSOGI envelope (tau ~ 2/(k_s w') = 3.4 ms at 1000 rpm, corner ~47 Hz, "
-                   "proportional to speed) caps T_est, so raising f_n in chain B does not widen it"),
+            "H1": (
+                "the DSOGI envelope (tau ~ 2/(k_s w') = 3.4 ms at 1000 rpm, corner ~47 Hz, "
+                "proportional to speed) caps T_est, so raising f_n in chain B does not widen it"
+            ),
             "H2": "chain A (no filter) is markedly wider than chain B at equal f_n",
         },
-        "rows": rows, "summary": summary, "linearity": linearity,
+        "rows": rows,
+        "summary": summary,
+        "linearity": linearity,
     }
     out_dir = config.find_project_root() / "experiments" / "output" / "06b2_estimator_response"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -215,13 +269,14 @@ def main() -> int:
     print("== T_est gain / phase (matched cell, eps=0.5 %) ==")
     for key, s in summary.items():
         m3 = s["minus3db_hz"]
-        print(f"  {key:16s} -3dB={'%.1f Hz' % m3 if m3 else '>200 Hz':>8s} "
-              f"ph(25Hz)={s['phase_at_25Hz_deg']:7.1f}  ph(50Hz)={s['phase_at_50Hz_deg']:7.1f}")
+        print(
+            f"  {key:16s} -3dB={'%.1f Hz' % m3 if m3 else '>200 Hz':>8s} "
+            f"ph(25Hz)={s['phase_at_25Hz_deg']:7.1f}  ph(50Hz)={s['phase_at_50Hz_deg']:7.1f}"
+        )
     print("\n== gain vs f_m (1000 rpm) ==")
     for chain in ("A_fn20", "A_fn200", "B_fn20", "B_fn200"):
         s = summary[f"rpm1000_{chain}"]
-        print(f"  {chain:8s} " + " ".join(
-            f"{k}:{v:.2f}" for k, v in s["gain_vs_fm"].items()))
+        print(f"  {chain:8s} " + " ".join(f"{k}:{v:.2f}" for k, v in s["gain_vs_fm"].items()))
     print("\n== linearity (f_m=20 Hz) ==")
     for key, v in linearity.items():
         print(f"  {key:18s} gain={v['gain']:.3f} phase={v['phase_deg']:+.2f} deg")

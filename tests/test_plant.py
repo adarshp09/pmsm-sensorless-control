@@ -133,8 +133,11 @@ def test_short_circuit_rotating_current_matches_closed_form(plant: PMSMPlant) ->
     omega_e = 209.44
     dt = 1e-4
     steps = 1000
-    a_ss = -1j * omega_e * parameters.psi_f / (
-        parameters.stator_resistance + 1j * omega_e * parameters.ld
+    a_ss = (
+        -1j
+        * omega_e
+        * parameters.psi_f
+        / (parameters.stator_resistance + 1j * omega_e * parameters.ld)
     )
     state = PMSMState(0.0, 0.0, omega_e, 0.0)
     worst = 0.0
@@ -142,7 +145,9 @@ def test_short_circuit_rotating_current_matches_closed_form(plant: PMSMPlant) ->
         state = plant.step(state, 0.0, 0.0, dt)
         t = k * dt
         reference = a_ss * np.exp(1j * omega_e * t) - a_ss * math.exp(-t / tau)
-        worst = max(worst, math.hypot(state.i_alpha - reference.real, state.i_beta - reference.imag))
+        worst = max(
+            worst, math.hypot(state.i_alpha - reference.real, state.i_beta - reference.imag)
+        )
     assert worst < 1e-5
 
 
@@ -195,7 +200,9 @@ def test_outputs_are_finite_under_rotating_field(plant: PMSMPlant) -> None:
     state = PMSMState(0.0, 0.0, 300.0, 0.0)
     for _ in range(5000):
         state = plant.step(state, 50.0, -25.0, 1e-4)
-    assert all(math.isfinite(v) for v in (state.i_alpha, state.i_beta, state.omega_e, state.theta_e))
+    assert all(
+        math.isfinite(v) for v in (state.i_alpha, state.i_beta, state.omega_e, state.theta_e)
+    )
     assert -math.pi <= state.theta_e < math.pi
 
 

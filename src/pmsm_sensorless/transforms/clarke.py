@@ -95,9 +95,7 @@ def inverse_clarke_matrix(scaling: str = "amplitude_invariant") -> np.ndarray:
     return _INVERSE_SCALE[_check_scaling(scaling)] * _BASE.T
 
 
-def clarke_abc_to_alphabeta(
-    x_abc: object, *, scaling: str = "amplitude_invariant"
-) -> np.ndarray:
+def clarke_abc_to_alphabeta(x_abc: object, *, scaling: str = "amplitude_invariant") -> np.ndarray:
     """Transform three-phase quantities to ``(alpha, beta)``.
 
     Args:
@@ -112,9 +110,7 @@ def clarke_abc_to_alphabeta(
     """
     array = np.asarray(x_abc, dtype=float)
     if array.ndim == 0 or array.shape[-1] != 3:
-        raise ValueError(
-            f"x_abc must have last axis of length 3, got shape {array.shape}"
-        )
+        raise ValueError(f"x_abc must have last axis of length 3, got shape {array.shape}")
     return array @ clarke_matrix(scaling).T
 
 
@@ -135,7 +131,5 @@ def clarke_alphabeta_to_abc(
     """
     array = np.asarray(x_alphabeta, dtype=float)
     if array.ndim == 0 or array.shape[-1] != 2:
-        raise ValueError(
-            f"x_alphabeta must have last axis of length 2, got shape {array.shape}"
-        )
+        raise ValueError(f"x_alphabeta must have last axis of length 2, got shape {array.shape}")
     return array @ inverse_clarke_matrix(scaling).T

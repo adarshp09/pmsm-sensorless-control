@@ -160,22 +160,52 @@ def isolation(plant, phase02, pmsm_cfg, observer_cfg) -> dict:
         add_case("(a) ideal E_true", true_a, true_b, dt, true_a, true_b, theta, mask, f_true_arr)
         add_case(
             "(b1) E_true + period-2 ripple",
-            true_a + alternating, true_b + alternating,
-            dt, true_a, true_b, theta, mask, f_true_arr,
+            true_a + alternating,
+            true_b + alternating,
+            dt,
+            true_a,
+            true_b,
+            theta,
+            mask,
+            f_true_arr,
         )
         add_case(
             "(b2) E_true + white ripple",
-            true_a + white, true_b + white,
-            dt, true_a, true_b, theta, mask, f_true_arr,
+            true_a + white,
+            true_b + white,
+            dt,
+            true_a,
+            true_b,
+            theta,
+            mask,
+            f_true_arr,
         )
-        add_case("(c) SMO sign @100us", sm_sign["ea"], sm_sign["eb"], dt,
-                 true_a, true_b, theta, mask, f_true_arr)
+        add_case(
+            "(c) SMO sign @100us",
+            sm_sign["ea"],
+            sm_sign["eb"],
+            dt,
+            true_a,
+            true_b,
+            theta,
+            mask,
+            f_true_arr,
+        )
 
         _, _, _, sm_sig = _observer_signals(
             plant, phase02, SigmoidSMO.from_config(pmsm_cfg, observer_cfg), omega, dt, total
         )
-        add_case("(c) SMO sigmoid @100us (limit cycle)", sm_sig["ea"], sm_sig["eb"], dt,
-                 true_a, true_b, theta, mask, f_true_arr)
+        add_case(
+            "(c) SMO sigmoid @100us (limit cycle)",
+            sm_sig["ea"],
+            sm_sig["eb"],
+            dt,
+            true_a,
+            true_b,
+            theta,
+            mask,
+            f_true_arr,
+        )
 
         # sigmoid @50 us (stable) at the same rpm
         dt2 = 50e-6
@@ -186,8 +216,17 @@ def isolation(plant, phase02, pmsm_cfg, observer_cfg) -> dict:
         _, _, _, sm_sig2 = _observer_signals(
             plant, phase02, SigmoidSMO.from_config(pmsm_cfg, observer_cfg), omega, dt2, total2
         )
-        add_case("(c) SMO sigmoid @50us (stable)", sm_sig2["ea"], sm_sig2["eb"], dt2,
-                 true_a2, true_b2, theta2, mask2, np.full(n2, f_true))
+        add_case(
+            "(c) SMO sigmoid @50us (stable)",
+            sm_sig2["ea"],
+            sm_sig2["eb"],
+            dt2,
+            true_a2,
+            true_b2,
+            theta2,
+            mask2,
+            np.full(n2, f_true),
+        )
 
         out[f"{int(rpm)}rpm"] = {
             "electrical_frequency_hz": f_true,
@@ -274,7 +313,13 @@ def low_speed_fit(plant, phase02, pmsm_cfg, observer_cfg) -> dict:
 
 def phase03_table() -> dict:
     """Read the Phase 03 post-fix table and annotate limit-cycle rows (D-027)."""
-    path = Path(__file__).resolve().parents[1] / "experiments" / "output" / "03_dsogi_fll_validation" / "diagnostics.json"
+    path = (
+        Path(__file__).resolve().parents[1]
+        / "experiments"
+        / "output"
+        / "03_dsogi_fll_validation"
+        / "diagnostics.json"
+    )
     data = json.loads(path.read_text(encoding="utf-8"))
     table = {}
     for ts, entry in data["results"].items():
@@ -299,8 +344,11 @@ def main() -> int:
     diff = config_diff.summary(
         "03d_filter_isolation",
         {"epsilon_filter_tau": EPSILON_FILTER_TAU, "min_omega": 2.0 * math.pi * MIN_FREQ_HZ},
-        scenario={"rpm": RPM_LIST, "cycles": CYCLES,
-                  "note": "LPF on (0.01 s) and off are reported per row"},
+        scenario={
+            "rpm": RPM_LIST,
+            "cycles": CYCLES,
+            "note": "LPF on (0.01 s) and off are reported per row",
+        },
     )
     diagnostics = {
         "note": "Phase 03d filter isolation; defaults/code unchanged. Filter metrics only. Options per row (LPF on/off).",
@@ -317,15 +365,19 @@ def main() -> int:
     config_diff.emit(diff)
 
     for rpm, data in diagnostics["isolation"].items():
-        print(f"== isolation {rpm} (f={data['electrical_frequency_hz']:.2f} Hz, "
-              f"window {data['window_cycles']} cycles = {data['window_s']*1e3:.1f} ms, "
-              f"raw ripple RMS {data['raw_observer_ripple_rms_v']:.1f} V) ==")
+        print(
+            f"== isolation {rpm} (f={data['electrical_frequency_hz']:.2f} Hz, "
+            f"window {data['window_cycles']} cycles = {data['window_s'] * 1e3:.1f} ms, "
+            f"raw ripple RMS {data['raw_observer_ripple_rms_v']:.1f} V) =="
+        )
         for name, m in data["cases"].items():
             if m.get("diverged"):
                 print(f"   {name:52s}: DIVERGED")
                 continue
-            print(f"   {name:52s}: ferr={m['frequency_error_mean_hz']:+7.3f} Hz  jitter={m['omega_prime_jitter_hz']:6.3f} Hz  "
-                  f"gain={m['filtered_gain']:.3f}  phase={m['filtered_phase_deg']:+6.2f}  ripple={m['residual_ripple_v']:6.2f} V")
+            print(
+                f"   {name:52s}: ferr={m['frequency_error_mean_hz']:+7.3f} Hz  jitter={m['omega_prime_jitter_hz']:6.3f} Hz  "
+                f"gain={m['filtered_gain']:.3f}  phase={m['filtered_phase_deg']:+6.2f}  ripple={m['residual_ripple_v']:6.2f} V"
+            )
     print("== amplitude dependence ==")
     print(json.dumps(diagnostics["amplitude_dependence"], indent=2))
     print("== low-speed fit ==")

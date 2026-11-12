@@ -101,19 +101,13 @@ class SMOObserverParameters:
 
     def __post_init__(self) -> None:
         if self.stator_resistance <= 0.0:
-            raise ValueError(
-                f"stator_resistance must be positive, got {self.stator_resistance}"
-            )
+            raise ValueError(f"stator_resistance must be positive, got {self.stator_resistance}")
         if self.ld <= 0.0:
             raise ValueError(f"ld must be positive, got {self.ld}")
         if self.switching_gain_k <= 0.0:
-            raise ValueError(
-                f"switching_gain_k must be positive, got {self.switching_gain_k}"
-            )
+            raise ValueError(f"switching_gain_k must be positive, got {self.switching_gain_k}")
         if self.sigmoid_slope_a is not None and self.sigmoid_slope_a <= 0.0:
-            raise ValueError(
-                f"sigmoid_slope_a must be positive, got {self.sigmoid_slope_a}"
-            )
+            raise ValueError(f"sigmoid_slope_a must be positive, got {self.sigmoid_slope_a}")
 
     @classmethod
     def from_config(

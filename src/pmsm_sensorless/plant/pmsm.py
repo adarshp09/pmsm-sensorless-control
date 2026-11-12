@@ -129,24 +129,19 @@ class PMSMParameters:
         if self.pole_pairs < 1:
             raise ValueError(f"pole_pairs must be >= 1, got {self.pole_pairs}")
         if self.stator_resistance <= 0.0:
-            raise ValueError(
-                f"stator_resistance must be positive, got {self.stator_resistance}"
-            )
+            raise ValueError(f"stator_resistance must be positive, got {self.stator_resistance}")
         if self.ld <= 0.0 or self.lq <= 0.0:
             raise ValueError(f"inductances must be positive, got ld={self.ld}, lq={self.lq}")
         if not math.isclose(self.lq, self.ld, rel_tol=1e-9):
             raise ValueError(
-                "Eq.(1) is the non-salient model with Ld = Lq; "
-                f"got ld={self.ld}, lq={self.lq}"
+                f"Eq.(1) is the non-salient model with Ld = Lq; got ld={self.ld}, lq={self.lq}"
             )
         if self.psi_f <= 0.0:
             raise ValueError(f"psi_f must be positive, got {self.psi_f}")
         if self.inertia is not None and self.inertia <= 0.0:
             raise ValueError(f"inertia must be positive, got {self.inertia}")
         if self.viscous_friction is not None and self.viscous_friction < 0.0:
-            raise ValueError(
-                f"viscous_friction must be non-negative, got {self.viscous_friction}"
-            )
+            raise ValueError(f"viscous_friction must be non-negative, got {self.viscous_friction}")
 
     @classmethod
     def from_config(cls, config: dict[str, Any]) -> "PMSMParameters":
@@ -161,21 +156,15 @@ class PMSMParameters:
         """
         pole_pairs_value = resolve_parameter(config, "machine.pole_pairs", unit="-")
         if float(pole_pairs_value) != int(pole_pairs_value):
-            raise ConfigError(
-                f"machine.pole_pairs must be a whole number, got {pole_pairs_value}"
-            )
+            raise ConfigError(f"machine.pole_pairs must be a whole number, got {pole_pairs_value}")
         return cls(
             pole_pairs=int(pole_pairs_value),
-            stator_resistance=resolve_parameter(
-                config, "machine.stator_resistance_rs", unit="ohm"
-            ),
+            stator_resistance=resolve_parameter(config, "machine.stator_resistance_rs", unit="ohm"),
             ld=resolve_parameter(config, "machine.stator_inductance_ld", unit="H"),
             lq=resolve_parameter(config, "machine.stator_inductance_lq", unit="H"),
             psi_f=resolve_parameter(config, "machine.pm_flux_linkage_psi_f", unit="Wb"),
             inertia=get_parameter(config, "mech.inertia_j", unit="kg.m^2"),
-            viscous_friction=get_parameter(
-                config, "mech.viscous_friction_b", unit="N.m.s/rad"
-            ),
+            viscous_friction=get_parameter(config, "mech.viscous_friction_b", unit="N.m.s/rad"),
         )
 
 
@@ -256,9 +245,7 @@ class PMSMPlant:
         amplitude = omega_e * self.parameters.psi_f
         return np.array([-amplitude * math.sin(theta_e), amplitude * math.cos(theta_e)])
 
-    def current_derivative(
-        self, i: Any, u: Any, theta_e: float, omega_e: float
-    ) -> np.ndarray:
+    def current_derivative(self, i: Any, u: Any, theta_e: float, omega_e: float) -> np.ndarray:
         """Return ``d[i_alpha, i_beta]/dt`` in A/s from Eq.(1), p.2."""
         emf = self.back_emf(theta_e, omega_e)
         return (
@@ -272,9 +259,7 @@ class PMSMPlant:
     ) -> np.ndarray:
         """Return the equilibrium current ``(u - E)/Rs`` in ampere (for constant inputs)."""
         emf = self.back_emf(theta_e, omega_e)
-        return (
-            np.array([u_alpha, u_beta], dtype=float) - emf
-        ) / self.parameters.stator_resistance
+        return (np.array([u_alpha, u_beta], dtype=float) - emf) / self.parameters.stator_resistance
 
     def electromagnetic_torque(self, i: Any, theta_e: float) -> float:
         """Return the electromagnetic torque ``T_e`` in N.m (derived; Ld = Lq)."""
@@ -286,9 +271,7 @@ class PMSMPlant:
         """Return ``d(omega_e)/dt`` in rad/s^2 from the (derived) torque balance."""
         inertia = self.parameters.inertia
         if inertia is None or self._friction is None:
-            raise ValueError(
-                "speed_derivative requires resolved inertia and an explicit friction"
-            )
+            raise ValueError("speed_derivative requires resolved inertia and an explicit friction")
         pole_pairs = self.parameters.pole_pairs
         return (pole_pairs * (torque - load_torque) - self._friction * omega_e) / inertia
 
@@ -333,9 +316,7 @@ class PMSMPlant:
                 domega = self.speed_derivative(omega_e, torque, load_torque)
                 return np.array([di[0], di[1], domega, omega_e])
 
-            y0 = np.array(
-                [state.i_alpha, state.i_beta, state.omega_e, state.theta_e], dtype=float
-            )
+            y0 = np.array([state.i_alpha, state.i_beta, state.omega_e, state.theta_e], dtype=float)
             y1 = rk4_step(rhs, y0, dt)
             return PMSMState(
                 i_alpha=float(y1[0]),

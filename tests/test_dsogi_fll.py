@@ -41,7 +41,11 @@ def test_positive_sequence_passes_with_unity_gain() -> None:
         if k >= 6000:
             indices.append(k)
             samples.append(out.v_alpha)
-    phasor = 2.0 / len(samples) * np.sum(np.asarray(samples) * np.exp(-1j * omega * np.asarray(indices) * DT))
+    phasor = (
+        2.0
+        / len(samples)
+        * np.sum(np.asarray(samples) * np.exp(-1j * omega * np.asarray(indices) * DT))
+    )
     assert abs(phasor) == pytest.approx(50.0, rel=2e-2)  # amplitude preserved
 
 
@@ -113,7 +117,9 @@ def test_epsilon_filter_smooths_the_error_signal() -> None:
 def test_normalization_option_runs_and_changes_the_loop() -> None:
     target = 2.0 * math.pi * 100.0
     raw = DSOGIFLL(DSOGIFLLParameters(K_S, GAMMA, 2.0 * math.pi * 90.0))
-    normalized = DSOGIFLL(DSOGIFLLParameters(K_S, GAMMA, 2.0 * math.pi * 90.0, normalize_error=True))
+    normalized = DSOGIFLL(
+        DSOGIFLLParameters(K_S, GAMMA, 2.0 * math.pi * 90.0, normalize_error=True)
+    )
     raw_final = _run_fll(raw, target, 50.0, 4000)[-1]
     norm_final = _run_fll(normalized, target, 50.0, 4000)[-1]
     assert raw_final != norm_final  # the option is observable

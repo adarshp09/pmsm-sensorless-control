@@ -153,7 +153,9 @@ class QPLLParameters:
         if zeta <= 0.0 or f_n_hz <= 0.0:
             raise ValueError(f"zeta and f_n_hz must be positive, got {zeta}, {f_n_hz}")
         w_n = _TWO_PI * f_n_hz
-        return cls(kp=2.0 * zeta * w_n / amplitude_v, ki=w_n * w_n / amplitude_v, normalize=normalize)
+        return cls(
+            kp=2.0 * zeta * w_n / amplitude_v, ki=w_n * w_n / amplitude_v, normalize=normalize
+        )
 
     @classmethod
     def from_configs(

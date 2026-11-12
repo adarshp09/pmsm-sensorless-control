@@ -65,9 +65,7 @@ def electrical_speed_e(rpm: float, pole_pairs: int) -> float:
     return pole_pairs * rpm * _RPM_TO_RAD_S
 
 
-def rated_current_from_torque(
-    rated_torque: float, pole_pairs: int, psi_f: float
-) -> float:
+def rated_current_from_torque(rated_torque: float, pole_pairs: int, psi_f: float) -> float:
     """Return the q-axis rated current ``I_rated`` [A] for ``i_d = 0``.
 
     From the (derived) torque relation ``T_e = (3/2) p psi_f i_q`` used by
@@ -190,10 +188,21 @@ def nominal_drive_rollout(
     profile = _SpeedProfile(rpm_start, rpm_end, ramp_time, plant.parameters.pole_pairs)
     steps = int(round(duration / dt))
     t = np.arange(steps) * dt
-    out = {name: np.empty(steps) for name in (
-        "u_alpha", "u_beta", "i_alpha", "i_beta", "i_ref_alpha", "i_ref_beta",
-        "e_alpha", "e_beta", "theta_e", "omega_e",
-    )}
+    out = {
+        name: np.empty(steps)
+        for name in (
+            "u_alpha",
+            "u_beta",
+            "i_alpha",
+            "i_beta",
+            "i_ref_alpha",
+            "i_ref_beta",
+            "e_alpha",
+            "e_beta",
+            "theta_e",
+            "omega_e",
+        )
+    }
 
     stator_resistance = plant.parameters.stator_resistance
     ld = plant.parameters.ld

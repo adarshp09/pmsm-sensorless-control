@@ -98,12 +98,14 @@ class DSOGIFLLParameters:
             raise ValueError(f"initial_omega must be positive, got {self.initial_omega}")
         if self.min_omega is not None and self.min_omega <= 0.0:
             raise ValueError(f"min_omega must be positive, got {self.min_omega}")
-        if self.max_omega is not None and self.min_omega is not None and self.max_omega < self.min_omega:
+        if (
+            self.max_omega is not None
+            and self.min_omega is not None
+            and self.max_omega < self.min_omega
+        ):
             raise ValueError("max_omega must be >= min_omega")
         if self.epsilon_filter_tau is not None and self.epsilon_filter_tau <= 0.0:
-            raise ValueError(
-                f"epsilon_filter_tau must be positive, got {self.epsilon_filter_tau}"
-            )
+            raise ValueError(f"epsilon_filter_tau must be positive, got {self.epsilon_filter_tau}")
 
     @classmethod
     def from_config(
@@ -248,12 +250,7 @@ class DSOGIFLL:
             v_beta - beta.in_phase
         )
         if parameters.normalize_error:
-            norm = (
-                alpha.in_phase**2
-                + alpha.quadrature**2
-                + beta.in_phase**2
-                + beta.quadrature**2
-            )
+            norm = alpha.in_phase**2 + alpha.quadrature**2 + beta.in_phase**2 + beta.quadrature**2
             epsilon_f = epsilon_f / norm if norm > 0.0 else 0.0
         if parameters.epsilon_filter_tau is not None:
             self._epsilon_filtered += (dt / parameters.epsilon_filter_tau) * (

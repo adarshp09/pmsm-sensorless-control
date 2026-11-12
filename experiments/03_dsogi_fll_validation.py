@@ -92,7 +92,9 @@ def fll_rollout(fll: DSOGIFLL, e_alpha: np.ndarray, e_beta: np.ndarray, dt: floa
     return out
 
 
-def _fundamental_block(result, e_true_alpha, e_true_beta, e_raw_alpha, e_raw_beta, theta, mask) -> dict:
+def _fundamental_block(
+    result, e_true_alpha, e_true_beta, e_raw_alpha, e_raw_beta, theta, mask
+) -> dict:
     """Raw and filtered fundamental gain/phase, ripple and total error over ``mask``.
 
     Definitions in ``experiments/validation_metrics.py`` / ``docs/phase03.md``.
@@ -123,7 +125,15 @@ def _fundamental_block(result, e_true_alpha, e_true_beta, e_raw_alpha, e_raw_bet
 
 
 def filter_metrics(
-    result, e_true_alpha, e_true_beta, e_raw_alpha, e_raw_beta, f_true, theta, steady_mask, ramp_mask
+    result,
+    e_true_alpha,
+    e_true_beta,
+    e_raw_alpha,
+    e_raw_beta,
+    f_true,
+    theta,
+    steady_mask,
+    ramp_mask,
 ) -> dict:
     """Frequency error and fundamental metrics over the steady and ramp windows."""
     steady_freq = result["freq"][steady_mask] - f_true[steady_mask]
@@ -133,13 +143,17 @@ def filter_metrics(
             "frequency_error_mean_hz": float(np.mean(steady_freq)),
             "frequency_error_std_hz": float(np.std(steady_freq)),
             "frequency_error_max_abs_hz": float(np.max(np.abs(steady_freq))),
-            **_fundamental_block(result, e_true_alpha, e_true_beta, e_raw_alpha, e_raw_beta, theta, steady_mask),
+            **_fundamental_block(
+                result, e_true_alpha, e_true_beta, e_raw_alpha, e_raw_beta, theta, steady_mask
+            ),
         },
         "ramp": {
             "frequency_error_mean_hz": float(np.mean(ramp_freq)),
             "frequency_error_std_hz": float(np.std(ramp_freq)),
             "frequency_error_max_abs_hz": float(np.max(np.abs(ramp_freq))),
-            **_fundamental_block(result, e_true_alpha, e_true_beta, e_raw_alpha, e_raw_beta, theta, ramp_mask),
+            **_fundamental_block(
+                result, e_true_alpha, e_true_beta, e_raw_alpha, e_raw_beta, theta, ramp_mask
+            ),
         },
     }
 
@@ -151,7 +165,9 @@ def make_plots(t, f_true, runs, output_dir: Path) -> None:
         if run["dt"] == TS_VALUES[0]:
             axes[0].plot(t, run["conv"]["freq"], label=f"conv -> DSOGI-FLL ({label})", alpha=0.8)
             axes[0].plot(t, run["sig"]["freq"], label="sigmoid -> DSOGI-FLL", alpha=0.8)
-    axes[0].set(xlabel="time (s)", ylabel="frequency (Hz)", title="FLL frequency tracking (Ts=100us)")
+    axes[0].set(
+        xlabel="time (s)", ylabel="frequency (Hz)", title="FLL frequency tracking (Ts=100us)"
+    )
     axes[0].legend(fontsize=8)
     axes[0].grid(True, alpha=0.3)
     run = next(r for r in runs.values() if r["dt"] == TS_VALUES[0])
@@ -168,7 +184,8 @@ def make_plots(t, f_true, runs, output_dir: Path) -> None:
     axes[1].grid(True, alpha=0.3, axis="y")
     fig.suptitle(
         "epsilon_filter_tau=0.01 s (NON-DEFAULT, D-028) - RETRACTED; see 03e re-base",
-        fontsize=10, color="crimson",
+        fontsize=10,
+        color="crimson",
     )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     fig.savefig(output_dir / "frequency_and_chatter.png", dpi=130)
@@ -212,10 +229,18 @@ def main() -> int:
             fll = DSOGIFLL(build_fll_parameters(observer_cfg, init_omega))
             filt = fll_rollout(fll, sm["ea"], sm["eb"], dt)
             metrics = filter_metrics(
-                filt, emf[:, 0], emf[:, 1], sm["ea"], sm["eb"], f_true, theta, steady_mask, ramp_mask
+                filt,
+                emf[:, 0],
+                emf[:, 1],
+                sm["ea"],
+                sm["eb"],
+                f_true,
+                theta,
+                steady_mask,
+                ramp_mask,
             )
             entry[label] = {"freq": filt["freq"], "va": filt["va"], "metrics": metrics}
-        results[f"{int(round(dt*1e6))}us"] = entry
+        results[f"{int(round(dt * 1e6))}us"] = entry
 
     output_dir = config.find_project_root() / "experiments" / "output" / "03_dsogi_fll_validation"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -223,7 +248,10 @@ def main() -> int:
 
     diff = config_diff.summary(
         "03_dsogi_fll_validation",
-        {"epsilon_filter_tau": FLL_EPSILON_FILTER_TAU, "min_omega": 2.0 * math.pi * FLL_MIN_FREQUENCY_HZ},
+        {
+            "epsilon_filter_tau": FLL_EPSILON_FILTER_TAU,
+            "min_omega": 2.0 * math.pi * FLL_MIN_FREQUENCY_HZ,
+        },
         scenario={"ts_us": [x * 1e6 for x in TS_VALUES]},
     )
     diagnostics = {
@@ -237,7 +265,9 @@ def main() -> int:
         "retraction_reason": "epsilon_filter_tau=10 ms is a non-paper option (D-028); see docs/phase03.md Step 2",
         "paper_sample_time": "Ts=100us (Eq.(20), p.5); 10 kHz (Table III, p.6)",
         "parameters": {
-            "damping_gain_k": config.resolve_parameter(observer_cfg, "dsogi.damping_gain_k", unit="-"),
+            "damping_gain_k": config.resolve_parameter(
+                observer_cfg, "dsogi.damping_gain_k", unit="-"
+            ),
             "fll_gain_gamma": config.resolve_parameter(observer_cfg, "fll.gamma_gain", unit="-"),
             "steady_window_s": [float(ramp_time + STEADY_SETTLE_S), float(duration)],
             "defaults_unchanged": True,
@@ -250,13 +280,13 @@ def main() -> int:
             "normalize_error": False,
         },
         "results": {
-            key: {
-                obs: entry[obs]["metrics"] for obs in ("conv", "sig")
-            }
+            key: {obs: entry[obs]["metrics"] for obs in ("conv", "sig")}
             for key, entry in results.items()
         },
     }
-    (output_dir / "diagnostics.json").write_text(json.dumps(diagnostics, indent=2), encoding="utf-8")
+    (output_dir / "diagnostics.json").write_text(
+        json.dumps(diagnostics, indent=2), encoding="utf-8"
+    )
     np.savez(
         output_dir / "states.npz",
         t=results["100us"]["t"],

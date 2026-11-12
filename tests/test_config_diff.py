@@ -28,4 +28,8 @@ def test_reports_clamp_and_normalization_overrides() -> None:
     block = config_diff.summary(
         "x", {"min_omega": 12.0, "normalize_error": True, "positive_sequence": False}
     )
-    assert set(block["non_default_options"]) == {"min_omega", "normalize_error", "positive_sequence"}
+    assert set(block["non_default_options"]) == {
+        "min_omega",
+        "normalize_error",
+        "positive_sequence",
+    }

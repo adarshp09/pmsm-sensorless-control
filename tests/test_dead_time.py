@@ -40,15 +40,18 @@ def test_phase_error_magnitude() -> None:
 
 def test_sign_opposes_current_and_zero_at_zero() -> None:
     # i_alpha > 0 with i_beta = 0 -> phase a current positive -> dv_a negative
-    da, db = dead_time_delta_alpha_beta(5.0, 0.0, v_dc=V_DC, dead_time_s=T_D,
-                                        switching_hz=F_SW, current_threshold_a=I_TH)
+    da, db = dead_time_delta_alpha_beta(
+        5.0, 0.0, v_dc=V_DC, dead_time_s=T_D, switching_hz=F_SW, current_threshold_a=I_TH
+    )
     assert da < 0.0
     # zero current -> zero distortion
-    assert dead_time_delta_alpha_beta(0.0, 0.0, v_dc=V_DC, dead_time_s=T_D,
-                                      switching_hz=F_SW, current_threshold_a=I_TH) == (0.0, 0.0)
+    assert dead_time_delta_alpha_beta(
+        0.0, 0.0, v_dc=V_DC, dead_time_s=T_D, switching_hz=F_SW, current_threshold_a=I_TH
+    ) == (0.0, 0.0)
     # below threshold: proportional
-    da_small, _ = dead_time_delta_alpha_beta(0.05, 0.0, v_dc=V_DC, dead_time_s=T_D,
-                                             switching_hz=F_SW, current_threshold_a=I_TH)
+    da_small, _ = dead_time_delta_alpha_beta(
+        0.05, 0.0, v_dc=V_DC, dead_time_s=T_D, switching_hz=F_SW, current_threshold_a=I_TH
+    )
     assert 0.0 > da_small > da
 
 
@@ -98,14 +101,34 @@ def test_dead_time_compensation_cancels_distortion() -> None:
     ic = 5.0 * np.cos(theta + 2.0 * math.pi / 3.0)
     i_alpha = ia
     i_beta = (ib - ic) / math.sqrt(3.0)
-    d = np.array([dead_time_delta_alpha_beta(i_alpha[k], i_beta[k], v_dc=V_DC, dead_time_s=T_D,
-                                             switching_hz=F_SW, current_threshold_a=I_TH)
-                  for k in range(len(theta))])
+    d = np.array(
+        [
+            dead_time_delta_alpha_beta(
+                i_alpha[k],
+                i_beta[k],
+                v_dc=V_DC,
+                dead_time_s=T_D,
+                switching_hz=F_SW,
+                current_threshold_a=I_TH,
+            )
+            for k in range(len(theta))
+        ]
+    )
     ip = np.roll(i_alpha, 1)
     jp = np.roll(i_beta, 1)
-    c = np.array([dead_time_compensation_alpha_beta(ip[k], jp[k], v_dc=V_DC, dead_time_s=T_D,
-                                                    switching_hz=F_SW, current_threshold_a=I_TH)
-                  for k in range(len(theta))])
+    c = np.array(
+        [
+            dead_time_compensation_alpha_beta(
+                ip[k],
+                jp[k],
+                v_dc=V_DC,
+                dead_time_s=T_D,
+                switching_hz=F_SW,
+                current_threshold_a=I_TH,
+            )
+            for k in range(len(theta))
+        ]
+    )
     net = np.hypot(*(d + c).T)
     away = np.min(np.vstack([np.abs(ia), np.abs(ib), np.abs(ic)]), axis=0) >= I_TH
     assert np.max(net[away]) < 0.05 * amp
@@ -116,9 +139,13 @@ def test_defaults_are_bit_identical_regression(config_dir) -> None:
     params = DriveParameters.from_configs(
         config.load_config("drive", directory=config_dir),
         config.load_config("drive_assumptions", directory=config_dir),
-        config.load_config("pmsm", directory=config_dir))
-    plant = PMSMPlant(PMSMParameters.from_config(config.load_config("pmsm", directory=config_dir)),
-                      integrate_mechanics=True, viscous_friction=0.0)
+        config.load_config("pmsm", directory=config_dir),
+    )
+    plant = PMSMPlant(
+        PMSMParameters.from_config(config.load_config("pmsm", directory=config_dir)),
+        integrate_mechanics=True,
+        viscous_friction=0.0,
+    )
     kw = dict(duration=0.2, speed_ref_rpm=1000.0, load_torque=ConstantLoadTorque(7.7))
     a = run_drive(plant, params, **kw)
     b = run_drive(plant, params, dead_time_s=0.0, **kw)
@@ -129,13 +156,19 @@ def test_defaults_are_bit_identical_regression(config_dir) -> None:
 def test_dead_time_changes_the_plant() -> None:
     """A non-zero dead time perturbs the current (so the flag is wired)."""
     import pmsm_sensorless.simulation.drive as dr
-    plant = PMSMPlant(PMSMParameters.from_config(
-        config.load_config("pmsm", directory=config.default_config_dir())),
-        integrate_mechanics=True, viscous_friction=0.0)
+
+    plant = PMSMPlant(
+        PMSMParameters.from_config(
+            config.load_config("pmsm", directory=config.default_config_dir())
+        ),
+        integrate_mechanics=True,
+        viscous_friction=0.0,
+    )
     params = DriveParameters.from_configs(
         config.load_config("drive", directory=config.default_config_dir()),
         config.load_config("drive_assumptions", directory=config.default_config_dir()),
-        config.load_config("pmsm", directory=config.default_config_dir()))
+        config.load_config("pmsm", directory=config.default_config_dir()),
+    )
     kw = dict(duration=0.3, speed_ref_rpm=1000.0, load_torque=ConstantLoadTorque(7.7))
     a = dr.run_drive(plant, params, **kw)
     b = dr.run_drive(plant, params, dead_time_s=2e-6, **kw)

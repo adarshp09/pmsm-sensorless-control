@@ -53,46 +53,102 @@ def main() -> int:
     params = DriveParameters.from_configs(
         config.load_config("drive", directory=directory),
         config.load_config("drive_assumptions", directory=directory),
-        stack.pmsm_config)
-    plant = PMSMPlant(PMSMParameters.from_config(stack.pmsm_config),
-                      integrate_mechanics=True, viscous_friction=0.0)
+        stack.pmsm_config,
+    )
+    plant = PMSMPlant(
+        PMSMParameters.from_config(stack.pmsm_config),
+        integrate_mechanics=True,
+        viscous_friction=0.0,
+    )
     rule = G._rule(directory)
 
     results = {}
     # 500 rpm: 2a (no-load, 20 % load) and 2b (20 % load step)
     for advance in (False, True):
         for load_frac in (0.0, 0.2):
-            src, cs, res = G._run(stack, params, plant, speed_rpm=500,
-                                  load=ConstantLoadTorque(load_frac * RATED), speed_ref=500.0,
-                                  duration=1.6, advance=advance, alpha_w=rule[500])
-            results[f"2a|500rpm|load{int(load_frac*100)}|adv{'on' if advance else 'off'}"] = G._gate_entry(
-                src, cs, res, alpha_w=rule[500], advance=advance, speed_rpm=500)
-        src, cs, res = G._run(stack, params, plant, speed_rpm=500,
-                              load=StepLoadTorque(0.0, 0.2 * RATED, 0.5), speed_ref=500.0,
-                              duration=2.0, advance=advance, alpha_w=rule[500])
+            src, cs, res = G._run(
+                stack,
+                params,
+                plant,
+                speed_rpm=500,
+                load=ConstantLoadTorque(load_frac * RATED),
+                speed_ref=500.0,
+                duration=1.6,
+                advance=advance,
+                alpha_w=rule[500],
+            )
+            results[f"2a|500rpm|load{int(load_frac * 100)}|adv{'on' if advance else 'off'}"] = (
+                G._gate_entry(src, cs, res, alpha_w=rule[500], advance=advance, speed_rpm=500)
+            )
+        src, cs, res = G._run(
+            stack,
+            params,
+            plant,
+            speed_rpm=500,
+            load=StepLoadTorque(0.0, 0.2 * RATED, 0.5),
+            speed_ref=500.0,
+            duration=2.0,
+            advance=advance,
+            alpha_w=rule[500],
+        )
         results[f"2b|500rpm|load20|adv{'on' if advance else 'off'}"] = G._gate_entry(
-            src, cs, res, step_s=0.5, alpha_w=rule[500], advance=advance, speed_rpm=500,
-            require_steady_deg=None)
+            src,
+            cs,
+            res,
+            step_s=0.5,
+            alpha_w=rule[500],
+            advance=advance,
+            speed_rpm=500,
+            require_steady_deg=None,
+        )
         # 1000 rpm regression (2a no-load/20 %, 2b 20 %, 2c 50 %)
         for load_frac in (0.0, 0.2):
-            src, cs, res = G._run(stack, params, plant, speed_rpm=1000,
-                                  load=ConstantLoadTorque(load_frac * RATED), speed_ref=1000.0,
-                                  duration=1.6, advance=advance, alpha_w=rule[1000])
-            results[f"reg2a|1000rpm|load{int(load_frac*100)}|adv{'on' if advance else 'off'}"] = G._gate_entry(
-                src, cs, res, alpha_w=rule[1000], advance=advance, speed_rpm=1000)
+            src, cs, res = G._run(
+                stack,
+                params,
+                plant,
+                speed_rpm=1000,
+                load=ConstantLoadTorque(load_frac * RATED),
+                speed_ref=1000.0,
+                duration=1.6,
+                advance=advance,
+                alpha_w=rule[1000],
+            )
+            results[f"reg2a|1000rpm|load{int(load_frac * 100)}|adv{'on' if advance else 'off'}"] = (
+                G._gate_entry(src, cs, res, alpha_w=rule[1000], advance=advance, speed_rpm=1000)
+            )
         for tag, frac in (("reg2b", 0.2), ("reg2c", 0.5)):
-            src, cs, res = G._run(stack, params, plant, speed_rpm=1000,
-                                  load=StepLoadTorque(0.0, frac * RATED, 0.5), speed_ref=1000.0,
-                                  duration=2.0, advance=advance, alpha_w=rule[1000])
-            results[f"{tag}|1000rpm|load{int(frac*100)}|adv{'on' if advance else 'off'}"] = G._gate_entry(
-                src, cs, res, step_s=0.5, alpha_w=rule[1000], advance=advance, speed_rpm=1000,
-                require_steady_deg=None)
+            src, cs, res = G._run(
+                stack,
+                params,
+                plant,
+                speed_rpm=1000,
+                load=StepLoadTorque(0.0, frac * RATED, 0.5),
+                speed_ref=1000.0,
+                duration=2.0,
+                advance=advance,
+                alpha_w=rule[1000],
+            )
+            results[f"{tag}|1000rpm|load{int(frac * 100)}|adv{'on' if advance else 'off'}"] = (
+                G._gate_entry(
+                    src,
+                    cs,
+                    res,
+                    step_s=0.5,
+                    alpha_w=rule[1000],
+                    advance=advance,
+                    speed_rpm=1000,
+                    require_steady_deg=None,
+                )
+            )
 
     off = [k for k in results if k.endswith("advoff")]
     gate = all(results[k]["passed"] for k in off)
     out = {
-        "note": ("Phase 06b-4 gate at the softened low-speed bandwidth (500 rpm: 2.5 Hz, "
-                 "1000 rpm: 10 Hz); chain B, matched cell, f_n = 20 Hz. Advance off/on."),
+        "note": (
+            "Phase 06b-4 gate at the softened low-speed bandwidth (500 rpm: 2.5 Hz, "
+            "1000 rpm: 10 Hz); chain B, matched cell, f_n = 20 Hz. Advance off/on."
+        ),
         "rule": {str(k): v for k, v in rule.items()},
         "gate": "PASS" if gate else "FAIL",
         "results": results,
@@ -103,10 +159,16 @@ def main() -> int:
 
     print(f"== GATE (06b-4): {out['gate']} ==  rule={out['rule']}")
     for key, e in results.items():
-        dip = f" dip={e['speed_dip_rpm']:7.1f} rec10={e['recovery_to_10rpm_s']}" if "speed_dip_rpm" in e else ""
-        print(f"  {key:30s} hand={e['handed_over']} fll={e['fll_status']:9s} "
-              f"peak={e['peak_theta_err_deg']:7.1f} steady={e['steady_theta_err_max_deg'] if e['steady_theta_err_max_deg'] is not None else -1:7.1f} "
-              f"sat={e['saturation_frac_after_transient']:.3f}{dip} {'PASS' if e['passed'] else 'FAIL'}")
+        dip = (
+            f" dip={e['speed_dip_rpm']:7.1f} rec10={e['recovery_to_10rpm_s']}"
+            if "speed_dip_rpm" in e
+            else ""
+        )
+        print(
+            f"  {key:30s} hand={e['handed_over']} fll={e['fll_status']:9s} "
+            f"peak={e['peak_theta_err_deg']:7.1f} steady={e['steady_theta_err_max_deg'] if e['steady_theta_err_max_deg'] is not None else -1:7.1f} "
+            f"sat={e['saturation_frac_after_transient']:.3f}{dip} {'PASS' if e['passed'] else 'FAIL'}"
+        )
     print(f"\nOutputs written to: {out_dir}")
     return 0
 

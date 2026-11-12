@@ -47,9 +47,17 @@ def main() -> int:
     params = DriveParameters.from_configs(
         config.load_config("drive", directory=directory),
         config.load_config("drive_assumptions", directory=directory),
-        config.load_config("pmsm", directory=directory))
-    resp = json.loads((config.find_project_root() / "experiments" / "output" /
-                       "06b2_estimator_response" / "estimator_response.json").read_text())
+        config.load_config("pmsm", directory=directory),
+    )
+    resp = json.loads(
+        (
+            config.find_project_root()
+            / "experiments"
+            / "output"
+            / "06b2_estimator_response"
+            / "estimator_response.json"
+        ).read_text()
+    )
     cfg = config.load_config("drive_assumptions", directory=directory)
     alpha_500 = config.resolve_parameter(cfg, "speed_loop.alpha_w_hz_at_500rpm", unit="Hz")
     alpha_1000 = config.resolve_parameter(cfg, "speed_loop.alpha_w_hz_at_1000rpm", unit="Hz")
@@ -63,8 +71,10 @@ def main() -> int:
     pm_ok = softened.get("pm_deg") is not None and softened["pm_deg"] >= PM_TARGET_DEG
     gm_ok = softened.get("gm_db") is not None and softened["gm_db"] >= GM_TARGET_DB
     out = {
-        "note": ("Phase 06b-4 Step 1: verify the softened 500 rpm bandwidth (2.5 Hz) with "
-                 "the 06b-2 measured T_est; L = L_enc x T_est, chain B, f_n = 20 Hz."),
+        "note": (
+            "Phase 06b-4 Step 1: verify the softened 500 rpm bandwidth (2.5 Hz) with "
+            "the 06b-2 measured T_est; L = L_enc x T_est, chain B, f_n = 20 Hz."
+        ),
         "rule": {"alpha_w_500_hz": alpha_500, "alpha_w_1000_hz": alpha_1000},
         "targets": {"pm_min_deg": PM_TARGET_DEG, "gm_min_db": GM_TARGET_DB},
         "softened_500rpm": softened,
@@ -81,15 +91,21 @@ def main() -> int:
     for aw in GRID:
         e = grid[f"rpm500_aw{aw:g}"]
         mark = "  <-- softened" if aw == alpha_500 else ""
-        print(f"  rpm500  aw={aw:4g} Hz: PM={e.get('pm_deg'):7.1f}  "
-              f"GM={('%.1f' % e['gm_db']) if e.get('gm_db') is not None else 'inf':>6s}  "
-              f"fc={('%.1f' % e['crossover_hz']) if e.get('crossover_hz') else 'none':>6s}{mark}")
+        print(
+            f"  rpm500  aw={aw:4g} Hz: PM={e.get('pm_deg'):7.1f}  "
+            f"GM={('%.1f' % e['gm_db']) if e.get('gm_db') is not None else 'inf':>6s}  "
+            f"fc={('%.1f' % e['crossover_hz']) if e.get('crossover_hz') else 'none':>6s}{mark}"
+        )
     e = out["regression_1000rpm"]
-    print(f"  rpm1000 aw={alpha_1000:4g} Hz: PM={e.get('pm_deg'):7.1f}  "
-          f"GM={('%.1f' % e['gm_db']) if e.get('gm_db') is not None else 'inf':>6s}  "
-          f"fc={('%.1f' % e['crossover_hz']) if e.get('crossover_hz') else 'none':>6s}")
-    print(f"\n  target PM >= {PM_TARGET_DEG:.0f} deg at {alpha_500:g} Hz: "
-          f"{'PASS' if out['softened_500rpm_pass'] else 'FAIL'}")
+    print(
+        f"  rpm1000 aw={alpha_1000:4g} Hz: PM={e.get('pm_deg'):7.1f}  "
+        f"GM={('%.1f' % e['gm_db']) if e.get('gm_db') is not None else 'inf':>6s}  "
+        f"fc={('%.1f' % e['crossover_hz']) if e.get('crossover_hz') else 'none':>6s}"
+    )
+    print(
+        f"\n  target PM >= {PM_TARGET_DEG:.0f} deg at {alpha_500:g} Hz: "
+        f"{'PASS' if out['softened_500rpm_pass'] else 'FAIL'}"
+    )
     print(f"Outputs written to: {out_dir}")
     return 0
 

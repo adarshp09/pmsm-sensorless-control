@@ -82,9 +82,7 @@ class SOGICoefficients:
     a2: float
 
 
-def sogi_coefficients(
-    damping_gain_k: float, omega_prime: float, dt: float
-) -> SOGICoefficients:
+def sogi_coefficients(damping_gain_k: float, omega_prime: float, dt: float) -> SOGICoefficients:
     """Return the prewarped-Tustin biquad coefficients for ``D(z)`` and ``Q(z)``.
 
     Args:
@@ -124,16 +122,19 @@ def sogi_coefficients(
 def in_phase_transfer(omega: float, damping_gain_k: float, omega_prime: float) -> complex:
     """Closed-form band-pass ``D(j omega)`` from Eq.(9)."""
     s = 1j * omega
-    return damping_gain_k * omega_prime * s / (
-        s**2 + damping_gain_k * omega_prime * s + omega_prime**2
+    return (
+        damping_gain_k
+        * omega_prime
+        * s
+        / (s**2 + damping_gain_k * omega_prime * s + omega_prime**2)
     )
 
 
 def quadrature_transfer(omega: float, damping_gain_k: float, omega_prime: float) -> complex:
     """Closed-form low-pass ``Q(j omega)`` from Eq.(10)."""
     s = 1j * omega
-    return damping_gain_k * omega_prime**2 / (
-        s**2 + damping_gain_k * omega_prime * s + omega_prime**2
+    return (
+        damping_gain_k * omega_prime**2 / (s**2 + damping_gain_k * omega_prime * s + omega_prime**2)
     )
 
 
@@ -163,9 +164,7 @@ class SOGIQSG:
         initial_state: Optional biquad state.
     """
 
-    def __init__(
-        self, damping_gain_k: float, initial_state: SOGIQSGState | None = None
-    ) -> None:
+    def __init__(self, damping_gain_k: float, initial_state: SOGIQSGState | None = None) -> None:
         if damping_gain_k <= 0.0:
             raise ValueError(f"damping_gain_k must be positive, got {damping_gain_k}")
         self.damping_gain_k = damping_gain_k

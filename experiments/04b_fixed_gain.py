@@ -73,7 +73,8 @@ def _rollout(observer, u, i, dt, record_gains=False):
     n = len(u)
     out = {key: np.empty(n) for key in ("ia", "ib", "sa", "sb", "ea", "eb")}
     if record_gains:
-        out["kf"] = np.empty(n); out["af"] = np.empty(n)
+        out["kf"] = np.empty(n)
+        out["af"] = np.empty(n)
     for k in range(n):
         result = observer.step(u[k, 0], u[k, 1], i[k, 0], i[k, 1], dt)
         out["ia"][k], out["ib"][k] = result.i_alpha_hat, result.i_beta_hat
@@ -129,9 +130,15 @@ def main() -> int:
     parameters = PMSMParameters.from_config(pmsm_cfg)
     plant = PMSMPlant(parameters)
     base_engine = FuzzyEngine.from_yaml(directory)
-    v_base = math.sqrt(2.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V") / math.sqrt(3.0)
-    i_base = math.sqrt(2.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_power", unit="W") / (
-        math.sqrt(3.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V")
+    v_base = (
+        math.sqrt(2.0)
+        * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V")
+        / math.sqrt(3.0)
+    )
+    i_base = (
+        math.sqrt(2.0)
+        * config.resolve_parameter(pmsm_cfg, "rating.rated_power", unit="W")
+        / (math.sqrt(3.0) * config.resolve_parameter(pmsm_cfg, "rating.rated_voltage", unit="V"))
     )
     k0 = config.resolve_parameter(observer_cfg, "smo.switching_gain_k", unit="-") * v_base
     a0 = config.resolve_parameter(observer_cfg, "smo.sigmoid_slope_a", unit="-") / i_base
@@ -155,8 +162,11 @@ def main() -> int:
         def record(label, observer, *, gains=False, kf_af=None):
             sm = _rollout(observer, u, i, dt, record_gains=gains)
             vm = vector_metrics(
-                sm["ea"][steady_mask], sm["eb"][steady_mask],
-                emf[steady_mask, 0], emf[steady_mask, 1], theta[steady_mask],
+                sm["ea"][steady_mask],
+                sm["eb"][steady_mask],
+                emf[steady_mask, 0],
+                emf[steady_mask, 1],
+                theta[steady_mask],
             )
             entry = {
                 "ts_us": dt * 1e6,
@@ -168,20 +178,28 @@ def main() -> int:
                     **_surface_metrics(sm["sa"], sm["sb"], steady_mask),
                     "period2_flag": _period2(sm["sa"][steady_mask]) > 0.5,
                     "post_update_current_rmse_a_old": float(
-                        np.sqrt(np.mean(
-                            np.hypot(sm["ia"][steady_mask] - i[steady_mask, 0],
-                                     sm["ib"][steady_mask] - i[steady_mask, 1]) ** 2
-                        ))
+                        np.sqrt(
+                            np.mean(
+                                np.hypot(
+                                    sm["ia"][steady_mask] - i[steady_mask, 0],
+                                    sm["ib"][steady_mask] - i[steady_mask, 1],
+                                )
+                                ** 2
+                            )
+                        )
                     ),
                 },
                 "transient": _transient(sm["sa"], sm["sb"], t, steady_mask),
                 "ramp": summarize_ramp(
                     sliding_window_ramp_metrics(
-                        sm["ea"][ramp_mask], sm["eb"][ramp_mask],
-                        emf[ramp_mask, 0], emf[ramp_mask, 1],
+                        sm["ea"][ramp_mask],
+                        sm["eb"][ramp_mask],
+                        emf[ramp_mask, 0],
+                        emf[ramp_mask, 1],
                         np.array([rpm_at(x) for x in t[ramp_mask]]) * parameters.pole_pairs / 60.0,
                         np.array([rpm_at(x) for x in t[ramp_mask]]) * parameters.pole_pairs / 60.0,
-                        t[ramp_mask], window_s=0.06,
+                        t[ramp_mask],
+                        window_s=0.06,
                     )
                 ),
                 "kf_af_product": kf_af,
@@ -200,11 +218,11 @@ def main() -> int:
                 if label == "flc_ke1_kec1":
                     sdot = np.zeros_like(sm["sa"])
                     sdot[1:] = (sm["sa"][1:] - sm["sa"][:-1]) / dt  # engine's backward difference
-                    diagnostics[f"Ts{dt*1e6:.0f}_visited"] = {
+                    diagnostics[f"Ts{dt * 1e6:.0f}_visited"] = {
                         "sn": (KE * sm["sa"]).tolist(),
                         "sdotn": (KEC * sdot).tolist(),
                     }
-            runs[f"Ts{dt*1e6:.0f}_{label}"] = entry
+            runs[f"Ts{dt * 1e6:.0f}_{label}"] = entry
 
         record("fixed_sign", ConventionalSMO.from_config(pmsm_cfg, observer_cfg))
         record("fixed_sigmoid", SigmoidSMO.from_config(pmsm_cfg, observer_cfg))
@@ -212,45 +230,71 @@ def main() -> int:
             for af in AF_GRID:
                 record(
                     f"fixed_kf{kf:g}_af{af:g}",
-                    SigmoidSMO(SMOObserverParameters(
-                        parameters.stator_resistance, parameters.ld, kf * k0, sigmoid_slope_a=af * a0
-                    )),
+                    SigmoidSMO(
+                        SMOObserverParameters(
+                            parameters.stator_resistance,
+                            parameters.ld,
+                            kf * k0,
+                            sigmoid_slope_a=af * a0,
+                        )
+                    ),
                     kf_af=kf * af,
                 )
         record(
             "fixed_flc_mean",
-            SigmoidSMO(SMOObserverParameters(
-                parameters.stator_resistance, parameters.ld, FLC_MEAN[0] * k0,
-                sigmoid_slope_a=FLC_MEAN[1] * a0,
-            )),
+            SigmoidSMO(
+                SMOObserverParameters(
+                    parameters.stator_resistance,
+                    parameters.ld,
+                    FLC_MEAN[0] * k0,
+                    sigmoid_slope_a=FLC_MEAN[1] * a0,
+                )
+            ),
             kf_af=FLC_MEAN[0] * FLC_MEAN[1],
         )
         for ke_mult in GRID_MULTS:
             for kec_mult in GRID_MULTS:
                 params = dataclasses.replace(
-                    base_engine.parameters, ke=base_engine.parameters.ke * ke_mult,
+                    base_engine.parameters,
+                    ke=base_engine.parameters.ke * ke_mult,
                     kec=base_engine.parameters.kec * kec_mult,
                 )
                 label = f"flc_ke{ke_mult:g}_kec{kec_mult:g}"
-                record(label, FuzzySMO(
-                    SMOObserverParameters.from_config(pmsm_cfg, observer_cfg), FuzzyEngine(params)
-                ), gains=True)
+                record(
+                    label,
+                    FuzzySMO(
+                        SMOObserverParameters.from_config(pmsm_cfg, observer_cfg),
+                        FuzzyEngine(params),
+                    ),
+                    gains=True,
+                )
 
     # ---- FLC engine diagnostics (dense grid + visited samples, 100 us nominal)
     grid = np.linspace(-1.0, 1.0, 201)
     sn, sdn = np.meshgrid(grid, grid, indexing="ij")
-    kf_surface = np.array([[base_engine.evaluate(float(a), float(b))[0] for b in grid] for a in grid])
-    af_surface = np.array([[base_engine.evaluate(float(a), float(b))[1] for b in grid] for a in grid])
+    kf_surface = np.array(
+        [[base_engine.evaluate(float(a), float(b))[0] for b in grid] for a in grid]
+    )
+    af_surface = np.array(
+        [[base_engine.evaluate(float(a), float(b))[1] for b in grid] for a in grid]
+    )
     visited = diagnostics.get("Ts100_visited", {"sn": [], "sdotn": []})
-    sn_v = np.asarray(visited["sn"]); sdn_v = np.asarray(visited["sdotn"])
-    saturated = float(np.mean((np.abs(sn_v) >= 0.999) | (np.abs(sdn_v) >= 0.999))) if len(sn_v) else 0.0
+    sn_v = np.asarray(visited["sn"])
+    sdn_v = np.asarray(visited["sdotn"])
+    saturated = (
+        float(np.mean((np.abs(sn_v) >= 0.999) | (np.abs(sdn_v) >= 0.999))) if len(sn_v) else 0.0
+    )
     engine_diag = {
         "achievable_kf_range": [float(kf_surface.min()), float(kf_surface.max())],
         "achievable_af_range": [float(af_surface.min()), float(af_surface.max())],
-        "observed_kf_range": [runs["Ts100_flc_ke1_kec1"]["gains"]["kf_min"],
-                              runs["Ts100_flc_ke1_kec1"]["gains"]["kf_max"]],
-        "observed_af_range": [runs["Ts100_flc_ke1_kec1"]["gains"]["af_min"],
-                              runs["Ts100_flc_ke1_kec1"]["gains"]["af_max"]],
+        "observed_kf_range": [
+            runs["Ts100_flc_ke1_kec1"]["gains"]["kf_min"],
+            runs["Ts100_flc_ke1_kec1"]["gains"]["kf_max"],
+        ],
+        "observed_af_range": [
+            runs["Ts100_flc_ke1_kec1"]["gains"]["af_min"],
+            runs["Ts100_flc_ke1_kec1"]["gains"]["af_max"],
+        ],
         "visited_sn_range": [float(np.min(sn_v)), float(np.max(sn_v))] if len(sn_v) else None,
         "visited_sdotn_range": [float(np.min(sdn_v)), float(np.max(sdn_v))] if len(sdn_v) else None,
         "saturation_fraction": saturated,
@@ -261,38 +305,52 @@ def main() -> int:
 
     # ---- dominance / Pareto
     flc_nominal = runs["Ts100_flc_ke1_kec1"]["steady"]
-    fixed_cells = {name: entry for name, entry in runs.items()
-                   if "_fixed_kf" in name or name.endswith("_fixed_flc_mean")}
+    fixed_cells = {
+        name: entry
+        for name, entry in runs.items()
+        if "_fixed_kf" in name or name.endswith("_fixed_flc_mean")
+    }
     dominators = []
     for name, entry in fixed_cells.items():
         s = entry["steady"]
-        if (s["ripple_rms_v"] <= flc_nominal["ripple_rms_v"]
-                and abs(s["fundamental_gain"] - 1.0) <= abs(flc_nominal["fundamental_gain"] - 1.0)
-                and abs(s["fundamental_phase_deg"]) <= abs(flc_nominal["fundamental_phase_deg"])
-                and s["rms_abs_s_a"] <= flc_nominal["rms_abs_s_a"]):
+        if (
+            s["ripple_rms_v"] <= flc_nominal["ripple_rms_v"]
+            and abs(s["fundamental_gain"] - 1.0) <= abs(flc_nominal["fundamental_gain"] - 1.0)
+            and abs(s["fundamental_phase_deg"]) <= abs(flc_nominal["fundamental_phase_deg"])
+            and s["rms_abs_s_a"] <= flc_nominal["rms_abs_s_a"]
+        ):
             dominators.append(name)
 
     def pareto_flags(transform):
-        fixed = [(entry["transient"]["t_conv_s"], transform(entry["steady"]))
-                 for entry in fixed_cells.values() if entry["transient"]["t_conv_s"] is not None]
+        fixed = [
+            (entry["transient"]["t_conv_s"], transform(entry["steady"]))
+            for entry in fixed_cells.values()
+            if entry["transient"]["t_conv_s"] is not None
+        ]
         flags = {}
         for name, entry in runs.items():
             if "flc_" not in name or entry["transient"]["t_conv_s"] is None:
                 continue
             point = (entry["transient"]["t_conv_s"], transform(entry["steady"]))
-            dominated = any(a <= point[0] and b <= point[1] and (a < point[0] or b < point[1])
-                            for a, b in fixed)
+            dominated = any(
+                a <= point[0] and b <= point[1] and (a < point[0] or b < point[1]) for a, b in fixed
+            )
             flags[name] = not dominated
         return flags
 
     result = {
         "note": "Phase 04b; RAW E_hat only. All FLC values are ASSUMPTIONS (Ke=0.13472 1/A, Kec=1.3472e-5 s/A, Ku=1, CoG grid=1001, Ruspini feet, min/max, per-axis, backward-difference s_dot).",
         "assumptions": {"ke_1_per_a": KE, "kec_s_per_a": KEC, "ku": 1.0, "cog_grid_points": 1001},
-        "k0_v": k0, "a0_per_a": a0,
+        "k0_v": k0,
+        "a0_per_a": a0,
         "config_diff": config_diff.summary(
             "04b_fixed_gain",
-            {"epsilon_filter_tau": None, "min_omega": None, "normalize_error": False,
-             "positive_sequence": True},
+            {
+                "epsilon_filter_tau": None,
+                "min_omega": None,
+                "normalize_error": False,
+                "positive_sequence": True,
+            },
             scenario={"ts_us": [x * 1e6 for x in TS_VALUES], "cycles": CYCLES},
         ),
         "runs": runs,
@@ -326,26 +384,49 @@ def main() -> int:
         (axes[0], "ripple_rms_v", "steady ripple (V)"),
         (axes[1], "fundamental_gain", "|gain - 1|"),
     ):
-        xs = [runs[n]["transient"]["t_conv_s"] for n in fixed_names
-              if runs[n]["transient"]["t_conv_s"] is not None]
-        ys = [runs[n]["steady"][objective] for n in fixed_names
-              if runs[n]["transient"]["t_conv_s"] is not None]
+        xs = [
+            runs[n]["transient"]["t_conv_s"]
+            for n in fixed_names
+            if runs[n]["transient"]["t_conv_s"] is not None
+        ]
+        ys = [
+            runs[n]["steady"][objective]
+            for n in fixed_names
+            if runs[n]["transient"]["t_conv_s"] is not None
+        ]
         if objective == "fundamental_gain":
             ys = [abs(y - 1.0) for y in ys]
         ax.scatter(xs, ys, label="fixed-gain cells", alpha=0.7)
         flc = [n for n in runs if "flc_" in n and runs[n]["transient"]["t_conv_s"] is not None]
-        ax.scatter([runs[n]["transient"]["t_conv_s"] for n in flc],
-                   [runs[n]["steady"][objective] if objective != "fundamental_gain"
-                    else abs(runs[n]["steady"][objective] - 1.0) for n in flc],
-                   marker="x", label="FLC grid cells")
+        ax.scatter(
+            [runs[n]["transient"]["t_conv_s"] for n in flc],
+            [
+                runs[n]["steady"][objective]
+                if objective != "fundamental_gain"
+                else abs(runs[n]["steady"][objective] - 1.0)
+                for n in flc
+            ],
+            marker="x",
+            label="FLC grid cells",
+        )
         nominal = runs["Ts100_flc_ke1_kec1"]
-        ax.scatter([nominal["transient"]["t_conv_s"]],
-                   [nominal["steady"][objective] if objective != "fundamental_gain"
-                    else abs(nominal["steady"][objective] - 1.0)],
-                   marker="*", s=140, label="FLC nominal (100 us)")
+        ax.scatter(
+            [nominal["transient"]["t_conv_s"]],
+            [
+                nominal["steady"][objective]
+                if objective != "fundamental_gain"
+                else abs(nominal["steady"][objective] - 1.0)
+            ],
+            marker="*",
+            s=140,
+            label="FLC nominal (100 us)",
+        )
         ax.set(xlabel="t_conv (s)", ylabel=ylabel, title=f"t_conv vs {ylabel}")
-        ax.legend(fontsize=8); ax.grid(True, alpha=0.3)
-    fig.suptitle("Phase 04b transient vs steady trade-off (Ts=100 us shown for FLC nominal)", fontsize=9)
+        ax.legend(fontsize=8)
+        ax.grid(True, alpha=0.3)
+    fig.suptitle(
+        "Phase 04b transient vs steady trade-off (Ts=100 us shown for FLC nominal)", fontsize=9
+    )
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     fig.savefig(output_dir / "transient_tradeoff.png", dpi=130)
     plt.close(fig)
@@ -355,9 +436,11 @@ def main() -> int:
     for name in ("fixed_sign", "fixed_sigmoid", "fixed_flc_mean", "flc_ke1_kec1"):
         s = runs[f"Ts100_{name}"]["steady"]
         t_conv = runs[f"Ts100_{name}"]["transient"]["t_conv_s"]
-        print(f"  {name:16s}: gain={s['fundamental_gain']:.3f} phase={s['fundamental_phase_deg']:+6.2f} "
-              f"ripple={s['ripple_rms_v']:7.2f} rmsS={s['rms_abs_s_a']:.3f} meanS={s['mean_abs_s_a']:.3f} "
-              f"tconv={t_conv} maxS20={runs[f'Ts100_{name}']['transient']['max_abs_s_first_20ms_v']:.2f}")
+        print(
+            f"  {name:16s}: gain={s['fundamental_gain']:.3f} phase={s['fundamental_phase_deg']:+6.2f} "
+            f"ripple={s['ripple_rms_v']:7.2f} rmsS={s['rms_abs_s_a']:.3f} meanS={s['mean_abs_s_a']:.3f} "
+            f"tconv={t_conv} maxS20={runs[f'Ts100_{name}']['transient']['max_abs_s_first_20ms_v']:.2f}"
+        )
     print("== dominators of FLC nominal:", dominators)
     print("== FLC diag:", json.dumps(engine_diag, indent=1))
     print("== Pareto beyond fixed-gain front (ripple):", result["pareto_beyond_front_ripple"])

@@ -40,7 +40,7 @@ TWO_PI = 2.0 * math.pi
 RPM_TO_RAD_S = TWO_PI / 60.0
 K_S = math.sqrt(2.0)
 GAMMA = 50.0
-MATCHED = (1.0, 0.4)                 # Phase 05b/06a nominal cell (kF, aF)
+MATCHED = (1.0, 0.4)  # Phase 05b/06a nominal cell (kF, aF)
 CELLS = ("matched_sigmoid", "flc_nominal")
 
 
@@ -83,11 +83,20 @@ def build_stack(config_dir: Any = None) -> Stack:
     )
     design_amp = (pole_pairs * 1000.0 * RPM_TO_RAD_S) * psi_f
     return Stack(
-        config_dir=directory, pmsm_config=pmsm, observer_config=observer,
-        assumptions_config=assumptions, pole_pairs=pole_pairs,
-        stator_resistance=config.resolve_parameter(pmsm, "machine.stator_resistance_rs", unit="ohm"),
+        config_dir=directory,
+        pmsm_config=pmsm,
+        observer_config=observer,
+        assumptions_config=assumptions,
+        pole_pairs=pole_pairs,
+        stator_resistance=config.resolve_parameter(
+            pmsm, "machine.stator_resistance_rs", unit="ohm"
+        ),
         ld=config.resolve_parameter(pmsm, "machine.stator_inductance_ld", unit="H"),
-        psi_f=psi_f, k0=k0, a0=a0, i_rated=i_rated, design_amp_v=design_amp,
+        psi_f=psi_f,
+        k0=k0,
+        a0=a0,
+        i_rated=i_rated,
+        design_amp_v=design_amp,
         qpll_parameters=QPLLParameters.from_configs(assumptions, design_amplitude_v=design_amp),
     )
 
@@ -95,25 +104,32 @@ def build_stack(config_dir: Any = None) -> Stack:
 def build_observer(cell: str, stack: Stack):
     """Build the SMO for a named cell (matched fixed sigmoid, or FLC nominal)."""
     if cell == "matched_sigmoid":
-        return SigmoidSMO(SMOObserverParameters(
-            stack.stator_resistance, stack.ld, MATCHED[0] * stack.k0,
-            sigmoid_slope_a=MATCHED[1] * stack.a0,
-        ))
+        return SigmoidSMO(
+            SMOObserverParameters(
+                stack.stator_resistance,
+                stack.ld,
+                MATCHED[0] * stack.k0,
+                sigmoid_slope_a=MATCHED[1] * stack.a0,
+            )
+        )
     if cell == "flc_nominal":
-        return FuzzySMO.from_config(stack.pmsm_config, stack.observer_config,
-                                    fuzzy_directory=stack.config_dir)
+        return FuzzySMO.from_config(
+            stack.pmsm_config, stack.observer_config, fuzzy_directory=stack.config_dir
+        )
     raise ValueError(f"unknown cell {cell!r}; expected one of {CELLS}")
 
 
-def build_fll(initial_omega: float, *, min_omega: float | None = None,
-              max_omega: float | None = None) -> DSOGIFLL:
+def build_fll(
+    initial_omega: float, *, min_omega: float | None = None, max_omega: float | None = None
+) -> DSOGIFLL:
     """DSOGI-FLL at library defaults except optional frequency clamps.
 
     ``min_omega``/``max_omega`` (``None`` = no clamp) are electrical rad/s and are the
     only non-default options (Phase 06b-5).
     """
-    return DSOGIFLL(DSOGIFLLParameters(K_S, GAMMA, initial_omega,
-                                       min_omega=min_omega, max_omega=max_omega))
+    return DSOGIFLL(
+        DSOGIFLLParameters(K_S, GAMMA, initial_omega, min_omega=min_omega, max_omega=max_omega)
+    )
 
 
 def fll_min_omega_rad_s(stack: "Stack") -> float | None:
@@ -127,12 +143,16 @@ def build_qpll(stack: Stack, *, initial_theta: float = 0.0, initial_omega: float
     return QPLL(stack.qpll_parameters, initial_theta=initial_theta, initial_omega=initial_omega)
 
 
-def run_chain_open_loop(observer, fll, qpll, *, u_alpha, u_beta, i_alpha, i_beta, dt: float) -> dict:
+def run_chain_open_loop(
+    observer, fll, qpll, *, u_alpha, u_beta, i_alpha, i_beta, dt: float
+) -> dict:
     """Run the chain over a fixed record (open loop); returns the recorded arrays."""
     n = len(u_alpha)
     out = {name: np.empty(n) for name in ("theta_hat", "omega_hat", "freq_hz", "e_alpha", "e_beta")}
     for k in range(n):
-        s = observer.step(float(u_alpha[k]), float(u_beta[k]), float(i_alpha[k]), float(i_beta[k]), dt)
+        s = observer.step(
+            float(u_alpha[k]), float(u_beta[k]), float(i_alpha[k]), float(i_beta[k]), dt
+        )
         f = fll.step(s.back_emf_alpha, s.back_emf_beta, dt)
         q = qpll.step(f.v_alpha_prime, f.v_beta_prime, dt)
         out["theta_hat"][k], out["omega_hat"][k] = q.theta_hat, q.omega_hat
@@ -176,7 +196,9 @@ class EstimatorSource:
         return self.omega_hat * 60.0 / (TWO_PI * self.pole_pairs)
 
     def __call__(self, sample, truth) -> tuple[float, float]:  # noqa: ARG002 (truth ignored)
-        s = self.observer.step(sample.u_alpha, sample.u_beta, sample.i_alpha, sample.i_beta, sample.dt)
+        s = self.observer.step(
+            sample.u_alpha, sample.u_beta, sample.i_alpha, sample.i_beta, sample.dt
+        )
         try:
             f = self.fll.step(s.back_emf_alpha, s.back_emf_beta, sample.dt)
             self.last_freq_hz = f.frequency_hz
@@ -211,7 +233,9 @@ def handover_assumptions(stack: Stack) -> HandoverAssumptions:
     cfg = config.load_config("drive_assumptions", directory=stack.config_dir)
     return HandoverAssumptions(
         omega_h_rpm=config.resolve_parameter(cfg, "handover.omega_h_rpm", unit="rpm"),
-        speed_tolerance_rpm=config.resolve_parameter(cfg, "handover.speed_tolerance_rpm", unit="rpm"),
+        speed_tolerance_rpm=config.resolve_parameter(
+            cfg, "handover.speed_tolerance_rpm", unit="rpm"
+        ),
         lock_time_s=config.resolve_parameter(cfg, "handover.lock_time_s", unit="s"),
     )
 
@@ -229,9 +253,17 @@ class HandoverSource:
 
     name = "handover"
 
-    def __init__(self, chain: EstimatorSource, *, pole_pairs: int, assumptions: HandoverAssumptions,
-                 initial_theta: float = 0.0, initial_omega: float = 0.0, generic: bool = False,
-                 fixed_time_s: float | None = None) -> None:
+    def __init__(
+        self,
+        chain: EstimatorSource,
+        *,
+        pole_pairs: int,
+        assumptions: HandoverAssumptions,
+        initial_theta: float = 0.0,
+        initial_omega: float = 0.0,
+        generic: bool = False,
+        fixed_time_s: float | None = None,
+    ) -> None:
         self.chain = chain
         self.pole_pairs = pole_pairs
         self.assumptions = assumptions
@@ -266,8 +298,9 @@ class HandoverSource:
                     # phase error |Delta e|/|E_hat| < sin(5 deg) (Phase 06c, default OFF).
                     mag = max(getattr(self.chain, "last_e_mag", 0.0), 1e-9)
                     sin_phi = abs(getattr(self.chain, "last_qpll_error", 0.0)) / mag
-                    locked = (omega_rpm >= self.assumptions.omega_h_rpm
-                              and sin_phi < math.sin(math.radians(5.0)))
+                    locked = omega_rpm >= self.assumptions.omega_h_rpm and sin_phi < math.sin(
+                        math.radians(5.0)
+                    )
                 else:
                     omega_prime_rpm = self._to_rpm(self.chain.omega_prime_rad_s)
                     locked = (

@@ -32,7 +32,9 @@ import sensorless_eval as E  # noqa: E402
 from pmsm_sensorless import config  # noqa: E402
 from pmsm_sensorless.plant.pmsm import PMSMPlant, PMSMParameters, PMSMState  # noqa: E402
 from pmsm_sensorless.simulation.drive import (  # noqa: E402
-    dead_time_delta_alpha_beta, dead_time_phase_error)
+    dead_time_delta_alpha_beta,
+    dead_time_phase_error,
+)
 from validation_metrics import vector_metrics  # noqa: E402
 
 TWO_PI = 2.0 * math.pi
@@ -65,9 +67,14 @@ def _rollout(plant, *, i_q, rpm0, dead_time_s, duration=0.5):
         out["theta_e"][n] = theta
         u_plant = u_cmd
         if dead_time_s > 0.0:
-            da, db = dead_time_delta_alpha_beta(state.i_alpha, state.i_beta, v_dc=V_DC,
-                                                dead_time_s=dead_time_s, switching_hz=F_SW,
-                                                current_threshold_a=I_TH)
+            da, db = dead_time_delta_alpha_beta(
+                state.i_alpha,
+                state.i_beta,
+                v_dc=V_DC,
+                dead_time_s=dead_time_s,
+                switching_hz=F_SW,
+                current_threshold_a=I_TH,
+            )
             u_plant = u_cmd + np.array([da, db])
         state = plant.step(state, float(u_plant[0]), float(u_plant[1]), TS)
     out["t"] = t
@@ -89,8 +96,11 @@ def _harmonics(signal, f0_hz, dt, mask):
         return float(spec[sel][i])
 
     fund = amp(f0_hz)
-    return {"fund_v": fund, "h5_rel": amp(5 * f0_hz) / fund if fund else None,
-            "h7_rel": amp(7 * f0_hz) / fund if fund else None}
+    return {
+        "fund_v": fund,
+        "h5_rel": amp(5 * f0_hz) / fund if fund else None,
+        "h7_rel": amp(7 * f0_hz) / fund if fund else None,
+    }
 
 
 def main() -> int:
@@ -107,25 +117,37 @@ def main() -> int:
             n = len(roll["t"])
             ea, eb = np.empty(n), np.empty(n)
             for k in range(n):
-                s = observer.step(roll["u_alpha"][k], roll["u_beta"][k], roll["i_alpha"][k], roll["i_beta"][k], TS)
+                s = observer.step(
+                    roll["u_alpha"][k], roll["u_beta"][k], roll["i_alpha"][k], roll["i_beta"][k], TS
+                )
                 ea[k], eb[k] = s.back_emf_alpha, s.back_emf_beta
             f_e = stack.pole_pairs * rpm / 60.0
             mask = roll["t"] >= 0.2
-            vm = vector_metrics(ea[mask], eb[mask], roll["e_alpha"][mask], roll["e_beta"][mask],
-                                roll["theta_e"][mask])
+            vm = vector_metrics(
+                ea[mask],
+                eb[mask],
+                roll["e_alpha"][mask],
+                roll["e_beta"][mask],
+                roll["theta_e"][mask],
+            )
             harm = _harmonics(ea, f_e, TS, mask)
             e_mag = abs(stack.pole_pairs * rpm * TWO_PI / 60.0 * stack.psi_f)
-            rows[f"rpm{int(rpm)}_iq{int(frac*100)}pct"] = {
-                "i_q_a": i_q, "abs_E_v": e_mag,
+            rows[f"rpm{int(rpm)}_iq{int(frac * 100)}pct"] = {
+                "i_q_a": i_q,
+                "abs_E_v": e_mag,
                 "fundamental_gain": vm["fundamental_gain"],
                 "amplitude_error_pct": 100.0 * (vm["fundamental_gain"] - 1.0),
                 "phase_error_deg": vm["fundamental_phase_deg"],
-                "h5_rel": harm["h5_rel"], "h7_rel": harm["h7_rel"],
-                "predicted_dE_v": pred, "predicted_pct_of_E": 100.0 * pred / e_mag,
+                "h5_rel": harm["h5_rel"],
+                "h7_rel": harm["h7_rel"],
+                "predicted_dE_v": pred,
+                "predicted_pct_of_E": 100.0 * pred / e_mag,
             }
     out = {
-        "note": ("Phase 06c GATE D: average-value dead time (V_dc=311 V, t_d=2 us, "
-                 "f_sw=10 kHz, i_th=0.1 A ASSUMPTION); observer sees the commanded voltage."),
+        "note": (
+            "Phase 06c GATE D: average-value dead time (V_dc=311 V, t_d=2 us, "
+            "f_sw=10 kHz, i_th=0.1 A ASSUMPTION); observer sees the commanded voltage."
+        ),
         "prediction": {"dE_v": pred, "formula": "4/pi * V_dc * t_d * f_sw"},
         "rows": rows,
     }
@@ -135,9 +157,13 @@ def main() -> int:
 
     print(f"== GATE D (dead time, matched cell) — prediction dE={pred:.2f} V ==")
     for k, r in rows.items():
-        print(f"  {k:18s} |E|={r['abs_E_v']:5.1f}V  amp_err={r['amplitude_error_pct']:+6.1f}% "
-              f"(pred {r['predicted_pct_of_E']:5.1f}%)  phase={r['phase_error_deg']:+6.2f}°  "
-              f"h5={r['h5_rel']:.3f} h7={r['h7_rel']:.3f}" if r['h5_rel'] is not None else f"  {k}: {r}")
+        print(
+            f"  {k:18s} |E|={r['abs_E_v']:5.1f}V  amp_err={r['amplitude_error_pct']:+6.1f}% "
+            f"(pred {r['predicted_pct_of_E']:5.1f}%)  phase={r['phase_error_deg']:+6.2f}°  "
+            f"h5={r['h5_rel']:.3f} h7={r['h7_rel']:.3f}"
+            if r["h5_rel"] is not None
+            else f"  {k}: {r}"
+        )
     print(f"\nOutputs written to: {out_dir}")
     return 0
 

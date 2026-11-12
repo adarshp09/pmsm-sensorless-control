@@ -87,9 +87,7 @@ def test_back_emf_reconstruction_averages_to_true_emf() -> None:
     rs, ld, k = 0.5, 0.01, 20.0
     emf = (6.0, 0.0)
     i_at_equilibrium = (-emf[0] / rs, -emf[1] / rs)  # u = 0 equilibrium of Eq.(1)
-    observer = ConventionalSMO(
-        SMOObserverParameters(rs, ld, k), SMOObserverState(0.0, 0.0)
-    )
+    observer = ConventionalSMO(SMOObserverParameters(rs, ld, k), SMOObserverState(0.0, 0.0))
     samples = []
     for n in range(20000):
         out = observer.step(0.0, 0.0, i_at_equilibrium[0], i_at_equilibrium[1], 1e-4)
@@ -148,9 +146,7 @@ def test_from_config_reads_and_converts_parameters(pmsm_config, observer_config)
 
 
 def test_from_config_without_scaling_keeps_raw_values(pmsm_config, observer_config) -> None:
-    observer = ConventionalSMO.from_config(
-        pmsm_config, observer_config, per_unit_scaling=False
-    )
+    observer = ConventionalSMO.from_config(pmsm_config, observer_config, per_unit_scaling=False)
     assert observer.parameters.switching_gain_k == pytest.approx(1.0)
 
 

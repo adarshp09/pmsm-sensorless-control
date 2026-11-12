@@ -88,9 +88,7 @@ def metrics(result, i: np.ndarray, dt: float, skip_fraction: float = 0.5) -> dic
         "rmse_current_a": float(np.sqrt(np.mean(error**2))),
         "max_abs_current_error_a": float(np.max(error)),
         "mean_sliding_surface_a": float(np.mean(surface)),
-        "mean_back_emf_amplitude_v": float(
-            np.mean(np.hypot(result["ea"], result["eb"])[skip:])
-        ),
+        "mean_back_emf_amplitude_v": float(np.mean(np.hypot(result["ea"], result["eb"])[skip:])),
         "runtime_per_update_us": 1e6 * result["runtime_s"] / len(i),
     }
 
@@ -101,7 +99,9 @@ def make_plots(t, i, emf, conv, sig, v_base, output_dir: Path) -> None:
         return np.convolve(x, kernel, mode="same")
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
-    axes[0].plot(t, np.hypot(conv["ia"] - i[:, 0], conv["ib"] - i[:, 1]), label="conventional (sign)")
+    axes[0].plot(
+        t, np.hypot(conv["ia"] - i[:, 0], conv["ib"] - i[:, 1]), label="conventional (sign)"
+    )
     axes[0].plot(t, np.hypot(sig["ia"] - i[:, 0], sig["ib"] - i[:, 1]), label="sigmoid")
     axes[0].set(xlabel="time (s)", ylabel="|i_hat - i| (A)", title="Current estimation error")
     axes[0].legend()
@@ -180,15 +180,25 @@ def main() -> int:
 
     np.savez(
         output_dir / "states.npz",
-        t=t, u_alpha=u[:, 0], u_beta=u[:, 1],
-        i_alpha=i[:, 0], i_beta=i[:, 1],
-        e_alpha=emf[:, 0], e_beta=emf[:, 1],
-        conv_i_alpha=conv["ia"], conv_i_beta=conv["ib"],
-        conv_s_alpha=conv["sa"], conv_s_beta=conv["sb"],
-        conv_e_alpha=conv["ea"], conv_e_beta=conv["eb"],
-        sig_i_alpha=sig["ia"], sig_i_beta=sig["ib"],
-        sig_s_alpha=sig["sa"], sig_s_beta=sig["sb"],
-        sig_e_alpha=sig["ea"], sig_e_beta=sig["eb"],
+        t=t,
+        u_alpha=u[:, 0],
+        u_beta=u[:, 1],
+        i_alpha=i[:, 0],
+        i_beta=i[:, 1],
+        e_alpha=emf[:, 0],
+        e_beta=emf[:, 1],
+        conv_i_alpha=conv["ia"],
+        conv_i_beta=conv["ib"],
+        conv_s_alpha=conv["sa"],
+        conv_s_beta=conv["sb"],
+        conv_e_alpha=conv["ea"],
+        conv_e_beta=conv["eb"],
+        sig_i_alpha=sig["ia"],
+        sig_i_beta=sig["ib"],
+        sig_s_alpha=sig["sa"],
+        sig_s_beta=sig["sb"],
+        sig_e_alpha=sig["ea"],
+        sig_e_beta=sig["eb"],
     )
 
     diagnostics = {
@@ -220,7 +230,9 @@ def main() -> int:
         * (conv_metrics["rmse_current_a"] - sig_metrics["rmse_current_a"])
         / conv_metrics["rmse_current_a"],
     }
-    (output_dir / "diagnostics.json").write_text(json.dumps(diagnostics, indent=2), encoding="utf-8")
+    (output_dir / "diagnostics.json").write_text(
+        json.dumps(diagnostics, indent=2), encoding="utf-8"
+    )
     print(json.dumps(diagnostics, indent=2))
     print(f"\nOutputs written to: {output_dir}")
     return 0

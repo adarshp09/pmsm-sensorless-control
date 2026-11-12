@@ -28,8 +28,8 @@ from pmsm_sensorless.simulation.drive import (
 )
 
 TWO_PI = 2.0 * math.pi
-OMEGA_1000_M = 1000.0 * TWO_PI / 60.0          # mechanical rad/s at 1000 rpm
-I_RATED = 7.7 / (1.5 * 4 * 0.1326)             # 9.678 A
+OMEGA_1000_M = 1000.0 * TWO_PI / 60.0  # mechanical rad/s at 1000 rpm
+I_RATED = 7.7 / (1.5 * 4 * 0.1326)  # 9.678 A
 
 
 @pytest.fixture(scope="module")
@@ -43,9 +43,7 @@ def params(config_dir) -> DriveParameters:
 
 @pytest.fixture(scope="module")
 def prescribed_plant(config_dir) -> PMSMPlant:
-    return PMSMPlant(
-        PMSMParameters.from_config(config.load_config("pmsm", directory=config_dir))
-    )
+    return PMSMPlant(PMSMParameters.from_config(config.load_config("pmsm", directory=config_dir)))
 
 
 @pytest.fixture(scope="module")
@@ -130,8 +128,11 @@ def test_current_step_matches_exact_discrete_model(params, prescribed_plant) -> 
     i_ref = 3.0
     n = 100
     result = run_drive(
-        prescribed_plant, params, duration=n * params.ts_current,
-        i_q_ref=lambda t: i_ref if t >= 0.0005 else 0.0, omega_e_fixed=0.0,
+        prescribed_plant,
+        params,
+        duration=n * params.ts_current,
+        i_q_ref=lambda t: i_ref if t >= 0.0005 else 0.0,
+        omega_e_fixed=0.0,
     )
     model = _discrete_current_step(params, i_ref, n - 5)  # 5 = step index
     assert np.max(np.abs(result.i_q[5:] - model)) < 1e-6
@@ -148,8 +149,11 @@ def test_current_step_first_order_shape_bounds(params, prescribed_plant) -> None
     """
     i_ref = 3.0
     result = run_drive(
-        prescribed_plant, params, duration=0.01,
-        i_q_ref=lambda t: i_ref if t >= 0.0005 else 0.0, omega_e_fixed=0.0,
+        prescribed_plant,
+        params,
+        duration=0.01,
+        i_q_ref=lambda t: i_ref if t >= 0.0005 else 0.0,
+        omega_e_fixed=0.0,
     )
     t, i_q = result.t, result.i_q
     steady = float(np.mean(i_q[t >= 0.008]))
@@ -176,9 +180,9 @@ def test_speed_step_settles_per_alpha_w(mechanical_plant, params) -> None:
     err = (result.omega_m - result.omega_m_ref) * 60.0 / TWO_PI
     tau = 1.0 / (TWO_PI * params.alpha_w_hz)
     settle = 0.05
-    assert np.max(np.abs(err[result.t >= settle])) < 0.5        # rpm
+    assert np.max(np.abs(err[result.t >= settle])) < 0.5  # rpm
     assert abs(np.mean(err[result.t >= 0.15])) < 0.05
-    bad = np.where(np.abs(err) > 1.0)[0]                        # to +-1 rpm
+    bad = np.where(np.abs(err) > 1.0)[0]  # to +-1 rpm
     assert result.t[bad[-1] + 1] < 6.0 * tau
 
 
@@ -191,7 +195,8 @@ def test_speed_error_is_zero_with_viscous_friction(config_dir, params) -> None:
     friction = 0.01
     plant = PMSMPlant(
         PMSMParameters.from_config(config.load_config("pmsm", directory=config_dir)),
-        integrate_mechanics=True, viscous_friction=friction,
+        integrate_mechanics=True,
+        viscous_friction=friction,
     )
     result = run_drive(plant, params, duration=0.2, speed_ref_rpm=100.0)
     err = (result.omega_m - result.omega_m_ref) * 60.0 / TWO_PI
@@ -205,7 +210,10 @@ def test_steady_state_currents_and_power_balance(mechanical_plant, params) -> No
     """At rated load and 1000 rpm: i_q = T_L/Kt, i_d = 0, power balance < 1 %."""
     load = 7.7
     result = run_drive(
-        mechanical_plant, params, duration=1.0, speed_ref_rpm=1000.0,
+        mechanical_plant,
+        params,
+        duration=1.0,
+        speed_ref_rpm=1000.0,
         load_torque=ConstantLoadTorque(load),
         initial_state=PMSMState(0.0, 0.0, 4.0 * OMEGA_1000_M, 0.0),
     )
@@ -216,7 +224,7 @@ def test_steady_state_currents_and_power_balance(mechanical_plant, params) -> No
     p_cu = 1.5 * params.stator_resistance * np.mean(result.i_d[m] ** 2 + result.i_q[m] ** 2)
     p_mech = np.mean(result.torque_e[m] * result.omega_m[m])
     assert abs(p_in - p_cu - p_mech) / abs(p_in) < 0.01
-    assert not np.any(result.saturated[m])       # no voltage-limit saturation
+    assert not np.any(result.saturated[m])  # no voltage-limit saturation
 
 
 # --- voltage saturation -------------------------------------------------------
@@ -230,14 +238,17 @@ def test_voltage_saturation_has_no_windup(prescribed_plant, params) -> None:
     command is released the current returns to ~0 with small overshoot.
     """
     result = run_drive(
-        prescribed_plant, params, duration=0.2,
-        i_q_ref=lambda t: 1000.0 if 0.01 <= t < 0.06 else 0.0, omega_e_fixed=0.0,
+        prescribed_plant,
+        params,
+        duration=0.2,
+        i_q_ref=lambda t: 1000.0 if 0.01 <= t < 0.06 else 0.0,
+        omega_e_fixed=0.0,
     )
     assert np.max(result.u_cmd_magnitude) <= params.v_limit + 1e-9
     assert np.mean(result.saturated[(result.t >= 0.01) & (result.t < 0.06)]) > 0.99
     after = result.t > 0.0605
     saturated_value = params.v_limit / params.stator_resistance
-    assert np.min(result.i_q[after]) > -0.1 * saturated_value     # bounded undershoot
+    assert np.min(result.i_q[after]) > -0.1 * saturated_value  # bounded undershoot
     tail = result.t >= 0.15
     assert np.max(np.abs(result.i_q[tail])) < 0.02 * saturated_value
 
@@ -250,7 +261,11 @@ def test_drive_imports_no_observer_filter_fuzzy_estimation() -> None:
         module = importlib.import_module(f"pmsm_sensorless.{name}")
         for value in vars(module).values():
             if isinstance(value, types.ModuleType):
-                root = value.__name__.split(".")[1] if value.__name__.startswith("pmsm_sensorless.") else ""
+                root = (
+                    value.__name__.split(".")[1]
+                    if value.__name__.startswith("pmsm_sensorless.")
+                    else ""
+                )
                 assert root not in {"observers", "filters", "fuzzy", "estimation"}, value.__name__
 
 
@@ -267,20 +282,35 @@ def test_true_source_is_the_only_ground_truth_path(prescribed_plant, params) -> 
             return 1.234, 5.678
 
     result = run_drive(
-        prescribed_plant, params, duration=0.01, i_q_ref=0.0,
-        omega_e_fixed=1000.0, source=_FixedSource(),
+        prescribed_plant,
+        params,
+        duration=0.01,
+        i_q_ref=0.0,
+        omega_e_fixed=1000.0,
+        source=_FixedSource(),
     )
     # the controller used the source angle (fixed): i_d/i_q are rotated by it
-    assert result.theta_e[0] == 0.0            # true plant angle is untouched
+    assert result.theta_e[0] == 0.0  # true plant angle is untouched
     assert np.all(np.isfinite(result.i_q))
 
 
 def test_run_drive_signature_has_no_ground_truth_estimator() -> None:
     names = set(inspect.signature(run_drive).parameters)
     assert names == {
-        "plant", "parameters", "ts", "duration", "load_torque", "source",
-        "speed_ref_rpm", "i_q_ref", "omega_e_fixed", "initial_state", "angle_advance",
-        "dead_time_s", "dead_time_current_threshold_a", "dead_time_switching_hz",
+        "plant",
+        "parameters",
+        "ts",
+        "duration",
+        "load_torque",
+        "source",
+        "speed_ref_rpm",
+        "i_q_ref",
+        "omega_e_fixed",
+        "initial_state",
+        "angle_advance",
+        "dead_time_s",
+        "dead_time_current_threshold_a",
+        "dead_time_switching_hz",
         "dead_time_compensation",
     }
 
@@ -312,7 +342,10 @@ def test_gate_speed_step_and_rated_load(mechanical_plant, params) -> None:
     assert not np.any(step.saturated[m])
 
     load = run_drive(
-        mechanical_plant, params, duration=1.0, speed_ref_rpm=1000.0,
+        mechanical_plant,
+        params,
+        duration=1.0,
+        speed_ref_rpm=1000.0,
         load_torque=ConstantLoadTorque(7.7),
         initial_state=PMSMState(0.0, 0.0, 4.0 * OMEGA_1000_M, 0.0),
     )

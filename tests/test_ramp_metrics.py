@@ -35,8 +35,22 @@ def test_windowed_fit_recovers_known_complex_gain() -> None:
 
 def test_summary_reports_mean_and_worst_window() -> None:
     rows = [
-        {"gain": 1.0, "phase_deg": 0.0, "ripple_rms_v": 1.0, "omega_prime_error_hz_mean": 0.0, "omega_prime_error_hz_std": 0.1, "t_center_s": 0.0},
-        {"gain": 1.1, "phase_deg": 2.0, "ripple_rms_v": 3.0, "omega_prime_error_hz_mean": 1.0, "omega_prime_error_hz_std": 0.2, "t_center_s": 0.06},
+        {
+            "gain": 1.0,
+            "phase_deg": 0.0,
+            "ripple_rms_v": 1.0,
+            "omega_prime_error_hz_mean": 0.0,
+            "omega_prime_error_hz_std": 0.1,
+            "t_center_s": 0.0,
+        },
+        {
+            "gain": 1.1,
+            "phase_deg": 2.0,
+            "ripple_rms_v": 3.0,
+            "omega_prime_error_hz_mean": 1.0,
+            "omega_prime_error_hz_std": 0.2,
+            "t_center_s": 0.06,
+        },
     ]
     summary = summarize_ramp(rows)
     assert summary["n_windows"] == 2

@@ -42,8 +42,12 @@ def test_d_phase_equals_plus_atan_of_r_squared_minus_one() -> None:
     d_discrete, q_discrete = _discrete_response(coefficients, omega, dt)
 
     # continuous via scipy.signal.freqs (independent of the repo helper)
-    _, d_continuous = signal.freqs([K_S * omega_prime, 0.0], [1.0, K_S * omega_prime, omega_prime**2], worN=[omega])
-    _, q_continuous = signal.freqs([K_S * omega_prime**2], [1.0, K_S * omega_prime, omega_prime**2], worN=[omega])
+    _, d_continuous = signal.freqs(
+        [K_S * omega_prime, 0.0], [1.0, K_S * omega_prime, omega_prime**2], worN=[omega]
+    )
+    _, q_continuous = signal.freqs(
+        [K_S * omega_prime**2], [1.0, K_S * omega_prime, omega_prime**2], worN=[omega]
+    )
     d_continuous = d_continuous[0]
     q_continuous = q_continuous[0]
 

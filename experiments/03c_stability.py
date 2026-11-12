@@ -95,7 +95,9 @@ def main() -> int:
         rows.append(
             {
                 "ts_us": dt * 1e6,
-                "ts_lambda_over_2": dt * (parameters.stator_resistance + k * a / 2.0) / parameters.ld,
+                "ts_lambda_over_2": dt
+                * (parameters.stator_resistance + k * a / 2.0)
+                / parameters.ld,
                 "fundamental_gain": metrics["fundamental_gain"],
                 "fundamental_phase_deg": metrics["fundamental_phase_deg"],
                 "ripple_rms_v": metrics["ripple_rms_v"],
@@ -115,7 +117,7 @@ def main() -> int:
         ax.plot(ts, [row[key] for row in rows], "o-")
         if ref is not None:
             ax.axhline(ref, color="k", ls=":")
-        ax.axvline(ts_star * 1e6, color="crimson", ls="--", label=f"Ts* = {ts_star*1e6:.1f} us")
+        ax.axvline(ts_star * 1e6, color="crimson", ls="--", label=f"Ts* = {ts_star * 1e6:.1f} us")
         ax.set(xlabel="Ts (us)", ylabel=label, title=label + " vs Ts (1000 rpm, sigmoid)")
         ax.legend()
         ax.grid(True, alpha=0.3)

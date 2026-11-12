@@ -84,7 +84,9 @@ def test_discrete_dc_gain_matches_closed_form() -> None:
     """Biquad DC gains: D(1) = 0, Q(1) = k_s."""
     coefficients = sogi_coefficients(K_S, OMEGA_0, DT)
     denominator = 1.0 + coefficients.a1 + coefficients.a2
-    d = (coefficients.b0_in_phase + coefficients.b1_in_phase + coefficients.b2_in_phase) / denominator
+    d = (
+        coefficients.b0_in_phase + coefficients.b1_in_phase + coefficients.b2_in_phase
+    ) / denominator
     q = (
         coefficients.b0_quadrature + coefficients.b1_quadrature + coefficients.b2_quadrature
     ) / denominator

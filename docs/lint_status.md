@@ -1,18 +1,41 @@
-# Ruff status
+# Ruff status (post formatting-only pass)
 
-Report-only audit run with:
+Report-only audit. No `ruff check --fix`, no logic edits. Applied in this wrap-up:
+`ruff format src tests experiments scripts` (Step 4, "style: formatting only").
+
+## History
+
+| Stage | `ruff check src tests experiments` |
+| --- | ---: |
+| Baseline (Phase 06g-2) | **694** |
+| After `ruff format` | **322** |
+| After the per-file E501 ignore | **231** |
+
+`ruff format` reformatted 69 of 95 files; the **AST is unchanged for all 95** (proof in
+`docs/FINAL_REPORT` / the Phase 06 final commit message: `ast.dump(ast.parse(...))`
+sha256 before vs after — 95/95 identical, 0 differences).
+
+## E501 handling — per-file ignore (not hand-wrapping)
+
+The formatter reduced E501 from **384 to 91**. The residual 91 are unsplittable long literals
+(ASCII tables printed by the experiment scripts; one docstring line in
+`src/pmsm_sensorless/filters/dsogi_fll.py`). They are exempted per-file in `pyproject.toml`
+`[tool.ruff.lint.per-file-ignores]` rather than hand-wrapped:
+
+```toml
+"experiments/*.py" = ["E501"]
+"src/pmsm_sensorless/filters/dsogi_fll.py" = ["E501"]
+```
+
+## Residual counts (231)
 
 ```text
 python -m ruff check src tests experiments --statistics
 ```
 
-No fixes were applied. Ruff reported **694 errors**:
-
 | Rule | Count |
 | --- | ---: |
-| E501 | 384 |
 | B023 | 86 |
-| E702 | 79 |
 | I001 | 52 |
 | F401 | 31 |
 | B905 | 14 |
@@ -25,8 +48,7 @@ No fixes were applied. Ruff reported **694 errors**:
 | F541 | 1 |
 | B008 | 1 |
 
-The report includes the new experiment script; the two additional findings are
-one E501 and one I001 in that script. Ruff also reports 100 fixable findings
-(43 unsafe fixes available).
-
-This is a baseline report, not a Phase 06g code-quality gate.
+100 are fixable (43 unsafe). **This is a baseline report, not a release gate.** The largest
+remaining class, `B023 function-uses-loop-variable` (86), is in the experiment scripts'
+closure-heavy builders and is **not** auto-fixable safely; it is deferred to a reviewed
+change (see `docs/future_work.md`).

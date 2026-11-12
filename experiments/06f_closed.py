@@ -41,12 +41,16 @@ STACK = None
 
 def matched(fn):
     a = C.handover_assumptions(STACK)
-    return C.EstimatorSource(observer=C.build_observer("matched_sigmoid", STACK),
-                             fll=C.build_fll(STACK.initial_omega_at(a.omega_h_rpm),
-                                             min_omega=C.fll_min_omega_rad_s(STACK)),
-                             qpll=QPLL(QPLLParameters.from_design(zeta=0.707, f_n_hz=fn,
-                                                                  amplitude_v=STACK.design_amp_v)),
-                             pole_pairs=STACK.pole_pairs)
+    return C.EstimatorSource(
+        observer=C.build_observer("matched_sigmoid", STACK),
+        fll=C.build_fll(
+            STACK.initial_omega_at(a.omega_h_rpm), min_omega=C.fll_min_omega_rad_s(STACK)
+        ),
+        qpll=QPLL(
+            QPLLParameters.from_design(zeta=0.707, f_n_hz=fn, amplitude_v=STACK.design_amp_v)
+        ),
+        pole_pairs=STACK.pole_pairs,
+    )
 
 
 class MixSource(P.FullRecorder):
@@ -66,14 +70,20 @@ class MixSource(P.FullRecorder):
 
 
 def window(rec, t_step, *, dt_max=0.05, p=4):
-    t = np.asarray(rec.t); post = np.asarray(rec.post, bool)
+    t = np.asarray(rec.t)
+    post = np.asarray(rec.post, bool)
     m = (t >= t_step) & (t <= t_step + dt_max) & post
     de = np.asarray(rec.theta_err)[m]
     dw = np.asarray(rec.omega_err)[m]
-    return {"first_peak_rpm": float(np.max(np.abs(dw))) if m.any() else None,
-            "peak_theta_deg": float(np.max(np.abs(de))) if m.any() else None,
-            "max_theta_deg_200ms": float(np.max(np.abs(np.asarray(rec.theta_err)[
-                (t >= t_step) & (t <= t_step + 0.2) & post]))) if m.any() else None}
+    return {
+        "first_peak_rpm": float(np.max(np.abs(dw))) if m.any() else None,
+        "peak_theta_deg": float(np.max(np.abs(de))) if m.any() else None,
+        "max_theta_deg_200ms": float(
+            np.max(np.abs(np.asarray(rec.theta_err)[(t >= t_step) & (t <= t_step + 0.2) & post]))
+        )
+        if m.any()
+        else None,
+    }
 
 
 def main() -> int:
@@ -81,24 +91,52 @@ def main() -> int:
     stack, params, plant, rule = E.load()
     STACK = stack
     scenarios = E.paper_scenarios(rule)
-    s2 = dict(scenarios["S2_sim_50pct_1000"]); s4 = dict(scenarios["S4_steady_1000"])
+    s2 = dict(scenarios["S2_sim_50pct_1000"])
+    s4 = dict(scenarios["S4_steady_1000"])
     t_step = s2["disturbance_s"]
-    out = {"note": ("Phase 06f Step 4 closed-loop cross-checks; matched cell, advance off, "
-                    "t_h=0.30 s, dead time OFF (S4 also ON+comp)."),
-           "a_alpha_w_low": {}, "b_channel_isolation": {}, "c_high_fn_cost": {},
-           "step2_v2_reference_rpm": {"fn20": 135, "fn80": 130, "fn160": 108}}
+    out = {
+        "note": (
+            "Phase 06f Step 4 closed-loop cross-checks; matched cell, advance off, "
+            "t_h=0.30 s, dead time OFF (S4 also ON+comp)."
+        ),
+        "a_alpha_w_low": {},
+        "b_channel_isolation": {},
+        "c_high_fn_cost": {},
+        "step2_v2_reference_rpm": {"fn20": 135, "fn80": 130, "fn160": 108},
+    }
 
     def run_chain(fn, spec, aw, *, dead=0.0, comp=False, mix=None):
         prm = replace(params, alpha_w_hz=aw)
         src = matched(fn)
-        rec = (MixSource(src, pole_pairs=stack.pole_pairs, assumptions=C.handover_assumptions(stack),
-                         fixed_time_s=0.30, theta_channel=mix[0], omega_channel=mix[1])
-               if mix else P.FullRecorder(src, pole_pairs=stack.pole_pairs,
-                                          assumptions=C.handover_assumptions(stack), fixed_time_s=0.30))
+        rec = (
+            MixSource(
+                src,
+                pole_pairs=stack.pole_pairs,
+                assumptions=C.handover_assumptions(stack),
+                fixed_time_s=0.30,
+                theta_channel=mix[0],
+                omega_channel=mix[1],
+            )
+            if mix
+            else P.FullRecorder(
+                src,
+                pole_pairs=stack.pole_pairs,
+                assumptions=C.handover_assumptions(stack),
+                fixed_time_s=0.30,
+            )
+        )
         from pmsm_sensorless.simulation.drive import run_drive
-        res = run_drive(plant, prm, duration=spec["duration"], speed_ref_rpm=spec["speed_ref"],
-                        load_torque=spec["load"], source=rec, dead_time_s=dead,
-                        dead_time_compensation=comp)
+
+        res = run_drive(
+            plant,
+            prm,
+            duration=spec["duration"],
+            speed_ref_rpm=spec["speed_ref"],
+            load_torque=spec["load"],
+            source=rec,
+            dead_time_s=dead,
+            dead_time_compensation=comp,
+        )
         return rec, src, res
 
     # (a)
@@ -107,35 +145,54 @@ def main() -> int:
             rec, src, res = run_chain(fn, s2, aw)
             ok, peak = P.lock_valid(rec)
             w = window(rec, t_step, p=stack.pole_pairs)
-            stable = bool(ok and src.status == "ok" and w["peak_theta_deg"] is not None
-                          and w["peak_theta_deg"] < 90.0)
+            stable = bool(
+                ok
+                and src.status == "ok"
+                and w["peak_theta_deg"] is not None
+                and w["peak_theta_deg"] < 90.0
+            )
             out["a_alpha_w_low"][f"aw{aw:g}|fn{fn:g}"] = {
-                "lock_valid": ok, "lock_peak_deg": peak, "fll_status": src.status,
-                "stable": stable, **w}
+                "lock_valid": ok,
+                "lock_peak_deg": peak,
+                "fll_status": src.status,
+                "stable": stable,
+                **w,
+            }
 
     # (b)
     for fn in (20.0, 80.0):
-        for label, mix in (("theta_enc_omega_chain", ("encoder", "chain")),
-                           ("theta_chain_omega_enc", ("chain", "encoder")),
-                           ("chain_chain", ("chain", "chain"))):
+        for label, mix in (
+            ("theta_enc_omega_chain", ("encoder", "chain")),
+            ("theta_chain_omega_enc", ("chain", "encoder")),
+            ("chain_chain", ("chain", "chain")),
+        ):
             rec, src, res = run_chain(fn, s2, 10.0, mix=mix)
             ok, peak = P.lock_valid(rec)
             w = window(rec, t_step, p=stack.pole_pairs)
             out["b_channel_isolation"][f"fn{fn:g}|{label}"] = {
-                "lock_valid": ok, "lock_peak_deg": peak, "fll_status": src.status, **w}
+                "lock_valid": ok,
+                "lock_peak_deg": peak,
+                "fll_status": src.status,
+                **w,
+            }
 
     # (c)
     for fn in (20.0, 40.0, 80.0, 160.0):
         for label, dead, comp in (("off", 0.0, False), ("on_comp", 2e-6, True)):
             rec, src, res = run_chain(fn, s4, 3.0, dead=dead, comp=comp)
-            t = np.asarray(rec.t); post = np.asarray(rec.post, bool)
+            t = np.asarray(rec.t)
+            post = np.asarray(rec.post, bool)
             lo, hi = s4["steady"]
             e = np.asarray(rec.theta_err)[(t >= lo) & (t <= hi) & post]
             out["c_high_fn_cost"][f"fn{fn:g}|{label}"] = {
                 "steady_mean_deg": float(np.mean(np.abs(e))) if e.size else None,
-                "steady_rms_deg": float(np.sqrt(np.mean(e ** 2))) if e.size else None,
-                "theta_ripple_rms_deg": float(np.sqrt(np.mean((e - np.mean(e)) ** 2))) if e.size else None,
-                "fll_status": src.status, "lock_valid": P.lock_valid(rec)[0]}
+                "steady_rms_deg": float(np.sqrt(np.mean(e**2))) if e.size else None,
+                "theta_ripple_rms_deg": float(np.sqrt(np.mean((e - np.mean(e)) ** 2)))
+                if e.size
+                else None,
+                "fll_status": src.status,
+                "lock_valid": P.lock_valid(rec)[0],
+            }
 
     out_dir = config.find_project_root() / "experiments" / "output" / "06f_closed"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -143,16 +200,22 @@ def main() -> int:
 
     print("== (a) low alpha_w, S2 (Step 2 V2 reference: fn20 135, fn80 130, fn160 108 rpm) ==")
     for k, v in out["a_alpha_w_low"].items():
-        print(f"  {k:16s} stable={v['stable']} lv={v['lock_valid']}({v['lock_peak_deg']}) "
-              f"fp={v['first_peak_rpm']} theta={v['peak_theta_deg']} fll={v['fll_status']}")
+        print(
+            f"  {k:16s} stable={v['stable']} lv={v['lock_valid']}({v['lock_peak_deg']}) "
+            f"fp={v['first_peak_rpm']} theta={v['peak_theta_deg']} fll={v['fll_status']}"
+        )
     print("\n== (b) channel isolation (S2, alpha_w=10) ==")
     for k, v in out["b_channel_isolation"].items():
-        print(f"  {k:34s} lv={v['lock_valid']}({v['lock_peak_deg']}) fp={v['first_peak_rpm']} "
-              f"theta={v['peak_theta_deg']} fll={v['fll_status']}")
+        print(
+            f"  {k:34s} lv={v['lock_valid']}({v['lock_peak_deg']}) fp={v['first_peak_rpm']} "
+            f"theta={v['peak_theta_deg']} fll={v['fll_status']}"
+        )
     print("\n== (c) high f_n cost at alpha_w=3, S4 ==")
     for k, v in out["c_high_fn_cost"].items():
-        print(f"  {k:16s} mean={v['steady_mean_deg']} rms={v['steady_rms_deg']} "
-              f"ripple={v['theta_ripple_rms_deg']} fll={v['fll_status']}")
+        print(
+            f"  {k:16s} mean={v['steady_mean_deg']} rms={v['steady_rms_deg']} "
+            f"ripple={v['theta_ripple_rms_deg']} fll={v['fll_status']}"
+        )
     print(f"Outputs: {out_dir}")
     return 0
 

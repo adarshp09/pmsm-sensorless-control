@@ -45,16 +45,30 @@ MIN_DURATION = 0.25
 def _nominal_chain(stack: C.Stack, plant: PMSMPlant, *, rpm, duration):
     """The 05b/06a nominal cell (matched sigmoid | DSOGI v' | QPLL) at constant rpm."""
     f_e = stack.pole_pairs * rpm / 60.0
-    r = nominal_drive_rollout(plant, i_q=stack.i_rated, dt=TS, duration=duration,
-                              rpm_start=rpm, rpm_end=rpm, ramp_time=1.0)
+    r = nominal_drive_rollout(
+        plant,
+        i_q=stack.i_rated,
+        dt=TS,
+        duration=duration,
+        rpm_start=rpm,
+        rpm_end=rpm,
+        ramp_time=1.0,
+    )
     observer = C.build_observer("matched_sigmoid", stack)
     fll = C.build_fll(stack.initial_omega_at(rpm))
     qpll = C.build_qpll(stack, initial_theta=float(r.theta_e[0]), initial_omega=float(r.omega_e[0]))
-    out = C.run_chain_open_loop(observer, fll, qpll, u_alpha=r.u_alpha, u_beta=r.u_beta,
-                                i_alpha=r.i_alpha, i_beta=r.i_beta, dt=TS)
+    out = C.run_chain_open_loop(
+        observer,
+        fll,
+        qpll,
+        u_alpha=r.u_alpha,
+        u_beta=r.u_beta,
+        i_alpha=r.i_alpha,
+        i_beta=r.i_beta,
+        dt=TS,
+    )
     omega_err_rpm = (out["omega_hat"] - r.omega_e) * 60.0 / (TWO_PI * stack.pole_pairs)
-    theta_err_deg = np.degrees(
-        (out["theta_hat"] - r.theta_e + np.pi) % TWO_PI - np.pi)
+    theta_err_deg = np.degrees((out["theta_hat"] - r.theta_e + np.pi) % TWO_PI - np.pi)
     return r.t, omega_err_rpm, theta_err_deg, f_e
 
 
@@ -66,7 +80,9 @@ def main() -> int:
     # ---- 0b: constant 1000 rpm under the 05b rule vs the ramp rule
     rpm = 1000.0
     short_duration = max(MIN_DURATION, RUN_CYCLES / (stack.pole_pairs * rpm / 60.0))
-    t_short, err_short, th_short, f_e = _nominal_chain(stack, plant, rpm=rpm, duration=short_duration)
+    t_short, err_short, th_short, f_e = _nominal_chain(
+        stack, plant, rpm=rpm, duration=short_duration
+    )
     short_mask = (t_short >= short_duration - STEADY_CYCLES / f_e) & (t_short <= short_duration)
     i_max = np.argmax(np.abs(err_short[short_mask]))
     window_start = t_short[short_mask][0]
@@ -74,7 +90,7 @@ def main() -> int:
     long_duration = 2.0
     t_long, err_long, _th_long, _ = _nominal_chain(stack, plant, rpm=rpm, duration=long_duration)
     late_mask = (t_long >= long_duration - STEADY_CYCLES / f_e) & (t_long <= long_duration)
-    settled_mask = (t_long >= 0.75) & (t_long <= 1.5)         # the ramp's settled rule
+    settled_mask = (t_long >= 0.75) & (t_long <= 1.5)  # the ramp's settled rule
 
     # ---- 0c: friction term
     inertia = plant.parameters.inertia
@@ -83,8 +99,11 @@ def main() -> int:
     omega_e, torque, load = 418.879, 3.0, 0.7
     domega_e = plant_b.speed_derivative(omega_e, torque, load)
     # documented mechanical form J dw_m/dt = T - T_L - B w_m, expressed as d w_e/dt
-    mechanical = plant.parameters.pole_pairs * (
-        torque - load - friction * (omega_e / plant.parameters.pole_pairs)) / inertia
+    mechanical = (
+        plant.parameters.pole_pairs
+        * (torque - load - friction * (omega_e / plant.parameters.pole_pairs))
+        / inertia
+    )
 
     out = {
         "step0b": {
@@ -94,10 +113,13 @@ def main() -> int:
             "constant_1000_05b_speed_max_rpm": float(np.max(np.abs(err_short[short_mask]))),
             "constant_1000_05b_time_of_max_s": float(t_short[short_mask][i_max]),
             "constant_1000_05b_time_of_max_after_window_start_s": float(
-                t_short[short_mask][i_max] - window_start),
+                t_short[short_mask][i_max] - window_start
+            ),
             "constant_1000_05b_error_at_window_start_rpm": float(err_short[short_mask][0]),
             "constant_1000_late_window_speed_max_rpm": float(np.max(np.abs(err_long[late_mask]))),
-            "constant_1000_settled_rule_speed_max_rpm": float(np.max(np.abs(err_long[settled_mask]))),
+            "constant_1000_settled_rule_speed_max_rpm": float(
+                np.max(np.abs(err_long[settled_mask]))
+            ),
             "constant_1000_settled_rule_angle_max_deg": float(np.max(np.abs(th_short[short_mask]))),
             "verdict": (
                 "transient-in-window artefact: the 05b constant window starts at 0.13 s, "
@@ -124,17 +146,23 @@ def main() -> int:
 
     b = out["step0b"]
     print("== 0b: constant-1000 rpm speed error ==")
-    print(f"  05b rule  : window [{b['constant_1000_05b_window'][0]:.3f}, {b['constant_1000_05b_window'][1]:.3f}] s, "
-          f"max|dw|={b['constant_1000_05b_speed_max_rpm']:.3f} rpm at t={b['constant_1000_05b_time_of_max_s']:.4f} "
-          f"({b['constant_1000_05b_time_of_max_after_window_start_s']*1e3:.1f} ms into the window)")
-    print(f"  2 s late window: max|dw|={b['constant_1000_late_window_speed_max_rpm']:.3f} rpm  |  "
-          f"settled [0.75,1.5]: {b['constant_1000_settled_rule_speed_max_rpm']:.3f} rpm")
+    print(
+        f"  05b rule  : window [{b['constant_1000_05b_window'][0]:.3f}, {b['constant_1000_05b_window'][1]:.3f}] s, "
+        f"max|dw|={b['constant_1000_05b_speed_max_rpm']:.3f} rpm at t={b['constant_1000_05b_time_of_max_s']:.4f} "
+        f"({b['constant_1000_05b_time_of_max_after_window_start_s'] * 1e3:.1f} ms into the window)"
+    )
+    print(
+        f"  2 s late window: max|dw|={b['constant_1000_late_window_speed_max_rpm']:.3f} rpm  |  "
+        f"settled [0.75,1.5]: {b['constant_1000_settled_rule_speed_max_rpm']:.3f} rpm"
+    )
     print(f"  ramp (05b)  : 0.1475 rpm (100 us)")
     print(f"  -> {b['verdict']}")
     c = out["step0c"]
     print("\n== 0c: friction term ==")
-    print(f"  speed_derivative uses {c['speed_derivative_applies']}; d w_e/dt code={c['domega_e_from_code']:.9f} "
-          f"vs mechanical={c['domega_e_mechanical_equivalent']:.9f} (identical={c['identical']})")
+    print(
+        f"  speed_derivative uses {c['speed_derivative_applies']}; d w_e/dt code={c['domega_e_from_code']:.9f} "
+        f"vs mechanical={c['domega_e_mechanical_equivalent']:.9f} (identical={c['identical']})"
+    )
     print(f"  -> {c['verdict']}")
     print(f"\nOutputs written to: {out_dir}")
     return 0

@@ -92,9 +92,15 @@ def dead_time_phase_error(v_dc: float, dead_time_s: float, switching_hz: float) 
     return v_dc * dead_time_s * switching_hz
 
 
-def dead_time_delta_alpha_beta(i_alpha: float, i_beta: float, *, v_dc: float,
-                               dead_time_s: float, switching_hz: float,
-                               current_threshold_a: float) -> tuple[float, float]:
+def dead_time_delta_alpha_beta(
+    i_alpha: float,
+    i_beta: float,
+    *,
+    v_dc: float,
+    dead_time_s: float,
+    switching_hz: float,
+    current_threshold_a: float,
+) -> tuple[float, float]:
     """Average-value dead-time voltage error in ``alpha-beta`` (Phase 06c).
 
     Per phase (abc): ``dv_x = -V_dc t_d f_sw * sat(i_x / i_th)`` (saturating at ``+-1``),
@@ -109,17 +115,28 @@ def dead_time_delta_alpha_beta(i_alpha: float, i_beta: float, *, v_dc: float,
     return dv_alpha, dv_beta
 
 
-def dead_time_compensation_alpha_beta(i_alpha: float, i_beta: float, *, v_dc: float,
-                                      dead_time_s: float, switching_hz: float,
-                                      current_threshold_a: float) -> tuple[float, float]:
+def dead_time_compensation_alpha_beta(
+    i_alpha: float,
+    i_beta: float,
+    *,
+    v_dc: float,
+    dead_time_s: float,
+    switching_hz: float,
+    current_threshold_a: float,
+) -> tuple[float, float]:
     """Dead-time compensation ``+V_dc t_d f_sw sat(i_x/i_th)`` in ``alpha-beta``.
 
     Added to the voltage applied by the plant (Phase 06c-2, default OFF), cancelling the
     per-phase ``-V_dc t_d f_sw sat(i_x/i_th)`` distortion when ``i_meas ~ i``.
     """
     dv_alpha, dv_beta = dead_time_delta_alpha_beta(
-        i_alpha, i_beta, v_dc=v_dc, dead_time_s=dead_time_s, switching_hz=switching_hz,
-        current_threshold_a=current_threshold_a)
+        i_alpha,
+        i_beta,
+        v_dc=v_dc,
+        dead_time_s=dead_time_s,
+        switching_hz=switching_hz,
+        current_threshold_a=current_threshold_a,
+    )
     return -dv_alpha, -dv_beta
 
 
@@ -152,8 +169,9 @@ class AngleSpeedSource(Protocol):
 
     name: str
 
-    def __call__(self, sample: DriveSample, truth: PMSMState) -> tuple[float, float]:
-        ...  # pragma: no cover - protocol
+    def __call__(
+        self, sample: DriveSample, truth: PMSMState
+    ) -> tuple[float, float]: ...  # pragma: no cover - protocol
 
 
 class TrueSource:
@@ -267,7 +285,9 @@ class DriveParameters:
     @property
     def kp_speed(self) -> float:
         """Speed-loop proportional gain ``2 zeta alpha_w J / Kt`` [A/(rad/s)]."""
-        return 2.0 * self.zeta_speed * _TWO_PI * self.alpha_w_hz * self.inertia / self.torque_constant
+        return (
+            2.0 * self.zeta_speed * _TWO_PI * self.alpha_w_hz * self.inertia / self.torque_constant
+        )
 
     @property
     def ki_speed(self) -> float:
@@ -295,7 +315,9 @@ class DriveParameters:
         )
         return cls(
             pole_pairs=int(pole_pairs),
-            stator_resistance=resolve_parameter(pmsm_config, "machine.stator_resistance_rs", unit="ohm"),
+            stator_resistance=resolve_parameter(
+                pmsm_config, "machine.stator_resistance_rs", unit="ohm"
+            ),
             ld=resolve_parameter(pmsm_config, "machine.stator_inductance_ld", unit="H"),
             psi_f=psi_f,
             inertia=resolve_parameter(pmsm_config, "mech.inertia_j", unit="kg.m^2"),
@@ -303,11 +325,15 @@ class DriveParameters:
                 assumptions_config, "machine.viscous_friction_b", unit="N.m.s/rad"
             ),
             v_dc=resolve_parameter(assumptions_config, "inverter.dc_bus_voltage", unit="V"),
-            delay_samples=int(resolve_parameter(assumptions_config, "inverter.delay_samples", unit="-")),
+            delay_samples=int(
+                resolve_parameter(assumptions_config, "inverter.delay_samples", unit="-")
+            ),
             current_loop_hz=resolve_parameter(
                 drive_config, "control.current_loop_frequency", unit="Hz"
             ),
-            speed_loop_hz=resolve_parameter(drive_config, "control.speed_loop_frequency", unit="Hz"),
+            speed_loop_hz=resolve_parameter(
+                drive_config, "control.speed_loop_frequency", unit="Hz"
+            ),
             alpha_c_hz=resolve_parameter(
                 assumptions_config, "current_loop.bandwidth_alpha_c_hz", unit="Hz"
             ),
@@ -316,14 +342,18 @@ class DriveParameters:
             ),
             zeta_speed=resolve_parameter(assumptions_config, "speed_loop.damping_zeta", unit="-"),
             i_d_ref=resolve_parameter(drive_config, "control.i_d_reference", unit="A"),
-            i_q_clamp=resolve_parameter(
-                assumptions_config, "speed_loop.i_q_clamp_factor", unit="-"
-            )
+            i_q_clamp=resolve_parameter(assumptions_config, "speed_loop.i_q_clamp_factor", unit="-")
             * i_rated,
-            n_substeps=int(resolve_parameter(assumptions_config, "integration.substeps_per_ts", unit="-")),
-            decoupling=bool(resolve_parameter(assumptions_config, "current_loop.decoupling", unit="-")),
+            n_substeps=int(
+                resolve_parameter(assumptions_config, "integration.substeps_per_ts", unit="-")
+            ),
+            decoupling=bool(
+                resolve_parameter(assumptions_config, "current_loop.decoupling", unit="-")
+            ),
             back_emf_compensation=bool(
-                resolve_parameter(assumptions_config, "current_loop.back_emf_compensation", unit="-")
+                resolve_parameter(
+                    assumptions_config, "current_loop.back_emf_compensation", unit="-"
+                )
             ),
         )
 
@@ -570,9 +600,24 @@ def run_drive(
     speed = SpeedController(p)
 
     names = (
-        "u_alpha", "u_beta", "u_cmd_alpha", "u_cmd_beta", "i_alpha", "i_beta",
-        "i_d", "i_q", "i_d_ref", "i_q_ref", "v_d", "v_q", "theta_e", "omega_e",
-        "omega_m", "omega_m_ref", "torque_e", "load_torque",
+        "u_alpha",
+        "u_beta",
+        "u_cmd_alpha",
+        "u_cmd_beta",
+        "i_alpha",
+        "i_beta",
+        "i_d",
+        "i_q",
+        "i_d_ref",
+        "i_q_ref",
+        "v_d",
+        "v_q",
+        "theta_e",
+        "omega_e",
+        "omega_m",
+        "omega_m_ref",
+        "torque_e",
+        "load_torque",
     )
     out = {name: np.empty(steps) for name in names}
     saturated = np.zeros(steps, dtype=bool)
@@ -583,13 +628,15 @@ def run_drive(
     for k in range(steps):
         t = k * dt
         sample = DriveSample(
-            t=t, dt=dt, i_alpha=state.i_alpha, i_beta=state.i_beta,
-            u_alpha=float(u_applied[0]), u_beta=float(u_applied[1]),
+            t=t,
+            dt=dt,
+            i_alpha=state.i_alpha,
+            i_beta=state.i_beta,
+            u_alpha=float(u_applied[0]),
+            u_beta=float(u_applied[1]),
         )
         theta_src, omega_src = source(sample, state)
-        theta_out = theta_src + (
-            _ANGLE_ADVANCE_SAMPLES * omega_src * dt if angle_advance else 0.0
-        )
+        theta_out = theta_src + (_ANGLE_ADVANCE_SAMPLES * omega_src * dt if angle_advance else 0.0)
 
         i_d, i_q = _park(state.i_alpha, state.i_beta, theta_src)
         if speed_mode:
@@ -623,18 +670,29 @@ def run_drive(
             u_plant = u_applied
             if dead_time_s > 0.0:
                 dv_alpha, dv_beta = dead_time_delta_alpha_beta(
-                    state.i_alpha, state.i_beta, v_dc=p.v_dc, dead_time_s=dead_time_s,
+                    state.i_alpha,
+                    state.i_beta,
+                    v_dc=p.v_dc,
+                    dead_time_s=dead_time_s,
                     switching_hz=dead_time_switching_hz,
-                    current_threshold_a=dead_time_current_threshold_a)
+                    current_threshold_a=dead_time_current_threshold_a,
+                )
                 u_plant = u_applied + np.array([dv_alpha, dv_beta])
                 if dead_time_compensation:
                     co_alpha, co_beta = dead_time_compensation_alpha_beta(
-                        float(i_prev[0]), float(i_prev[1]), v_dc=p.v_dc,
-                        dead_time_s=dead_time_s, switching_hz=dead_time_switching_hz,
-                        current_threshold_a=dead_time_current_threshold_a)
+                        float(i_prev[0]),
+                        float(i_prev[1]),
+                        v_dc=p.v_dc,
+                        dead_time_s=dead_time_s,
+                        switching_hz=dead_time_switching_hz,
+                        current_threshold_a=dead_time_current_threshold_a,
+                    )
                     u_plant = u_plant + np.array([co_alpha, co_beta])
             state = plant.step(
-                state, float(u_plant[0]), float(u_plant[1]), dt_sub,
+                state,
+                float(u_plant[0]),
+                float(u_plant[1]),
+                dt_sub,
                 load_torque=load_torque(t + sub * dt_sub),
             )
         i_prev = np.array([state.i_alpha, state.i_beta])

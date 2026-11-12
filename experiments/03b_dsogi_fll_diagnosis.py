@@ -141,11 +141,17 @@ def make_plot(speed_sweep, ts_sweep, tiny, output_dir: Path) -> None:
     rpms = [row["rpm"] for row in speed_sweep]
     for name in ("sign", "sigmoid"):
         axes[0].plot(rpms, [row[name]["fundamental_gain"] for row in speed_sweep], "o-", label=name)
-        axes[1].plot(rpms, [row[name]["fundamental_phase_deg"] for row in speed_sweep], "o-", label=name)
+        axes[1].plot(
+            rpms, [row[name]["fundamental_phase_deg"] for row in speed_sweep], "o-", label=name
+        )
     axes[0].axhline(1.0, color="k", ls=":")
-    axes[0].set(xlabel="speed (rpm)", ylabel="fundamental gain", title="Raw E_hat gain vs speed (Ts=100us)")
+    axes[0].set(
+        xlabel="speed (rpm)", ylabel="fundamental gain", title="Raw E_hat gain vs speed (Ts=100us)"
+    )
     axes[1].axhline(0.0, color="k", ls=":")
-    axes[1].set(xlabel="speed (rpm)", ylabel="phase (deg)", title="Raw E_hat phase vs speed (Ts=100us)")
+    axes[1].set(
+        xlabel="speed (rpm)", ylabel="phase (deg)", title="Raw E_hat phase vs speed (Ts=100us)"
+    )
     for ax in axes:
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -158,9 +164,13 @@ def make_plot(speed_sweep, ts_sweep, tiny, output_dir: Path) -> None:
     ts = [row["ts_us"] for row in ts_sweep]
     for name in ("sign", "sigmoid"):
         axes[0].semilogx(ts, [row[name]["fundamental_gain"] for row in ts_sweep], "o-", label=name)
-        axes[1].semilogx(ts, [row[name]["fundamental_phase_deg"] for row in ts_sweep], "o-", label=name)
+        axes[1].semilogx(
+            ts, [row[name]["fundamental_phase_deg"] for row in ts_sweep], "o-", label=name
+        )
     axes[0].axhline(1.0, color="k", ls=":")
-    axes[0].set(xlabel="Ts (us)", ylabel="fundamental gain", title="Raw E_hat gain vs Ts (1000 rpm)")
+    axes[0].set(
+        xlabel="Ts (us)", ylabel="fundamental gain", title="Raw E_hat gain vs Ts (1000 rpm)"
+    )
     axes[1].axhline(0.0, color="k", ls=":")
     axes[1].set(xlabel="Ts (us)", ylabel="phase (deg)", title="Raw E_hat phase vs Ts (1000 rpm)")
     for ax in axes:
@@ -183,7 +193,9 @@ def main() -> int:
     reference = {
         f"{int(rpm)}rpm": {
             "|E_true|_v": float(parameters.psi_f * parameters.pole_pairs * rpm * 2 * math.pi / 60),
-            "psi_f_omega_e_v": float(parameters.psi_f * parameters.pole_pairs * rpm * 2 * math.pi / 60),
+            "psi_f_omega_e_v": float(
+                parameters.psi_f * parameters.pole_pairs * rpm * 2 * math.pi / 60
+            ),
         }
         for rpm in SPEEDS_RPM
     }
@@ -191,7 +203,9 @@ def main() -> int:
     for rpm in SPEEDS_RPM:
         omega_e = parameters.pole_pairs * rpm * 2 * math.pi / 60
         t, u, i, emf = phase02.plant_rollout(plant, lambda tt: omega_e, 0.05, 100e-6)
-        reference[f"{int(rpm)}rpm"]["|E_true|_measured_v"] = float(np.hypot(emf[:, 0], emf[:, 1]).mean())
+        reference[f"{int(rpm)}rpm"]["|E_true|_measured_v"] = float(
+            np.hypot(emf[:, 0], emf[:, 1]).mean()
+        )
 
     speed_sweep = []
     for rpm in SPEEDS_RPM:
@@ -215,8 +229,11 @@ def main() -> int:
     diff = config_diff.summary(
         "03b_dsogi_fll_diagnosis",
         {},
-        scenario={"speeds_rpm": SPEEDS_RPM, "ts_coarse_us": [x * 1e6 for x in TS_COARSE],
-                  "fll_used": False},
+        scenario={
+            "speeds_rpm": SPEEDS_RPM,
+            "ts_coarse_us": [x * 1e6 for x in TS_COARSE],
+            "fll_used": False,
+        },
     )
     diagnosis = {
         "note": "Phase 03b diagnosis; no code/defaults changed. Filter metrics only. epsilon_filter_tau=OFF (no DSOGI-FLL in this script).",

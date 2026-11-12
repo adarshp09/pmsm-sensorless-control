@@ -36,7 +36,7 @@ def render(page_1based: int) -> Image.Image:
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     jobs = {
-        "fig13_p830": (8, (0.02, 0.05, 0.52, 0.55)),   # top-left column, speed panel
+        "fig13_p830": (8, (0.02, 0.05, 0.52, 0.55)),  # top-left column, speed panel
         "fig19_p832": (10, (0.02, 0.05, 0.52, 0.55)),
     }
     for name, (page, crop) in jobs.items():

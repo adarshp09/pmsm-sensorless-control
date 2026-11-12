@@ -70,11 +70,12 @@ def sliding_window_ramp_metrics(
         delta = tt - centre
         weight = np.abs(zz_true) ** 2
         normal = np.array(
-            [[np.sum(weight), np.sum(delta * weight)], [np.sum(delta * weight), np.sum(delta**2 * weight)]]
+            [
+                [np.sum(weight), np.sum(delta * weight)],
+                [np.sum(delta * weight), np.sum(delta**2 * weight)],
+            ]
         )
-        rhs = np.array(
-            [np.sum(zz * np.conj(zz_true)), np.sum(delta * zz * np.conj(zz_true))]
-        )
+        rhs = np.array([np.sum(zz * np.conj(zz_true)), np.sum(delta * zz * np.conj(zz_true))])
         g0, g1 = np.linalg.solve(normal, rhs)
         residual = zz - (g0 + g1 * delta) * zz_true
         omega_error = omega_prime_hz[sl] - f_true_hz[sl]
@@ -97,7 +98,13 @@ def summarize_ramp(rows: list[dict]) -> dict:
     if not rows:
         return {}
     worst = max(rows, key=lambda row: row["ripple_rms_v"])
-    keys = ("gain", "phase_deg", "ripple_rms_v", "omega_prime_error_hz_mean", "omega_prime_error_hz_std")
+    keys = (
+        "gain",
+        "phase_deg",
+        "ripple_rms_v",
+        "omega_prime_error_hz_mean",
+        "omega_prime_error_hz_std",
+    )
     return {
         "n_windows": len(rows),
         "mean": {key: float(np.mean([row[key] for row in rows])) for key in keys},

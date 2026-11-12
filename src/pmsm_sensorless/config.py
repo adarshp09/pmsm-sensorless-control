@@ -39,9 +39,7 @@ def find_project_root(start: Path | str | None = None) -> Path:
     for candidate in (here, *here.parents):
         if (candidate / "pyproject.toml").is_file():
             return candidate
-    raise FileNotFoundError(
-        f"could not locate project root (no pyproject.toml found above {here})"
-    )
+    raise FileNotFoundError(f"could not locate project root (no pyproject.toml found above {here})")
 
 
 def default_config_dir() -> Path:
@@ -104,32 +102,24 @@ def iter_parameters(
     if params is None:
         raise ConfigError("configuration has no 'parameters' mapping")
     if not isinstance(params, dict):
-        raise ConfigError(
-            f"'parameters' must be a mapping, got {type(params).__name__}"
-        )
+        raise ConfigError(f"'parameters' must be a mapping, got {type(params).__name__}")
 
     for name, entry in params.items():
         if not isinstance(entry, dict):
-            raise ConfigError(
-                f"parameter {name!r} must be a mapping, got {type(entry).__name__}"
-            )
+            raise ConfigError(f"parameter {name!r} must be a mapping, got {type(entry).__name__}")
         missing = [key for key in _REQUIRED_PARAM_KEYS if key not in entry]
         if missing:
             raise ConfigError(f"parameter {name!r} is missing keys: {missing}")
 
         value = entry["value"]
         unit = entry["unit"]
-        if value is not UNRESOLVED and (
-            not isinstance(value, _NUMERIC) or isinstance(value, bool)
-        ):
+        if value is not UNRESOLVED and (not isinstance(value, _NUMERIC) or isinstance(value, bool)):
             raise ConfigError(
-                f"parameter {name!r} value must be numeric or null, "
-                f"got {type(value).__name__}"
+                f"parameter {name!r} value must be numeric or null, got {type(value).__name__}"
             )
         if not isinstance(unit, str) or not unit:
             raise ConfigError(
-                f"parameter {name!r} unit must be a non-empty string, "
-                f"got {type(unit).__name__}"
+                f"parameter {name!r} unit must be a non-empty string, got {type(unit).__name__}"
             )
         yield name, value, unit
 
@@ -147,9 +137,7 @@ def _find_parameter(config: dict[str, Any], name: str) -> tuple[float | None, st
     raise ConfigError(f"parameter {name!r} not found in configuration")
 
 
-def get_parameter(
-    config: dict[str, Any], name: str, *, unit: str | None = None
-) -> float | None:
+def get_parameter(config: dict[str, Any], name: str, *, unit: str | None = None) -> float | None:
     """Return a parameter's value, which may be :data:`UNRESOLVED` (``None``).
 
     Args:
@@ -163,15 +151,11 @@ def get_parameter(
     """
     value, stored_unit = _find_parameter(config, name)
     if unit is not None and stored_unit != unit:
-        raise ConfigError(
-            f"parameter {name!r} has unit {stored_unit!r}, expected {unit!r}"
-        )
+        raise ConfigError(f"parameter {name!r} has unit {stored_unit!r}, expected {unit!r}")
     return value
 
 
-def resolve_parameter(
-    config: dict[str, Any], name: str, *, unit: str | None = None
-) -> float:
+def resolve_parameter(config: dict[str, Any], name: str, *, unit: str | None = None) -> float:
     """Return a required parameter's numeric value.
 
     Unlike :func:`get_parameter`, an unresolved (``null``) value is an error:

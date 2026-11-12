@@ -25,8 +25,8 @@ from pmsm_sensorless.estimation import (
 TWO_PI = 2.0 * math.pi
 P = 4
 PSI_F = 0.1326
-OMEGA_1000 = P * 1000.0 * TWO_PI / 60.0          # electrical rad/s at 1000 rpm
-AMPLITUDE_1000 = OMEGA_1000 * PSI_F               # |E| at 1000 rpm = 55.543 V
+OMEGA_1000 = P * 1000.0 * TWO_PI / 60.0  # electrical rad/s at 1000 rpm
+AMPLITUDE_1000 = OMEGA_1000 * PSI_F  # |E| at 1000 rpm = 55.543 V
 
 
 def _emf(theta: float, amplitude: float = AMPLITUDE_1000) -> tuple[float, float]:
@@ -46,7 +46,7 @@ def _qpll_params(amplitude: float = AMPLITUDE_1000) -> QPLLParameters:
 def test_wrap_angle_pi_closed_convention() -> None:
     assert wrap_angle_pi_closed(0.0) == pytest.approx(0.0)
     assert wrap_angle_pi_closed(math.pi) == pytest.approx(math.pi)
-    assert wrap_angle_pi_closed(-math.pi) == pytest.approx(math.pi)      # (-pi, pi]
+    assert wrap_angle_pi_closed(-math.pi) == pytest.approx(math.pi)  # (-pi, pi]
     assert wrap_angle_pi_closed(3.0 * math.pi) == pytest.approx(math.pi)
     assert wrap_angle_pi_closed(1.5 * math.pi) == pytest.approx(-0.5 * math.pi)
     for x in (-20.0, -7.0, -3.2, 0.0, 2.0, 6.5, 20.0):
@@ -199,7 +199,11 @@ def test_estimation_imports_no_plant_observer_filter_fuzzy() -> None:
         module = importlib.import_module(f"pmsm_sensorless.{name}")
         for value in vars(module).values():
             if isinstance(value, types.ModuleType):
-                root = value.__name__.split(".")[1] if value.__name__.startswith("pmsm_sensorless.") else ""
+                root = (
+                    value.__name__.split(".")[1]
+                    if value.__name__.startswith("pmsm_sensorless.")
+                    else ""
+                )
                 assert root not in {"plant", "observers", "filters", "fuzzy"}, value.__name__
 
 

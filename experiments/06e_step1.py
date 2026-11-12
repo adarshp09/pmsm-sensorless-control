@@ -49,44 +49,62 @@ def _run(stack, plant, rpm, *, normalize, theta0_offset=0.0):
     roll = DT._rollout(plant, i_q=stack.i_rated, rpm0=rpm, dead_time_s=0.0, duration=0.6)
     observer = C.build_observer("matched_sigmoid", stack)
     fll = C.build_fll(stack.initial_omega_at(rpm))
-    qpll = QPLL(QPLLParameters.from_design(zeta=0.707, f_n_hz=20.0,
-                                           amplitude_v=stack.design_amp_v, normalize=normalize),
-                initial_theta=roll["theta_e"][0] + theta0_offset,
-                initial_omega=stack.pole_pairs * rpm * 2.0 * math.pi / 60.0)
+    qpll = QPLL(
+        QPLLParameters.from_design(
+            zeta=0.707, f_n_hz=20.0, amplitude_v=stack.design_amp_v, normalize=normalize
+        ),
+        initial_theta=roll["theta_e"][0] + theta0_offset,
+        initial_omega=stack.pole_pairs * rpm * 2.0 * math.pi / 60.0,
+    )
     n = len(roll["t"])
     th = np.empty(n)
     for k in range(n):
-        s = observer.step(roll["u_alpha"][k], roll["u_beta"][k], roll["i_alpha"][k], roll["i_beta"][k], DT.TS)
+        s = observer.step(
+            roll["u_alpha"][k], roll["u_beta"][k], roll["i_alpha"][k], roll["i_beta"][k], DT.TS
+        )
         f = fll.step(s.back_emf_alpha, s.back_emf_beta, DT.TS)
         th[k] = qpll.step(f.v_alpha_prime, f.v_beta_prime, DT.TS).theta_hat
     err = np.degrees([wrap_angle_pi_closed(a - b) for a, b in zip(th, roll["theta_e"])])
     f_e = stack.pole_pairs * rpm / 60.0
     m = roll["t"] >= 0.6 - 8.0 / f_e
-    return {"steady_mean_deg": float(np.mean(err[m])), "steady_std_deg": float(np.std(err[m])),
-            "final_deg": float(err[-1]),
-            "lock_in_deg": float(np.max(np.abs(err[m])))}
+    return {
+        "steady_mean_deg": float(np.mean(err[m])),
+        "steady_std_deg": float(np.std(err[m])),
+        "final_deg": float(err[-1]),
+        "lock_in_deg": float(np.max(np.abs(err[m]))),
+    }
 
 
 def main() -> int:
     directory = config.default_config_dir()
     stack = C.build_stack(directory)
     from pmsm_sensorless.plant.pmsm import PMSMPlant, PMSMParameters
+
     plant = PMSMPlant(PMSMParameters.from_config(stack.pmsm_config))
-    out = {"note": ("Phase 06e Step 1: Q-PLL normalization lock-point, open-loop nominal "
-                    "drive, matched cell, v' input, f_n=20."), "runs": {}}
+    out = {
+        "note": (
+            "Phase 06e Step 1: Q-PLL normalization lock-point, open-loop nominal "
+            "drive, matched cell, v' input, f_n=20."
+        ),
+        "runs": {},
+    }
     for rpm in (500.0, 1000.0):
         for normalize in (False, True):
             out["runs"][f"rpm{int(rpm)}|norm{'on' if normalize else 'off'}|theta0=0"] = _run(
-                stack, plant, rpm, normalize=normalize)
+                stack, plant, rpm, normalize=normalize
+            )
             out["runs"][f"rpm{int(rpm)}|norm{'on' if normalize else 'off'}|theta0=+90"] = _run(
-                stack, plant, rpm, normalize=normalize, theta0_offset=math.pi / 2.0)
+                stack, plant, rpm, normalize=normalize, theta0_offset=math.pi / 2.0
+            )
     out_dir = config.find_project_root() / "experiments" / "output" / "06e_step1"
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "lockpoint.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
     print("== Step 1: Q-PLL lock point ==")
     for k, v in out["runs"].items():
-        print(f"  {k:32s} steady_mean={v['steady_mean_deg']:8.2f}° std={v['steady_std_deg']:6.2f} "
-              f"final={v['final_deg']:8.2f}° lock_in_max={v['lock_in_deg']:8.2f}°")
+        print(
+            f"  {k:32s} steady_mean={v['steady_mean_deg']:8.2f}° std={v['steady_std_deg']:6.2f} "
+            f"final={v['final_deg']:8.2f}° lock_in_max={v['lock_in_deg']:8.2f}°"
+        )
     print(f"Outputs: {out_dir}")
     return 0
 

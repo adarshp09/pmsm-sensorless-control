@@ -35,9 +35,16 @@ ALPHA_W_GRID = (5.0, 7.5, 10.0, 15.0, 20.0, 30.0, 50.0)
 
 
 def _measured(rows, freqs, rpm, chain=CHAIN):
-    g = np.array([rows[f"rpm{int(rpm)}_fm{f:g}"]["chains"][chain]["gain"] for f in freqs], dtype=float)
-    p = np.degrees(np.unwrap(np.radians(
-        [rows[f"rpm{int(rpm)}_fm{f:g}"]["chains"][chain]["phase_deg"] for f in freqs])))
+    g = np.array(
+        [rows[f"rpm{int(rpm)}_fm{f:g}"]["chains"][chain]["gain"] for f in freqs], dtype=float
+    )
+    p = np.degrees(
+        np.unwrap(
+            np.radians(
+                [rows[f"rpm{int(rpm)}_fm{f:g}"]["chains"][chain]["phase_deg"] for f in freqs]
+            )
+        )
+    )
     return np.array(freqs, dtype=float), g, p
 
 
@@ -47,7 +54,8 @@ def _T_at(f, freqs, gain, phase_deg):
     if np.any(lf < lg[0] - 1e-9) or np.any(lf > lg[-1] + 1e-9):
         return None
     return 10 ** np.interp(lf, lg, np.log10(gain)) * np.exp(
-        1j * np.radians(np.interp(lf, lg, phase_deg)))
+        1j * np.radians(np.interp(lf, lg, phase_deg))
+    )
 
 
 def _L_enc(f, params, alpha_w_hz):
@@ -58,9 +66,12 @@ def _L_enc(f, params, alpha_w_hz):
     ki = (TWO_PI * alpha_w_hz) ** 2 * params.inertia / params.torque_constant
     c = kp + ki * tsw / (z - 1.0)
     plant = params.torque_constant * tsw / params.inertia / (z - 1.0)
-    current = (TWO_PI * params.alpha_c_hz) / (jw + TWO_PI * params.alpha_c_hz) \
+    current = (
+        (TWO_PI * params.alpha_c_hz)
+        / (jw + TWO_PI * params.alpha_c_hz)
         * np.exp(-jw * 1.5 * params.ts_current)
-    return c * plant * current * z ** -0.5
+    )
+    return c * plant * current * z**-0.5
 
 
 def _margins(f, L):
@@ -100,14 +111,24 @@ def main() -> int:
     params = DriveParameters.from_configs(
         config.load_config("drive", directory=directory),
         config.load_config("drive_assumptions", directory=directory),
-        config.load_config("pmsm", directory=directory))
-    resp = json.loads((config.find_project_root() / "experiments" / "output" /
-                       "06b2_estimator_response" / "estimator_response.json").read_text())
+        config.load_config("pmsm", directory=directory),
+    )
+    resp = json.loads(
+        (
+            config.find_project_root()
+            / "experiments"
+            / "output"
+            / "06b2_estimator_response"
+            / "estimator_response.json"
+        ).read_text()
+    )
 
     # proposed operating-point decoupled rule
     proposed = {"500": 5.0, "1000": 10.0}
-    criteria = {"500": {"pm_min_deg": 10.0, "gm_min_db": 6.0},
-                "1000": {"pm_min_deg": 45.0, "gm_min_db": 6.0}}
+    criteria = {
+        "500": {"pm_min_deg": 10.0, "gm_min_db": 6.0},
+        "1000": {"pm_min_deg": 45.0, "gm_min_db": 6.0},
+    }
 
     grid = {}
     for rpm in (500.0, 1000.0):
@@ -120,21 +141,31 @@ def main() -> int:
         c = criteria[rpm_s]
         pm_ok = entry.get("pm_deg") is not None and entry["pm_deg"] >= c["pm_min_deg"]
         gm_ok = entry.get("gm_db") is not None and entry["gm_db"] >= c["gm_min_db"]
-        checks[rpm_s] = {"alpha_w_hz": aw, "criteria": c, "margins": entry,
-                         "pm_ok": bool(pm_ok), "gm_ok": bool(gm_ok), "pass": bool(pm_ok and gm_ok)}
+        checks[rpm_s] = {
+            "alpha_w_hz": aw,
+            "criteria": c,
+            "margins": entry,
+            "pm_ok": bool(pm_ok),
+            "gm_ok": bool(gm_ok),
+            "pass": bool(pm_ok and gm_ok),
+        }
 
     # largest grid alpha_w at 1000 rpm meeting PM>=45 & GM>=6 dB
-    eligible = [aw for aw in ALPHA_W_GRID
-                if (grid[f"rpm1000_aw{aw:g}"].get("pm_deg") or -1e9) >= 45.0
-                and (grid[f"rpm1000_aw{aw:g}"].get("gm_db") or -1e9) >= 6.0]
+    eligible = [
+        aw
+        for aw in ALPHA_W_GRID
+        if (grid[f"rpm1000_aw{aw:g}"].get("pm_deg") or -1e9) >= 45.0
+        and (grid[f"rpm1000_aw{aw:g}"].get("gm_db") or -1e9) >= 6.0
+    ]
     largest_1000_pm45 = max(eligible) if eligible else None
 
     verdict = "PASS" if all(c["pass"] for c in checks.values()) else "FAIL"
     out = {
-        "note": ("Phase 06b-3 Step 1: verify the operating-point decoupled speed-loop rule "
-                 "against L = L_enc x T_est (chain B, f_n=20 Hz; 06b-2 T_est). No extrapolation."),
-        "proposed_rule": {"rpm500": 5.0, "rpm1000": 10.0,
-                          "criteria": criteria},
+        "note": (
+            "Phase 06b-3 Step 1: verify the operating-point decoupled speed-loop rule "
+            "against L = L_enc x T_est (chain B, f_n=20 Hz; 06b-2 T_est). No extrapolation."
+        ),
+        "proposed_rule": {"rpm500": 5.0, "rpm1000": 10.0, "criteria": criteria},
         "checks": checks,
         "grid": grid,
         "largest_alpha_w_1000rpm_with_pm45": largest_1000_pm45,
@@ -147,16 +178,20 @@ def main() -> int:
     print("== proposed operating-point decoupled rule ==")
     for rpm_s, chk in checks.items():
         m = chk["margins"]
-        print(f"  {rpm_s:>4s} rpm, alpha_w={chk['alpha_w_hz']:4g} Hz: "
-              f"PM={m.get('pm_deg'):7.1f} (min {chk['criteria']['pm_min_deg']:.0f})  "
-              f"GM={('%.1f' % m['gm_db']) if m.get('gm_db') is not None else 'inf':>6s} dB  "
-              f"fc={('%.1f' % m['crossover_hz']) if m.get('crossover_hz') else 'none':>6s} Hz  "
-              f"-> {'PASS' if chk['pass'] else 'FAIL'}")
+        print(
+            f"  {rpm_s:>4s} rpm, alpha_w={chk['alpha_w_hz']:4g} Hz: "
+            f"PM={m.get('pm_deg'):7.1f} (min {chk['criteria']['pm_min_deg']:.0f})  "
+            f"GM={('%.1f' % m['gm_db']) if m.get('gm_db') is not None else 'inf':>6s} dB  "
+            f"fc={('%.1f' % m['crossover_hz']) if m.get('crossover_hz') else 'none':>6s} Hz  "
+            f"-> {'PASS' if chk['pass'] else 'FAIL'}"
+        )
     print(f"\n  largest alpha_w at 1000 rpm with PM>=45 & GM>=6 dB: {largest_1000_pm45} Hz")
     print("\n== full grid (chain B, f_n=20) ==")
     for key, m in grid.items():
-        print(f"  {key:14s} PM={m.get('pm_deg'):7.1f}  GM={('%.1f' % m['gm_db']) if m.get('gm_db') is not None else 'inf':>6s}  "
-              f"fc={('%.1f' % m['crossover_hz']) if m.get('crossover_hz') else 'none':>6s}")
+        print(
+            f"  {key:14s} PM={m.get('pm_deg'):7.1f}  GM={('%.1f' % m['gm_db']) if m.get('gm_db') is not None else 'inf':>6s}  "
+            f"fc={('%.1f' % m['crossover_hz']) if m.get('crossover_hz') else 'none':>6s}"
+        )
     print(f"\n== VERDICT: {verdict} ==")
     print(f"Outputs written to: {out_dir}")
     return 0

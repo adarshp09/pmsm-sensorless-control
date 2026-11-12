@@ -30,16 +30,27 @@ ANGLE_LIMIT_DEG = 30.0
 
 def _run(stack, params, plant, spec, *, advance, clamp):
     source, chain_source, res = E.run_sensorless(
-        stack, params, plant, speed_ref=spec["speed_ref"], load_torque=spec["load"],
-        duration=spec["duration"], alpha_w=spec["alpha_w"], advance=advance, clamp=clamp)
-    m = E.estimate_metrics(source, chain_source, res,
-                           dynamic=spec["dynamic"], steady=spec["steady"])
+        stack,
+        params,
+        plant,
+        speed_ref=spec["speed_ref"],
+        load_torque=spec["load"],
+        duration=spec["duration"],
+        alpha_w=spec["alpha_w"],
+        advance=advance,
+        clamp=clamp,
+    )
+    m = E.estimate_metrics(
+        source, chain_source, res, dynamic=spec["dynamic"], steady=spec["steady"]
+    )
     if spec["disturbance_s"] is not None:
         m.update(E.speed_metrics(stack, res, {"disturbance_s": spec["disturbance_s"]}))
     m["passed"] = bool(
-        m["handed_over"] and m["fll_status"] == "ok"
+        m["handed_over"]
+        and m["fll_status"] == "ok"
         and (m["peak_theta_err_deg"] is not None and m["peak_theta_err_deg"] < ANGLE_LIMIT_DEG)
-        and m["saturation_after_transient"] == 0.0)
+        and m["saturation_after_transient"] == 0.0
+    )
     return m
 
 
@@ -57,9 +68,11 @@ def main() -> int:
     gate_keys = [k for k, _ in results.items() if k.endswith("|advoff|clampon")]
     gate_pass = all(results[k]["passed"] for k in gate_keys)
     out = {
-        "note": ("Phase 06b-6 Gate P: paper scenarios S1-S4, chain B, matched cell, "
-                 "clamp ON, advance off/on; ablation clamp OFF. Pass: peak |theta_hat-theta| "
-                 "< 30 deg, no saturation after transient, no FLL guard trip."),
+        "note": (
+            "Phase 06b-6 Gate P: paper scenarios S1-S4, chain B, matched cell, "
+            "clamp ON, advance off/on; ablation clamp OFF. Pass: peak |theta_hat-theta| "
+            "< 30 deg, no saturation after transient, no FLL guard trip."
+        ),
         "rule": {str(k): v for k, v in rule.items()},
         "gate": "PASS" if gate_pass else "FAIL",
         "results": results,
@@ -71,10 +84,12 @@ def main() -> int:
     print(f"== GATE P (06b-6): {out['gate']} ==")
     for key, m in results.items():
         th = m["steady_theta_err"]["max"]
-        print(f"  {key:38s} hand={m['handed_over']} fll={m['fll_status']:9s} "
-              f"peak={m['peak_theta_err_deg'] if m['peak_theta_err_deg'] is not None else -1:7.1f} "
-              f"steady_max={th if th is not None else -1:6.1f} sat_after={m['saturation_after_transient']:.3f} "
-              f"{'PASS' if m['passed'] else 'FAIL'}")
+        print(
+            f"  {key:38s} hand={m['handed_over']} fll={m['fll_status']:9s} "
+            f"peak={m['peak_theta_err_deg'] if m['peak_theta_err_deg'] is not None else -1:7.1f} "
+            f"steady_max={th if th is not None else -1:6.1f} sat_after={m['saturation_after_transient']:.3f} "
+            f"{'PASS' if m['passed'] else 'FAIL'}"
+        )
     print(f"\nOutputs written to: {out_dir}")
     return 0
 

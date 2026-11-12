@@ -40,8 +40,13 @@ GM_MIN_DB = 6.0
 
 def _measured(rows: dict, freqs, rpm: float, chain: str):
     g = np.array([rows[f"rpm{int(rpm)}_fm{f:g}"]["chains"][chain]["gain"] for f in freqs])
-    p = np.degrees(np.unwrap(np.radians(
-        [rows[f"rpm{int(rpm)}_fm{f:g}"]["chains"][chain]["phase_deg"] for f in freqs])))
+    p = np.degrees(
+        np.unwrap(
+            np.radians(
+                [rows[f"rpm{int(rpm)}_fm{f:g}"]["chains"][chain]["phase_deg"] for f in freqs]
+            )
+        )
+    )
     return np.array(freqs, dtype=float), g, p
 
 
@@ -65,9 +70,12 @@ def _L_enc(f, params: DriveParameters, alpha_w_hz: float):
     ki = (TWO_PI * alpha_w_hz) ** 2 * params.inertia / params.torque_constant
     c = kp + ki * tsw / (z - 1.0)
     plant_zoh = params.torque_constant * tsw / params.inertia / (z - 1.0)
-    current = (TWO_PI * params.alpha_c_hz) / (jw + TWO_PI * params.alpha_c_hz) \
+    current = (
+        (TWO_PI * params.alpha_c_hz)
+        / (jw + TWO_PI * params.alpha_c_hz)
         * np.exp(-jw * 1.5 * params.ts_current)
-    return c * plant_zoh * current * z ** -0.5
+    )
+    return c * plant_zoh * current * z**-0.5
 
 
 def _margins(f, L):
@@ -97,9 +105,17 @@ def main() -> int:
     params = DriveParameters.from_configs(
         config.load_config("drive", directory=directory),
         config.load_config("drive_assumptions", directory=directory),
-        config.load_config("pmsm", directory=directory))
-    resp = json.loads((config.find_project_root() / "experiments" / "output" /
-                       "06b2_estimator_response" / "estimator_response.json").read_text())
+        config.load_config("pmsm", directory=directory),
+    )
+    resp = json.loads(
+        (
+            config.find_project_root()
+            / "experiments"
+            / "output"
+            / "06b2_estimator_response"
+            / "estimator_response.json"
+        ).read_text()
+    )
     rows = resp["rows"]
     freqs = resp["config"]["freqs_hz"]
 
@@ -111,31 +127,47 @@ def main() -> int:
             for aw in ALPHA_W_GRID:
                 T = _T_at(fgrid, freqs_r, gain, phase)
                 if T is None:
-                    table[f"{chain}|rpm{int(rpm)}|aw{aw:g}"] = {"error": "crossover outside measured range"}
+                    table[f"{chain}|rpm{int(rpm)}|aw{aw:g}"] = {
+                        "error": "crossover outside measured range"
+                    }
                     continue
                 L = _L_enc(fgrid, params, aw) * T
                 table[f"{chain}|rpm{int(rpm)}|aw{aw:g}"] = _margins(fgrid, L)
 
     def ok(entry):
-        return (entry.get("pm_deg") is not None and entry["pm_deg"] >= PM_MIN
-                and entry.get("gm_db") is not None and entry["gm_db"] >= GM_MIN_DB)
+        return (
+            entry.get("pm_deg") is not None
+            and entry["pm_deg"] >= PM_MIN
+            and entry.get("gm_db") is not None
+            and entry["gm_db"] >= GM_MIN_DB
+        )
 
-    candidates = [aw for aw in ALPHA_W_GRID
-                  if ok(table[f"B_fn20|rpm500|aw{aw:g}"]) and ok(table[f"B_fn20|rpm1000|aw{aw:g}"])]
+    candidates = [
+        aw
+        for aw in ALPHA_W_GRID
+        if ok(table[f"B_fn20|rpm500|aw{aw:g}"]) and ok(table[f"B_fn20|rpm1000|aw{aw:g}"])
+    ]
     alpha_w_star = max(candidates) if candidates else None
 
     out = {
-        "note": ("Phase 06b-2 margins with the measured T_est. L = L_enc (06a discrete model, "
-                 "zeta=1 PI, current loop + delays, 1 kHz ZOH) x T_est (measured, log-interp). "
-                 "alpha_w* rule frozen before Step 3."),
-        "rule": {"pm_min_deg": PM_MIN, "gm_min_db": GM_MIN_DB,
-                 "definition": "largest grid alpha_w with PM>=45 and GM>=6 dB at both speeds, chain B f_n=20 Hz"},
+        "note": (
+            "Phase 06b-2 margins with the measured T_est. L = L_enc (06a discrete model, "
+            "zeta=1 PI, current loop + delays, 1 kHz ZOH) x T_est (measured, log-interp). "
+            "alpha_w* rule frozen before Step 3."
+        ),
+        "rule": {
+            "pm_min_deg": PM_MIN,
+            "gm_min_db": GM_MIN_DB,
+            "definition": "largest grid alpha_w with PM>=45 and GM>=6 dB at both speeds, chain B f_n=20 Hz",
+        },
         "alpha_w_grid": list(ALPHA_W_GRID),
         "alpha_w_star_hz": alpha_w_star,
         "table": table,
-        "time_domain_06b": {"stable_max_alpha_w_hz_constant_load": 15.0,
-                            "unstable_at_hz": 20.0,
-                            "note": "06b time-domain: constant-load stable <=15 Hz; a load step destabilised even 10 Hz"},
+        "time_domain_06b": {
+            "stable_max_alpha_w_hz_constant_load": 15.0,
+            "unstable_at_hz": 20.0,
+            "note": "06b time-domain: constant-load stable <=15 Hz; a load step destabilised even 10 Hz",
+        },
     }
     out_dir = config.find_project_root() / "experiments" / "output" / "06b2_margins"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -148,9 +180,12 @@ def main() -> int:
             for aw in ALPHA_W_GRID:
                 e = table[f"{chain}|rpm{int(rpm)}|aw{aw:g}"]
                 if "error" in e:
-                    print(f"     aw={aw:4g} Hz: {e['error']}"); continue
-                print(f"     aw={aw:4g} Hz: PM={e['pm_deg']:7.1f}  GM={('%6.1f' % e['gm_db']) if e['gm_db'] is not None else '   inf'}  "
-                      f"fc={('%6.1f' % e['crossover_hz']) if e['crossover_hz'] else '  none'}")
+                    print(f"     aw={aw:4g} Hz: {e['error']}")
+                    continue
+                print(
+                    f"     aw={aw:4g} Hz: PM={e['pm_deg']:7.1f}  GM={('%6.1f' % e['gm_db']) if e['gm_db'] is not None else '   inf'}  "
+                    f"fc={('%6.1f' % e['crossover_hz']) if e['crossover_hz'] else '  none'}"
+                )
     print(f"\n== alpha_w* (chain B, f_n=20, PM>={PM_MIN} & GM>={GM_MIN_DB} dB at both speeds) ==")
     print(f"  candidates={candidates} -> alpha_w* = {alpha_w_star} Hz")
     print(f"\nOutputs written to: {out_dir}")

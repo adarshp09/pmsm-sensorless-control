@@ -148,7 +148,9 @@ def test_rollout_is_deterministic(plant, i_rated) -> None:
 # --- GATE: fixed sigmoid reconstructs E at Ts = 10 us -------------------------
 
 
-def test_gate_sigmoid_reconstructs_back_emf_at_10us(plant, i_rated, pmsm_config, observer_config) -> None:
+def test_gate_sigmoid_reconstructs_back_emf_at_10us(
+    plant, i_rated, pmsm_config, observer_config
+) -> None:
     """GATE (Phase 04c Step 1): stable fixed sigmoid, Ts = 10 us, I_q = I_rated.
 
     Raw E_hat fundamental gain within 2 % and phase within 1 deg of E_true in the

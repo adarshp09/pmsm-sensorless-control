@@ -143,9 +143,13 @@ class FuzzyParameters:
 
         return cls(
             ke=resolve_parameter(assumptions_config, "flc.input_error_scale_ke", unit="1/A"),
-            kec=resolve_parameter(assumptions_config, "flc.input_delta_error_scale_kec", unit="s/A"),
+            kec=resolve_parameter(
+                assumptions_config, "flc.input_delta_error_scale_kec", unit="s/A"
+            ),
             ku=resolve_parameter(assumptions_config, "flc.output_scale_ku", unit="-"),
-            cog_grid_points=int(resolve_parameter(assumptions_config, "flc.cog_grid_points", unit="-")),
+            cog_grid_points=int(
+                resolve_parameter(assumptions_config, "flc.cog_grid_points", unit="-")
+            ),
             input_sets=input_sets,
             input_centres=input_centres,
             input_half_width=float(assumption_specs["input_mf_half_width"]),
@@ -173,7 +177,9 @@ class FuzzyEngine:
         if parameters.cog_grid_points < 2:
             raise ValueError("cog_grid_points must be >= 2")
         self.parameters = parameters
-        self._grid = np.linspace(parameters.output_min, parameters.output_max, parameters.cog_grid_points)
+        self._grid = np.linspace(
+            parameters.output_min, parameters.output_max, parameters.cog_grid_points
+        )
         self._output_memberships = np.array(
             [
                 triangular_membership(self._grid, (centre,), parameters.output_half_width)
@@ -203,7 +209,9 @@ class FuzzyEngine:
             return 0.0  # assumed handling of non-finite normalised inputs
         return min(1.0, max(-1.0, value))
 
-    def _infer(self, mu_s: np.ndarray, mu_sd: np.ndarray, rules: dict[str, tuple[str, ...]]) -> float:
+    def _infer(
+        self, mu_s: np.ndarray, mu_sd: np.ndarray, rules: dict[str, tuple[str, ...]]
+    ) -> float:
         strengths = np.zeros(len(self.parameters.output_sets))
         for i, row_label in enumerate(self.parameters.input_sets):
             for j, column_label in enumerate(self.parameters.input_sets):
@@ -220,8 +228,12 @@ class FuzzyEngine:
         """Return ``(kF, aF)`` for normalised inputs ``s_n, s_dot_n``."""
         s = self._normalise(s_n)
         s_dot = self._normalise(s_dot_n)
-        mu_s = triangular_membership(s, self.parameters.input_centres, self.parameters.input_half_width)
-        mu_sd = triangular_membership(s_dot, self.parameters.input_centres, self.parameters.input_half_width)
+        mu_s = triangular_membership(
+            s, self.parameters.input_centres, self.parameters.input_half_width
+        )
+        mu_sd = triangular_membership(
+            s_dot, self.parameters.input_centres, self.parameters.input_half_width
+        )
         k_f = self._infer(mu_s, mu_sd, self.parameters.rule_kF)
         a_f = self._infer(mu_s, mu_sd, self.parameters.rule_aF)
         return k_f, a_f

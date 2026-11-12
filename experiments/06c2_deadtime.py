@@ -39,7 +39,7 @@ from validation_metrics import vector_metrics  # noqa: E402
 
 TWO_PI = 2.0 * math.pi
 T_D = 2e-6
-PRED = 4.0 / math.pi * (311.0 * T_D * 10000.0)   # 7.92 V
+PRED = 4.0 / math.pi * (311.0 * T_D * 10000.0)  # 7.92 V
 
 
 def _observer_ehat(stack, res):
@@ -47,22 +47,34 @@ def _observer_ehat(stack, res):
     n = len(res.t)
     ea, eb = np.empty(n), np.empty(n)
     for k in range(n):
-        s = observer.step(res.u_alpha[k], res.u_beta[k], res.i_alpha[k], res.i_beta[k],
-                          float(res.t[1] - res.t[0]))
+        s = observer.step(
+            res.u_alpha[k], res.u_beta[k], res.i_alpha[k], res.i_beta[k], float(res.t[1] - res.t[0])
+        )
         ea[k], eb[k] = s.back_emf_alpha, s.back_emf_beta
     return ea, eb
 
 
 def _gate_d(stack, plant, params, *, rpm, frac, dead, comp):
-    res = run_drive(plant, params, duration=0.6, speed_ref_rpm=float(rpm),
-                    load_torque=ConstantLoadTorque(frac * E.RATED_TORQUE),
-                    dead_time_s=dead, dead_time_compensation=comp)
+    res = run_drive(
+        plant,
+        params,
+        duration=0.6,
+        speed_ref_rpm=float(rpm),
+        load_torque=ConstantLoadTorque(frac * E.RATED_TORQUE),
+        dead_time_s=dead,
+        dead_time_compensation=comp,
+    )
     ea, eb = _observer_ehat(stack, res)
     f_e = stack.pole_pairs * rpm / 60.0
     m = res.t >= 0.3
     e_true = np.abs(stack.pole_pairs * rpm * TWO_PI / 60.0 * stack.psi_f)
-    vm = vector_metrics(ea[m], eb[m], -(res.omega_e[m] * stack.psi_f) * np.sin(res.theta_e[m]),
-                        (res.omega_e[m] * stack.psi_f) * np.cos(res.theta_e[m]), res.theta_e[m])
+    vm = vector_metrics(
+        ea[m],
+        eb[m],
+        -(res.omega_e[m] * stack.psi_f) * np.sin(res.theta_e[m]),
+        (res.omega_e[m] * stack.psi_f) * np.cos(res.theta_e[m]),
+        res.theta_e[m],
+    )
     theta_hat = np.degrees(np.arctan2(-ea[m], eb[m]))
     theta_true = np.degrees(res.theta_e[m])
     err = (theta_hat - theta_true + 180.0) % 360.0 - 180.0
@@ -71,10 +83,14 @@ def _gate_d(stack, plant, params, *, rpm, frac, dead, comp):
     spec = np.abs(np.fft.rfft(err)) * 2.0 / n
     freqs = np.fft.rfftfreq(n, float(res.t[1] - res.t[0]))
     i6 = np.argmin(np.abs(freqs - 6.0 * f_e))
-    return {"abs_E_v": e_true, "fundamental_gain": vm["fundamental_gain"],
-            "amplitude_pct": 100.0 * (vm["fundamental_gain"] - 1.0),
-            "phase_deg": vm["fundamental_phase_deg"], "h6_deg": float(spec[i6]),
-            "pred_amp_pct": 100.0 * PRED / e_true}
+    return {
+        "abs_E_v": e_true,
+        "fundamental_gain": vm["fundamental_gain"],
+        "amplitude_pct": 100.0 * (vm["fundamental_gain"] - 1.0),
+        "phase_deg": vm["fundamental_phase_deg"],
+        "h6_deg": float(spec[i6]),
+        "pred_amp_pct": 100.0 * PRED / e_true,
+    }
 
 
 def main() -> int:
@@ -88,63 +104,97 @@ def main() -> int:
     gate = {}
     for rpm in (500.0, 1000.0):
         for frac in (1.0, 0.2):
-            for label, dead, comp in (("off", 0.0, False), ("on", T_D, False), ("on_comp", T_D, True)):
-                gate[f"rpm{int(rpm)}_iq{int(frac*100)}|{label}"] = _gate_d(
-                    stack, plant, params, rpm=rpm, frac=frac, dead=dead, comp=comp)
+            for label, dead, comp in (
+                ("off", 0.0, False),
+                ("on", T_D, False),
+                ("on_comp", T_D, True),
+            ):
+                gate[f"rpm{int(rpm)}_iq{int(frac * 100)}|{label}"] = _gate_d(
+                    stack, plant, params, rpm=rpm, frac=frac, dead=dead, comp=comp
+                )
 
     # ---- sensorless dead time
     scenarios = E.paper_scenarios(rule)
-    s2 = dict(scenarios["S2_sim_50pct_1000"]); s2["alpha_w"] = s2_alpha
-    runs = {"S1": (dict(scenarios["S1_no_load_ramp"]), 10.0),
-            "S3": (dict(scenarios["S3_exp_20pct_1000"]), 10.0),
-            "S4": (dict(scenarios["S4_steady_1000"]), 10.0),
-            "S2_matched": (s2, s2_alpha)}
+    s2 = dict(scenarios["S2_sim_50pct_1000"])
+    s2["alpha_w"] = s2_alpha
+    runs = {
+        "S1": (dict(scenarios["S1_no_load_ramp"]), 10.0),
+        "S3": (dict(scenarios["S3_exp_20pct_1000"]), 10.0),
+        "S4": (dict(scenarios["S4_steady_1000"]), 10.0),
+        "S2_matched": (s2, s2_alpha),
+    }
 
     def matched():
         a = C.handover_assumptions(stack)
-        return C.EstimatorSource(observer=C.build_observer("matched_sigmoid", stack),
-                                 fll=C.build_fll(stack.initial_omega_at(a.omega_h_rpm),
-                                                 min_omega=C.fll_min_omega_rad_s(stack)),
-                                 qpll=C.build_qpll(stack), pole_pairs=stack.pole_pairs)
+        return C.EstimatorSource(
+            observer=C.build_observer("matched_sigmoid", stack),
+            fll=C.build_fll(
+                stack.initial_omega_at(a.omega_h_rpm), min_omega=C.fll_min_omega_rad_s(stack)
+            ),
+            qpll=C.build_qpll(stack),
+            pole_pairs=stack.pole_pairs,
+        )
 
     sensorless = {}
     for rname, (spec, aw) in runs.items():
         for label, dead, comp in (("off", 0.0, False), ("on", T_D, False), ("on_comp", T_D, True)):
-            rec, src, res = P.run_fixed(matched, stack, params, plant, spec, alpha_w=aw,
-                                        dead_time=dead, compensation=comp)
-            m = P.metrics(rec, src, res, dynamic=spec["dynamic"], steady=spec["steady"],
-                          disturbance_s=spec["disturbance_s"])
+            rec, src, res = P.run_fixed(
+                matched, stack, params, plant, spec, alpha_w=aw, dead_time=dead, compensation=comp
+            )
+            m = P.metrics(
+                rec,
+                src,
+                res,
+                dynamic=spec["dynamic"],
+                steady=spec["steady"],
+                disturbance_s=spec["disturbance_s"],
+            )
             ok, peak = P.lock_valid(rec)
             sensorless[f"{rname}|{label}"] = {
-                "lock_valid": ok, "lock_peak_deg": peak,
+                "lock_valid": ok,
+                "lock_peak_deg": peak,
                 "steady_theta_max_deg": m["steady_theta"]["max"],
                 "dynamic_theta_max_deg": m["dynamic_theta"]["max"],
                 "dynamic_omega_max_rpm": m["dynamic_omega"]["max"],
-                "dip_rpm": m.get("dip_rpm"), "saturation": m["saturation_after_transient"],
-                "fll_status": m["fll_status"], "handed_over": m["handed_over"],
-                "steady_theta_rad": (math.radians(m["steady_theta"]["max"])
-                                     if m["steady_theta"]["max"] is not None else None),
+                "dip_rpm": m.get("dip_rpm"),
+                "saturation": m["saturation_after_transient"],
+                "fll_status": m["fll_status"],
+                "handed_over": m["handed_over"],
+                "steady_theta_rad": (
+                    math.radians(m["steady_theta"]["max"])
+                    if m["steady_theta"]["max"] is not None
+                    else None
+                ),
             }
 
-    out = {"note": ("Phase 06c-2 Step 4: dead time OFF/ON/ON+comp; observer sees the "
-                    "commanded voltage. Gate D' prediction dE1=7.92 V. Fixed-time handover "
-                    "t_h=0.30 s."),
-           "prediction": {"dE1_v": PRED, "formula": "4/pi Vdc td fsw"},
-           "gate_d_prime": gate, "sensorless": sensorless,
-           "s2_matched_alpha_w": s2_alpha}
+    out = {
+        "note": (
+            "Phase 06c-2 Step 4: dead time OFF/ON/ON+comp; observer sees the "
+            "commanded voltage. Gate D' prediction dE1=7.92 V. Fixed-time handover "
+            "t_h=0.30 s."
+        ),
+        "prediction": {"dE1_v": PRED, "formula": "4/pi Vdc td fsw"},
+        "gate_d_prime": gate,
+        "sensorless": sensorless,
+        "s2_matched_alpha_w": s2_alpha,
+    }
     out_dir = config.find_project_root() / "experiments" / "output" / "06c2_deadtime"
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "deadtime.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
 
     print("== GATE D' (encoder-fed, chain in background) ==")
     for k, v in gate.items():
-        print(f"  {k:22s} |E|={v['abs_E_v']:5.1f}V amp={v['amplitude_pct']:+6.1f}% "
-              f"(pred {v['pred_amp_pct']:5.1f}%) phase={v['phase_deg']:+6.2f}° h6={v['h6_deg']:.2f}°")
+        print(
+            f"  {k:22s} |E|={v['abs_E_v']:5.1f}V amp={v['amplitude_pct']:+6.1f}% "
+            f"(pred {v['pred_amp_pct']:5.1f}%) phase={v['phase_deg']:+6.2f}° h6={v['h6_deg']:.2f}°"
+        )
     print("\n== sensorless dead time (matched) ==")
     for k, v in sensorless.items():
-        print(f"  {k:18s} lv={v['lock_valid']} steady={v['steady_theta_max_deg']} "
-              f"dyn_dth={v['dynamic_theta_max_deg']} dyn_dw={v['dynamic_omega_max_rpm']} "
-              f"sat={v['saturation']:.3f} fll={v['fll_status']}")
+        print(
+            f"  {k:18s} lv={v['lock_valid']} steady={v['steady_theta_max_deg']} "
+            f"dyn_dth={v['dynamic_theta_max_deg']} dyn_dw={v['dynamic_omega_max_rpm']} "
+            f"sat={v['saturation']:.3f} fll={v['fll_status']}"
+        )
     print(f"\nOutputs written to: {out_dir}")
     return 0
 
